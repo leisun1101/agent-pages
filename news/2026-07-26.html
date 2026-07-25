@@ -631,12 +631,19 @@
     <h2 class="article-title">AMD 发布机器可读 ISA，让 AI 模型直接编写 GPU 内核</h2>
     <p class="article-lede">"Hey Claude, optimize this model for me"——ROCm.AI 平台意图绕开 CUDA 生态护城河。</p>
     <div class="article-body">
-      <p>AMD 发布了机器可读的指令集架构（ISA）文档，使前沿 AI 模型可以直接生成 AMD GPU 内核代码。这一举措伴随着 ROCm.AI 平台的推出，旨在降低开发者从 NVIDIA CUDA 迁移到 AMD ROCm 生态的门槛。</p>
-      <p>The Register 将其形容为"vibe codes its way past the CUDA moat"——AMD 正在用 AI 生成代码的方式来跨越 CUDA 十余年积累的生态壁垒。如果成功，这将从根本上改变 GPU 算力市场的竞争格局。</p>
+      <p>AMD 在旧金山 Advancing AI 活动上发布 ROCm.AI 平台，让开发者通过自然语言提示（如"用 Hyperloom 优化 MiniMax M3"）让前沿大模型自动为 AMD Instinct GPU 生成和调优内核。核心工具 Hyperloom 可自动启动推理服务器、性能分析、瓶颈识别并动态生成定制内核，在 AMD 新发布的 Helios 机架上实测将模型性能提升 38%。</p>
+      <p>更关键的是，AMD 每代 GPU 均发布机器可读 ISA（非仅文档），并深度合作 OpenAI、Anthropic 使前沿模型"原生理解 AMD 编程"。ROCm.AI 将作为插件接入 Claude Code、OpenAI Codex、Google Antigravity 和 Cursor——这意味着开发者无需手写底层代码，AI 会自动生成。</p>
+    </div>
+    <div class="data-callout">
+      <div class="label">关键数据</div>
+      <div class="stats">
+        <div class="stat-item"><span class="num">+38%</span><span class="desc">Hyperloom 实测性能提升</span></div>
+        <div class="stat-item"><span class="num">4 个</span><span class="desc">IDE 插件接入（Claude/Codex/Cursor/Antigravity）</span></div>
+      </div>
     </div>
     <div class="relevance-box">
       <div class="label">与你的关联</div>
-      <div class="text">你在 AWS 做 AI 基础设施，AMD ROCm 生态成熟度的变化直接影响 Inferentia/Trainium 以外的硬件选型策略和成本结构。</div>
+      <div class="text">你在 AWS 做 AI 基础设施，AMD ROCm 生态成熟度的变化直接影响 Inferentia/Trainium 以外的硬件选型策略和成本结构。如果 AI 能自动生成高质量 GPU 内核，CUDA 的生态壁垒将被根本性削弱。</div>
     </div>
     <div class="article-footer">
       <span class="source">The Register</span>
@@ -726,13 +733,15 @@
     <h2 class="article-title">特斯拉 Robotaxi 里程数不升反降，Q2 付费里程下滑 36%</h2>
     <p class="article-lede">尽管扩展至更多城市，付费 Robotaxi 里程却环比下降 36%，商业模式面临质疑。</p>
     <div class="article-body">
-      <p>TechCrunch 报道，特斯拉的 Robotaxi 网络在 2026 年第二季度出现了一个令人意外的信号：尽管扩展到了更多城市，付费 Robotaxi 里程却较上一季度下降了 36%。</p>
-      <p>这意味着每英里营收和用户留存可能存在结构性问题，而非简单的规模扩张就能解决。自动驾驶出租车商业化的预期正在被重新审视。</p>
+      <p>TechCrunch 报道，特斯拉 Robotaxi 网络 2026 年 Q2 付费行驶里程约 70 万英里，较 Q1 的约 110 万英里下降约 36%——尽管同期从扩张到了得州和佛州的 6 个城市。马斯克在财报电话会上承认，Cybercab 量产前需先积累大量搭载临时方向盘和踏板的改装车行驶数据来校准底盘，这与公司多年宣称"近 1000 万辆客户车已在后台收集数据训练 Robotaxi"的叙事相矛盾。</p>
+      <p>消息公布后特斯拉股价周四早盘暴跌超 13%。公司向 NHTSA 报告了试运营一年来的 22 起事故，AI 副总裁 Elluswamy 称无人监督行驶"超 38 万英里零重大事故"。</p>
     </div>
     <div class="data-callout">
       <div class="label">关键数据</div>
       <div class="stats">
-        <div class="stat-item"><span class="num">-36%</span><span class="desc">Q2 付费里程环比变化</span></div>
+        <div class="stat-item"><span class="num">-36%</span><span class="desc">Q2 付费里程环比（110万→70万英里）</span></div>
+        <div class="stat-item"><span class="num">-13%</span><span class="desc">股价暴跌</span></div>
+        <div class="stat-item"><span class="num">22 起</span><span class="desc">一年内报告事故数</span></div>
       </div>
     </div>
     <div class="relevance-box">
