@@ -4,759 +4,483 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>每日简报 · 2026年7月26日</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { font-size: 16px; -webkit-font-smoothing: antialiased; }
-body {
-  background: #0a0a0f;
-  color: #e8e6e0;
-  font-family: 'Inter', 'Noto Sans SC', sans-serif;
-  line-height: 1.7;
-  overflow-x: hidden;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0a0a0f; }
-::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #d4a554; }
-
-/* Hero */
-.hero {
-  position: relative;
-  min-height: 70vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 4rem 2rem;
-  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f0f18 100%);
-  overflow: hidden;
-}
-.hero::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(ellipse at 30% 50%, rgba(212,165,84,0.06) 0%, transparent 50%),
-              radial-gradient(ellipse at 70% 30%, rgba(212,165,84,0.03) 0%, transparent 40%);
-  animation: heroGlow 20s ease-in-out infinite alternate;
-}
-@keyframes heroGlow {
-  0% { transform: translate(0, 0); }
-  100% { transform: translate(-5%, 5%); }
-}
-.hero-content { position: relative; z-index: 1; max-width: 900px; }
-.hero-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: #d4a554;
-  margin-bottom: 1.5rem;
-}
-.hero h1 {
-  font-family: 'Noto Serif SC', 'Playfair Display', serif;
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
-  font-weight: 900;
-  line-height: 1.15;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, #f0ede8 0%, #d4a554 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.hero p {
-  font-size: 1.05rem;
-  color: #8a887e;
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
-  font-weight: 300;
-}
-.hero-meta {
-  margin-top: 2rem;
-  font-size: 0.85rem;
-  color: #5a5a5a;
-  letter-spacing: 0.05em;
-}
-.hero-meta span { margin: 0 0.5rem; color: #d4a554; }
-
-/* Container */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 3rem 2rem;
-}
-
-/* Desktop: two-column layout */
-@media (min-width: 1024px) {
-  .news-grid {
-    display: grid;
-    grid-template-columns: 60px 1fr;
-    gap: 2rem;
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    background: #e9e7df;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", sans-serif;
+    color: #202823;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: pan-y;
   }
-  .sidebar-sticky {
-    position: sticky;
-    top: 2rem;
-    height: fit-content;
+  .reader {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    max-width: 830px;
+    margin: 0 auto;
+    overflow: hidden;
   }
-  .sidebar-numbers {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  .page {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 3rem 2.5rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background: #fffefa;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.06);
+    will-change: transform;
+    transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1), opacity 400ms ease;
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
   }
-  .sidebar-number {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid #2a2a3a;
+  .page.active {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 2;
+  }
+  .page.past {
+    transform: translateX(-30%) rotateY(4deg);
+    opacity: 0;
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .page { transition: opacity 200ms ease, transform 200ms ease; }
+    .page.past { transform: translateX(-30%); }
+  }
+  @media (max-width: 600px) {
+    .page { padding: 1.8rem 1.2rem; }
+    html { font-size: 15px; }
+  }
+  /* Typography */
+  .page h1 {
+    font-family: Georgia, "Songti SC", "Noto Serif SC", serif;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #202823;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+  .page h1 .date-sub {
+    display: block;
+    font-size: 0.85rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-weight: 400;
+    color: #536d5c;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .page .category-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #c96b3d;
+    border: 1px solid #c96b3d;
+    padding: 0.15rem 0.6rem;
+    border-radius: 2px;
+    margin-bottom: 0.8rem;
+  }
+  .page .lead {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #202823;
+    margin-bottom: 1rem;
+  }
+  .page .lead:first-letter {
+    float: left;
+    font-family: Georgia, "Songti SC", serif;
+    font-size: 3.2rem;
+    line-height: 1;
+    padding-right: 0.4rem;
+    color: #536d5c;
+    font-weight: 700;
+  }
+  .page p {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: #3a403a;
+    margin-bottom: 0.9rem;
+  }
+  .page .fact-box {
+    background: #f5f3ed;
+    border-left: 3px solid #536d5c;
+    padding: 0.8rem 1rem;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    border-radius: 0 4px 4px 0;
+  }
+  .page .fact-box strong {
+    color: #202823;
+  }
+  .page .meta {
+    margin-top: 1.5rem;
+    font-size: 0.78rem;
+    color: #7a847a;
+    line-height: 1.5;
+    border-top: 1px solid #e5e3db;
+    padding-top: 1rem;
+  }
+  .page .meta a {
+    color: #536d5c;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .page .meta a:hover { color: #c96b3d; }
+  .hero-image {
+    width: calc(100% + 5rem);
+    margin: -3rem -2.5rem 1.5rem -2.5rem;
+    height: 240px;
+    overflow: hidden;
+    background: #e9e7df;
+  }
+  .hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  @media (max-width: 600px) {
+    .hero-image {
+      width: calc(100% + 2.4rem);
+      margin: -1.8rem -1.2rem 1.2rem -1.2rem;
+      height: 180px;
+    }
+  }
+  /* Navigation */
+  .nav-bar {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 830px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #5a5a5a;
-    font-family: 'Inter', sans-serif;
-    transition: all 0.2s;
+    justify-content: space-between;
+    padding: 0.7rem 1rem;
+    background: #fffefa;
+    border-top: 1px solid #e5e3db;
+    z-index: 10;
+  }
+  .nav-btn {
+    background: none;
+    border: 1px solid #d0cec4;
+    border-radius: 4px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    color: #536d5c;
+    cursor: pointer;
+    transition: all 150ms;
+  }
+  .nav-btn:disabled {
+    opacity: 0.3;
     cursor: default;
   }
-  .sidebar-number.active { border-color: #d4a554; color: #d4a554; background: rgba(212,165,84,0.08); }
-  .story-card { margin-bottom: 3rem; }
-}
-
-@media (max-width: 1023px) {
-  .sidebar-sticky { display: none; }
-  .story-card { margin-bottom: 2rem; }
-}
-
-/* Story card */
-.story-card {
-  position: relative;
-  padding: 0;
-  transition: all 0.3s ease;
-}
-.story-card:last-child { margin-bottom: 0; }
-
-/* Hero story — first card */
-.story-hero {
-  background: linear-gradient(135deg, #12121f 0%, #1a1a2e 100%);
-  border: 1px solid #2a2a3a;
-  border-radius: 16px;
-  padding: 2.5rem;
-  margin-bottom: 2.5rem;
-  position: relative;
-  overflow: hidden;
-}
-.story-hero::before {
-  content: '';
-  position: absolute;
-  top: 0; right: 0;
-  width: 200px; height: 200px;
-  background: radial-gradient(circle, rgba(212,165,84,0.05) 0%, transparent 70%);
-}
-.story-hero .story-category { background: rgba(212,165,84,0.15); color: #d4a554; }
-.story-hero .story-number {
-  font-family: 'Playfair Display', serif;
-  font-size: 4rem;
-  font-weight: 700;
-  color: rgba(212,165,84,0.08);
-  position: absolute;
-  top: 0.5rem; right: 1.5rem;
-  line-height: 1;
-}
-
-/* Regular card */
-.story-card:not(.story-hero) {
-  background: linear-gradient(135deg, #0f0f18 0%, #141420 100%);
-  border: 1px solid #1e1e2e;
-  border-radius: 12px;
-  padding: 2rem;
-  position: relative;
-  transition: border-color 0.3s;
-}
-.story-card:not(.story-hero):hover { border-color: #2a2a3a; }
-.story-card:not(.story-hero) .story-number {
-  font-family: 'Playfair Display', serif;
-  font-size: 3rem;
-  font-weight: 700;
-  color: rgba(212,165,84,0.06);
-  position: absolute;
-  top: 0.5rem; right: 1.5rem;
-  line-height: 1;
-}
-
-/* Category tag */
-.story-category {
-  display: inline-block;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  margin-bottom: 1rem;
-}
-.cat-local { background: rgba(100,200,255,0.1); color: #64c8ff; }
-.cat-climate { background: rgba(255,160,60,0.1); color: #ffa03c; }
-.cat-geopolitics { background: rgba(255,80,80,0.1); color: #ff5050; }
-.cat-economy { background: rgba(80,200,120,0.1); color: #50c878; }
-.cat-market { background: rgba(200,180,100,0.1); color: #c8b464; }
-.cat-tech { background: rgba(160,120,255,0.1); color: #a078ff; }
-.cat-industry { background: rgba(100,200,200,0.1); color: #64c8c8; }
-
-/* Typography */
-.story-title {
-  font-family: 'Noto Serif SC', serif;
-  font-size: clamp(1.2rem, 2vw, 1.65rem);
-  font-weight: 700;
-  line-height: 1.35;
-  margin-bottom: 0.75rem;
-  color: #f0ede8;
-  position: relative;
-  z-index: 1;
-}
-.story-hero .story-title { font-size: clamp(1.5rem, 2.5vw, 2rem); }
-.story-subtitle {
-  font-family: 'Inter', 'Noto Sans SC', sans-serif;
-  font-size: 0.95rem;
-  font-style: italic;
-  color: #8a887e;
-  margin-bottom: 1rem;
-  font-weight: 300;
-  padding-left: 1rem;
-  border-left: 2px solid rgba(212,165,84,0.3);
-}
-.story-body {
-  font-size: 0.92rem;
-  line-height: 1.8;
-  color: #c8c5bc;
-  font-weight: 300;
-  margin-bottom: 1.25rem;
-}
-.story-body p { margin-bottom: 0.75rem; }
-.story-body p:last-child { margin-bottom: 0; }
-
-/* Dropcap on first paragraph */
-.story-hero .story-body p:first-child:first-letter,
-.story-card:not(.story-hero) .story-body p:first-child:first-letter {
-  font-family: 'Noto Serif SC', 'Playfair Display', serif;
-  font-size: 2.8em;
-  font-weight: 700;
-  float: left;
-  line-height: 0.85;
-  margin-right: 0.4rem;
-  margin-top: 0.15rem;
-  color: #d4a554;
-}
-
-/* Stats grid */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.75rem;
-  margin: 1.25rem 0;
-}
-.stat-card {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid #1e1e2e;
-  border-radius: 8px;
-  padding: 0.75rem;
-  text-align: center;
-}
-.stat-value {
-  font-family: 'Playfair Display', 'Noto Serif SC', serif;
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #d4a554;
-  line-height: 1.2;
-}
-.stat-label {
-  font-size: 0.7rem;
-  color: #6a6a6a;
-  margin-top: 0.25rem;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-}
-
-/* Context box */
-.context-box {
-  background: rgba(212,165,84,0.04);
-  border: 1px solid rgba(212,165,84,0.12);
-  border-radius: 8px;
-  padding: 1rem 1.25rem;
-  margin: 1rem 0;
-}
-.context-box-title {
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: #d4a554;
-  margin-bottom: 0.5rem;
-}
-.context-box p {
-  font-size: 0.85rem;
-  color: #a8a69e;
-  line-height: 1.6;
-}
-
-/* Source + link */
-.story-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid #1a1a2a;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-.story-source {
-  font-size: 0.75rem;
-  color: #5a5a5a;
-}
-.story-link {
-  font-size: 0.75rem;
-  color: #d4a554;
-  text-decoration: none;
-  border: 1px solid rgba(212,165,84,0.2);
-  padding: 0.3rem 0.75rem;
-  border-radius: 20px;
-  transition: all 0.2s;
-  font-weight: 500;
-}
-.story-link:hover { background: rgba(212,165,84,0.1); border-color: #d4a554; }
-
-/* Separator between stories */
-.story-separator {
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #2a2a3a, transparent);
-  margin: 0 0 2rem 0;
-  border: none;
-}
-
-/* Mobile adjustments */
-@media (max-width: 767px) {
-  .container { padding: 1.5rem 1rem; }
-  .hero { min-height: 50vh; padding: 3rem 1.25rem; }
-  .story-hero { padding: 1.5rem; border-radius: 12px; }
-  .story-card:not(.story-hero) { padding: 1.5rem; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* Divider for section */
-.section-divider {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 2.5rem 0;
-  color: #2a2a3a;
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  font-weight: 600;
-}
-.section-divider::before,
-.section-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #2a2a3a, transparent);
-}
-.section-divider span { color: #5a5a5a; }
-
-/* Footer */
-.site-footer {
-  text-align: center;
-  padding: 3rem 2rem;
-  border-top: 1px solid #1a1a2a;
-  margin-top: 3rem;
-}
-.site-footer p {
-  font-size: 0.75rem;
-  color: #3a3a3a;
-  letter-spacing: 0.05em;
-}
+  .nav-btn:not(:disabled):hover {
+    background: #536d5c;
+    color: #fffefa;
+    border-color: #536d5c;
+  }
+  .page-counter {
+    font-size: 0.8rem;
+    color: #7a847a;
+    font-variant-numeric: tabular-nums;
+  }
+  .dots {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #d0cec4;
+    transition: background 200ms;
+  }
+  .dot.active { background: #536d5c; width: 8px; height: 8px; }
+  @media (max-width: 600px) {
+    .nav-bar { padding: 0.5rem 0.8rem; }
+  }
 </style>
 </head>
 <body>
 
-<header class="hero">
-  <div class="hero-content">
-    <div class="hero-label">Daily Briefing</div>
-    <h1>每日简报</h1>
-    <p>地缘风险与市场压力交织的一周——柏林恐袭、法国山火、美伊冲突扩大，AI 市场深度回调，但半导体长期信号依然强劲。</p>
-    <div class="hero-meta">2026 年 7 月 26 日 <span>·</span> 10 条新闻 <span>·</span> 柏林</div>
-  </div>
-</header>
-
-<div class="container">
-
-<div class="news-grid">
-
-<!-- Sidebar -->
-<aside class="sidebar-sticky">
-  <div class="sidebar-numbers">
-    <div class="sidebar-number">1</div>
-    <div class="sidebar-number">2</div>
-    <div class="sidebar-number">3</div>
-    <div class="sidebar-number">4</div>
-    <div class="sidebar-number">5</div>
-    <div class="sidebar-number">6</div>
-    <div class="sidebar-number">7</div>
-    <div class="sidebar-number">8</div>
-    <div class="sidebar-number">9</div>
-    <div class="sidebar-number">10</div>
-  </div>
-</aside>
-
-<main>
-
-<!-- Story 1: Berlin Pride -->
-<article class="story-card story-hero">
-  <div class="story-number">01</div>
-  <span class="story-category cat-local">柏林·本地</span>
-  <h2 class="story-title">柏林骄傲游行遭汽车冲撞，1 死 16 伤</h2>
-  <div class="story-subtitle">嫌犯为 21 岁伊斯兰主义背景男子，全城搜捕中</div>
-  <div class="story-body">
-    <p>周六下午，柏林 Christopher Street Day 同志骄傲游行期间，一辆汽车冲入人群。事件造成 1 人死亡、至少 16 人受伤，部分伤者伤势严重。嫌犯被确认为 21 岁的 Abdul B，已知是柏林伊斯兰主义圈子成员。警方出动直升机并使用热成像夜间搜捕，目前仍在追捕中。</p>
-    <p>总理梅尔茨在社交媒体上谴责这一"可怕行为"，柏林市长韦格纳称这是"对自由开放社会的攻击"，呼吁民众保持警惕。CDU 政治局也已宣布将全面审查下周末所有大型活动的安保方案。</p>
+<div class="reader" id="reader">
+  <!-- Page 1: Overview -->
+  <div class="page active" data-index="0">
+    <div class="hero-image">
+      <img src="https://ichef.bbci.co.uk/news/1200/branded_zhongwen/5fe5/live/c9dbe000-8899-11f1-b8ee-9b3c26ad07bb.jpg" alt="" onerror="this.parentElement.remove()">
+    </div>
+    <h1><span class="date-sub">Sunday · 2026年7月26日</span>每日简报</h1>
+    <p class="lead">筛选窗口：柏林时间7月25日08:00 至 7月26日07:00。最终入选10条。</p>
+    <p>过去24小时，国际格局在多条战线上同时收紧。美伊冲突从波斯湾蔓延至红海和里海，胡塞武装向沙特石油设施发射导弹，全球能源供应风险进一步上升。欧洲方面，柏林骄傲游行遭遇汽车冲撞袭击，1死16伤，21岁伊斯兰主义嫌犯在逃；法国波尔多山火迫使20万人疏散，近10万公顷被焚。特朗普则在民调走低之际高调宣布第四次竞选。</p>
+    <p>科技与资本市场方面，"大空头"Burry加码做空英伟达和美光，质疑AI需求的真实性；美国科技巨头年内裁员近14万人；东吴证券分析AI板块调整的内外传导机制。边缘计算领域传来突破——8美元的ESP32-S3微控制器成功运行了28.9M参数的LLM。</p>
   </div>
 
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-value">1</div>
-      <div class="stat-label">死亡</div>
+  <!-- Page 2: Berlin Pride -->
+  <div class="page" data-index="1">
+    <div class="hero-image">
+      <img src="https://ichef.bbci.co.uk/news/1200/branded_zhongwen/5fe5/live/c9dbe000-8899-11f1-b8ee-9b3c26ad07bb.jpg" alt="" onerror="this.parentElement.remove()">
     </div>
-    <div class="stat-card">
-      <div class="stat-value">16+</div>
-      <div class="stat-label">受伤</div>
+    <span class="category-tag">欧洲 · 柏林</span>
+    <h1>柏林骄傲游行遭汽车冲撞，1死16伤</h1>
+    <p class="lead">7月25日晚，柏林年度Christopher Street Day骄傲游行在蒂尔加滕公园附近遭一辆白色SUV高速冲撞，至少1人死亡、16人受伤，多人生命垂危。</p>
+    <p>警方已锁定21岁嫌犯Abdul B，将其描述为"柏林伊斯兰主义圈子"成员，出动直升机和热成像在全城搜捕。嫌犯身材偏瘦、黑发，穿黑色连帽衫和白色长裤，作案后弃车逃逸。警方在案发现场还接到多人被刀刺伤的报告。</p>
+    <p>德国总理梅尔茨称这是"可怕的行为"，柏林市长韦格纳定性为"对我们自由开放社会的攻击"。柏林骄傲活动通常吸引约100万人参与，事件发生后所有活动取消。近年来德国已发生多起车辆冲撞袭击——2016年柏林圣诞集市13死，2024年马德堡圣诞集市6死，2026年5月莱比锡2死。</p>
+    <div class="fact-box">
+      <strong>关键事实：</strong>嫌犯21岁，柏林伊斯兰主义圈子成员，目前在逃。2016年以来德国已发生4起大规模车辆冲撞事件。
     </div>
-    <div class="stat-card">
-      <div class="stat-value">21岁</div>
-      <div class="stat-label">嫌犯年龄</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">全城</div>
-      <div class="stat-label">搜捕范围</div>
+    <div class="meta">
+      来源：BBC中文 · 2026-07-26 03:19 UTC · 更新于6小时前<br>
+      <a href="https://www.bbc.com/zhongwen/articles/cly5q2r3pyyo/trad" target="_blank">阅读原文 →</a>
     </div>
   </div>
 
-  <div class="story-footer">
-    <span class="story-source">BBC 中文 · 7 月 26 日</span>
-    <a href="https://www.bbc.com/zhongwen/articles/cly5q2r3pyyo/trad" class="story-link" target="_blank">阅读原文 →</a>
-  </div>
-</article>
-
-<!-- Story 2: Bordeaux wildfires -->
-<article class="story-card">
-  <div class="story-number">02</div>
-  <span class="story-category cat-climate">气候·欧洲</span>
-  <h2 class="story-title">法国波尔多山火，20 万人疏散</h2>
-  <div class="story-subtitle">近 10 万公顷土地被焚，机场关闭</div>
-  <div class="story-body">
-    <p>法国西南部波尔多地区爆发大规模野火，火势在强风助推下迅速蔓延。约 20 万居民被迫疏散，近 10 万公顷土地化为焦土。波尔多机场已关闭，航班取消。法国政府向欧盟及邻国发出国际援助请求，多个国家已派出消防飞机和人员。</p>
-    <p>这是法国近年来最严重的山火之一。气象部门警告，未来数日持续高温干旱将进一步增大灭火难度。</p>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-value">20万</div>
-      <div class="stat-label">疏散人数</div>
+  <!-- Page 3: Bordeaux Wildfires -->
+  <div class="page" data-index="2">
+    <span class="category-tag">欧洲 · 环境</span>
+    <h1>法国波尔多山火：20万人疏散，近10万公顷被焚</h1>
+    <p class="lead">法国西南部波尔多地区 wildfires 持续肆虐，约20万人被迫疏散，烧毁近9.8万公顷土地，波尔多机场关闭。法国已寻求国际援助。</p>
+    <p>这场山火是2026年欧洲夏季极端气候的最新表现。大火逼近波尔多市区，浓烟影响空中交通。消防部门正全力控制火势，但持续高温和干燥天气加大了灭火难度。法国政府启动应急机制，并向欧盟及其他盟国请求灭火资源支援。</p>
+    <p>这是欧洲近年来最严重的山火事件之一，与2003年葡萄牙山火、2018年希腊马蒂山火和2022年法国吉伦特省山火相比，撤离规模创下新高。波尔多作为法国重要的葡萄酒产区和旅游城市，经济影响预计将十分显著。</p>
+    <div class="fact-box">
+      <strong>关键事实：</strong>约20万人疏散，9.8万公顷被焚，波尔多机场关闭。法国寻求国际援助。
     </div>
-    <div class="stat-card">
-      <div class="stat-value">9.8万</div>
-      <div class="stat-label">公顷被焚</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">关闭</div>
-      <div class="stat-label">波尔多机场</div>
+    <div class="meta">
+      来源：Al Jazeera · Reuters · 2026-07-26 03:03 UTC<br>
+      <a href="https://www.aljazeera.com/video/newsfeed/2026/7/26/french-wildfires-trigger-mass-evacuations-around-bordeaux" target="_blank">阅读原文 →</a>
     </div>
   </div>
 
-  <div class="story-footer">
-    <span class="story-source">Al Jazeera · 7 月 26 日</span>
-    <a href="https://www.aljazeera.com/video/newsfeed/2026/7/26/french-wildfires-trigger-mass-evacuations-around-bordeaux" class="story-link" target="_blank">阅读原文 →</a>
-  </div>
-</article>
-
-<hr class="story-separator">
-
-<!-- Story 3: US-Iran-Houthi -->
-<article class="story-card">
-  <div class="story-number">03</div>
-  <span class="story-category cat-geopolitics">地缘·中东</span>
-  <h2 class="story-title">美伊冲突扩大至红海与里海</h2>
-  <div class="story-subtitle">胡塞武装攻击沙特石油设施，伊朗船只遭乌克兰袭击</div>
-  <div class="story-body">
-    <p>美伊战争周末进一步升级。胡塞武装向沙特吉赞和延布的阿美石油设施发射了导弹和无人机。部署在沙特的希腊操作爱国者防空系统成功拦截了部分导弹。与此同时，美国军方在波斯湾拦截了一艘被指控试图突破伊朗封锁的油轮，并公布了登船视频。</p>
-    <p>在另一个方向，伊朗指控乌克兰使用无人机袭击了其在里海的一艘商船，造成 1 人死亡、1 人受伤。伊朗外交部召见了乌克兰外交官。乌克兰方面尚未正式回应。这场冲突的战线正向多个方向扩展。</p>
-  </div>
-
-  <div class="context-box">
-    <div class="context-box-title">为什么重要</div>
-    <p>霍尔木兹海峡是全球最重要的石油运输通道。冲突扩大直接推高全球能源价格和通胀预期，也影响了美联储和 ECB 的利率决策。花旗的最新报告中也将霍尔木兹风险列为 AI 板块调整的三大因素之一。</p>
-  </div>
-
-  <div class="story-footer">
-    <span class="story-source">Al Jazeera · BBC · Reuters · 7 月 26 日</span>
-    <a href="https://www.aljazeera.com/news/2026/7/26/new-front-in-us-iran-war-escalates-as-houthis-fire-at-saudi-oil-facilities" class="story-link" target="_blank">阅读原文 →</a>
-  </div>
-</article>
-
-<hr class="story-separator">
-
-<!-- Story 4: Trump 4th campaign -->
-<article class="story-card">
-  <div class="story-number">04</div>
-  <span class="story-category cat-geopolitics">政治·美国</span>
-  <h2 class="story-title">特朗普宣布将第四次竞选总统</h2>
-  <div class="story-subtitle">支持率跌至 37%，"强烈支持"比例创历史新低</div>
-  <div class="story-body">
-    <p>特朗普戴着印有"2028"字样的红色帽子高调宣布将第四次角逐美国总统。然而同一天发布的民调显示：总体支持率已降至 37%，"强烈支持"的比例更是创下历史新低。69% 的受访者不认可其伊朗政策，67% 对美国经济前景感到悲观。</p>
-    <p>特朗普在发言中表示"我已经很有经验了"，强调自己仍然是共和党内最具影响力的人物。但党内已经有声音质疑这一定。2028 年的党内初选格局正在成型。</p>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-value">37%</div>
-      <div class="stat-label">总体支持率</div>
+  <!-- Page 4: US-Iran/Houthi -->
+  <div class="page" data-index="3">
+    <span class="category-tag">国际 · 地缘政治</span>
+    <h1>美伊战争扩大：胡塞攻击沙特石油设施，里海伊朗船只遭袭</h1>
+    <p class="lead">伊朗支持的也门胡塞武装向沙特阿美在吉赞和延布的石油设施发射导弹和无人机，希腊操作的爱国者系统在延布拦截了两枚弹道导弹，红海成为美伊冲突的新战场。</p>
+    <p>这场冲突自7月11日美国对伊朗发动13轮空袭以来持续升级。胡塞武装此前已宣布对沙特实施海上封锁，沙特则空袭了胡塞控制的荷台达。市场担心胡塞可能封锁曼德海峡——如果霍尔木兹海峡和曼德海峡同时受阻，将引发全球供应链危机。</p>
+    <p>与此同时，冲突蔓延至里海：一架伊朗商船遭远程打击，1死1伤，伊朗指控乌克兰发动袭击，并召见乌克兰驻德黑兰临时代办。乌克兰总统泽连斯基承认在里海取得"非常强劲的战果"，打击了"参与伊朗军事物资运输的船只"。白宫方面表示特朗普仍倾向外交，但谈判未有实质突破。</p>
+    <div class="fact-box">
+      <strong>关键事实：</strong>胡塞攻击沙特阿美吉赞和延布设施；冲突蔓延至里海，伊朗船只遭乌克兰打击；美伊通过中介交换信号，但立场差异巨大。
     </div>
-    <div class="stat-card">
-      <div class="stat-value">69%</div>
-      <div class="stat-label">不认可伊朗政策</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">67%</div>
-      <div class="stat-label">对经济悲观</div>
+    <div class="meta">
+      来源：Al Jazeera · 2026-07-26 04:40 UTC<br>
+      <a href="https://www.aljazeera.com/news/2026/7/26/new-front-in-us-iran-war-escalates-as-houthis-fire-at-saudi-oil-facilities" target="_blank">阅读原文 →</a>
     </div>
   </div>
 
-  <div class="story-footer">
-    <span class="story-source">华尔街见闻 · 7 月 25 日</span>
-    <a href="https://wallstreetcn.com/articles/3777927" class="story-link" target="_blank">阅读原文 →</a>
-  </div>
-</article>
-
-<hr class="story-separator">
-
-<!-- Story 5: Trump 301 tariffs -->
-<article class="story-card">
-  <div class="story-number">05</div>
-  <span class="story-category cat-economy">经济·贸易</span>
-  <h2 class="story-title">9500 亿美元关税新框架生效</h2>
-  <div class="story-subtitle">301 条款接棒，AI 芯片和服务器获豁免</div>
-  <div class="story-body">
-    <p>7 月 24 日 122 关税到期后，特朗普政府立即启用 301 条款重建关税框架。"强制劳动关税"正式生效，对 60 个经济体加征 10-12.5% 的关税。对中国的实际税率从 20% 左右小幅升至 20.6-20.8%。</p>
-    <p>关键变化在于豁免范围大幅扩大，涵盖了 AI 链核心产品——服务器、半导体设备、储能材料等。华泰证券分析认为，新框架的法律基础更坚实、更难通过行政命令取消，因此对全球供应链的长期重塑影响更大。后续还需关注"过剩产能"301 调查结果。</p>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-value">$9500亿</div>
-      <div class="stat-label">涉及贸易额</div>
+  <!-- Page 5: Trump 4th Campaign -->
+  <div class="page" data-index="4">
+    <span class="category-tag">美国 · 政治</span>
+    <h1>特朗普宣布第四次竞选总统，民调支持率跌至37%</h1>
+    <p class="lead">当地时间7月25日，特朗普在白宫记者协会晚宴上戴着印有"特朗普2028"字样的标志性小红帽，宣布将第四次竞选美国总统。</p>
+    <p>然而最新民调显示其政治处境持续恶化。《华盛顿邮报》和益普索的联合民调（7月8-13日，2648人样本）显示：总体支持率仅37%，"强烈支持"比例创历史新低15%（2月为19%）；69%的民众不认可其伊朗政策，68%认为伊朗战事"不值得打"，67%预计未来一年经济将进一步恶化。</p>
+    <p>特朗普说"他们现在正在跟我们谈，他们很想达成协议"，表示愿意倾听伊朗方面意见。民调中仅23%的人相信特朗普政府能谈出比奥巴马时期更好的伊核协议。CNN指出，对伊朗军事行动正成为特朗普的"政治包袱"。</p>
+    <div class="fact-box">
+      <strong>关键事实：</strong>支持率37%，"强烈支持"15%创历史新低；69%不认可伊朗政策；67%对经济悲观。4月宣布第四次参选。
     </div>
-    <div class="stat-card">
-      <div class="stat-value">60</div>
-      <div class="stat-label">经济体涉及</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">10-12.5%</div>
-      <div class="stat-label">加征税率</div>
+    <div class="meta">
+      来源：华尔街见闻/每日经济新闻 · 2026-07-25 16:23 UTC<br>
+      <a href="https://wallstreetcn.com/articles/3777927" target="_blank">阅读原文 →</a>
     </div>
   </div>
 
-  <div class="story-footer">
-    <span class="story-source">华尔街见闻 · 7 月 26 日</span>
-    <a href="https://wallstreetcn.com/member/articles/3777944" class="story-link" target="_blank">阅读原文 →</a>
-  </div>
-</article>
-
-<hr class="story-separator">
-
-<!-- Story 6: Burry shorts Nvidia -->
-<article class="story-card">
-  <div class="story-number">06</div>
-  <span class="story-category cat-market">市场·半导体</span>
-  <h2 class="story-title">"大空头"Burry 加码做空英伟达</h2>
-  <div class="story-subtitle">指控需求由表外融资循环驱动</div>
-  <div class="story-body">
-    <p>Michael Burry——电影《大空头》原型——在 Substack 披露最新持仓。他加码做空英伟达（$210.28/股）、美光科技（$933.86/股）和费城半导体 ETF，新增做空卡特彼勒，维持做空特斯拉和 Palantir，并继续持有纳斯达克 100 看跌期权。</p>
-    <p>Burry 的核心看空逻辑令人关注：他认为英伟达当前及未来的大量需求并非来自真实的终端客户，而是通过表外融资安排循环驱动，并援引 2026 年国际清算银行年度报告作为佐证。与他相反，多仓他买入 Flutter Entertainment 和 DraftKings，押注体育博彩/预测市场。</p>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-value">$210.28</div>
-      <div class="stat-label">英伟达做空价位</div>
+  <!-- Page 6: 301 Tariff -->
+  <div class="page" data-index="5">
+    <span class="category-tag">全球经济 · 贸易</span>
+    <h1>301条款接棒122关税：对华微升至20.6%，豁免AI链核心产品</h1>
+    <p class="lead">7月23日，特朗普政府基于301条款推出"强制劳动关税"，对60个经济体加征10%或12.5%关税，接替到期的122关税。市场对此已有预期，短期冲击有限。</p>
+    <p>华泰证券分析指出：对华实际关税从约18.5%微升至20.6-20.8%，中国出口受影响可控。豁免范围扩大至食品、医药原料、关键矿产、电池与半导体等六大类，服务器、半导体制造设备、AI芯片（适用232条款25%关税，不叠加）等AI链核心产品均在豁免之列。</p>
+    <p>相比此前IEEPA和122关税，301条款法律基础更坚实，短期更"可预测"，但被完全取消的可能性也更小。特朗普政府仍在推进"过剩产能"301调查、以及针对多晶硅/无人机/机器人等关键商品的232调查，未来关税仍有上升空间。</p>
+    <div class="fact-box">
+      <strong>关键事实：</strong>60个经济体覆盖美国99.2%进口；对华加权关税约20.6-20.8%；AI链核心产品豁免。
     </div>
-    <div class="stat-card">
-      <div class="stat-value">$933.86</div>
-      <div class="stat-label">美光做空价位</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">做多</div>
-      <div class="stat-label">DraftKings + Flutter</div>
+    <div class="meta">
+      来源：华尔街见闻/华泰证券 · 2026-07-26 03:11 UTC<br>
+      <a href="https://wallstreetcn.com/articles/3777940" target="_blank">阅读原文 →</a>
     </div>
   </div>
 
-  <div class="context-box">
-    <div class="context-box-title">AI 市场背景</div>
-    <p>Burry 的加码做空发生在 AI 板块深度回调的背景下。东吴证券的分析指出，三重压力（美股盈利担忧、韩国去杠杆、霍尔木兹风险）正在集体释放。英伟达自本轮高点已回落明显，多空分歧进一步加剧。</p>
-  </div>
-
-  <div class="story-footer">
-    <span class="story-source">华尔街见闻 · 7 月 26 日</span>
-    <a href="https://wallstreetcn.com/articles/3777945" class="story-link" target="_blank">阅读原文 →</a>
-  </div>
-</article>
-
-<hr class="story-separator">
-
-<!-- Story 7: US tech layoffs -->
-<article class="story-card">
-  <div class="story-number">07</div>
-  <span class="story-category cat-economy">行业·科技</span>
-  <h2 class="story-title">科技巨头年内裁员 14 万，AI 投资 7250 亿</h2>
-  <div class="story-subtitle">裁员瘦身 vs 豪赌 AI 基础设施</div>
-  <div class="story-body">
-    <p>美国科技行业 2026 年至今已宣布裁员近 14 万人，占全美裁员总数的三分之一以上。亚马逊、甲骨文、Meta、微软四家巨头合计裁员约 5 万人，约占其员工总数的 6%。</p>
-    <p>但同日发布的资本支出计划显示，光是亚马逊、Alphabet、Meta、微软四大巨头的 AI 数据中心基础设施投资就高达 7250 亿美元。分析指出，科技公司正在借"AI 提效"之名裁减疫情期间过度招聘的岗位，同时释放资本用于 AI 基础设施竞赛。而 AI 原生创业公司 Anthropic、OpenAI 则在迅猛扩张人员规模。</p>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-value">14万</div>
-      <div class="stat-label">裁员总数</div>
+  <!-- Page 7: Burry Shorts -->
+  <div class="page" data-index="6">
+    <span class="category-tag">资本市场 · AI</span>
+    <h1>"大空头"Burry加码做空英伟达、美光</h1>
+    <p class="lead">Michael Burry于7月25日在Substack披露最新持仓：进一步扩大对美光（$933.86/股）、英伟达（$210.28/股）和费城半导体ETF（$535.83/股）的空头仓位，新增做空卡特彼勒，维持做空特斯拉和Palantir。</p>
+    <p>Burry的核心论据直击AI产业软肋：英伟达大量需求并非来自真实终端客户，而是通过表外融资安排循环驱动。他援引2026年国际清算银行年度报告佐证，认为AI基础设施投资的资本开支并未对应真实需求，存在系统性高估风险。他预计半导体板块将面临约30%回调。</p>
+    <p>股价表现上，美光年内涨幅接近200%、英伟达约10%，Burry的这些空头仓位面临压力；但Palantir和特斯拉年内已跌超三成，与其做空方向吻合。做空AI的同时，Burry买入Flutter Entertainment和DraftKings布局体育博彩领域。</p>
+    <div class="fact-box">
+      <strong>关键事实：</strong>Burry认为英伟达需求由表外融资循环驱动而非终端客户；预计半导体回调30%；同时做多体育博彩。
     </div>
-    <div class="stat-card">
-      <div class="stat-value">$7250亿</div>
-      <div class="stat-label">AI 资本支出</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">6%</div>
-      <div class="stat-label">四大巨头裁员比例</div>
+    <div class="meta">
+      来源：华尔街见闻 · 2026-07-26 03:53 UTC<br>
+      <a href="https://wallstreetcn.com/articles/3777945" target="_blank">阅读原文 →</a>
     </div>
   </div>
 
-  <div class="story-footer">
-    <span class="story-source">华尔街见闻 · 7 月 26 日</span>
-    <a href="https://wallstreetcn.com/articles/3777930" class="story-link" target="_blank">阅读原文 →</a>
-  </div>
-</article>
-
-<hr class="story-separator">
-
-<!-- Story 8: AI correction analysis -->
-<article class="story-card">
-  <div class="story-number">08</div>
-  <span class="story-category cat-tech">市场·AI</span>
-  <h2 class="story-title">AI 还要跌多久？</h2>
-  <div class="story-subtitle">东吴证券：急跌近尾声，估值消化仍需 3-5 周</div>
-  <div class="story-body">
-    <p>东吴证券发布专题报告，认为本轮 A 股 AI 板块调整由三重压力共振引发：第一，美股投资者对 AI 利润分配产生质疑；第二，韩国市场去杠杆将盈利怀疑转化为真实卖盘；第三，霍尔木兹海峡地缘风险推高利率预期，抬高了等待 AI 利润的"时间成本"。</p>
-    <p>报告判断，杠杆出清导致的急跌可能已在 1-3 周内完成了大部分跌幅，但估值消化仍将持续 3-5 周，市场会经历高波动、反弹和重新探底的过程。下一轮上涨需要寻找"新盈利加速度"——聚焦高增长硬件（如 CPO、先进封装）和已兑现商业化利润的下游应用（如 AI 广告、企业软件）。花旗同日也发布 AI 追踪报告，认为竞争护城河将从算力获取转向效率与专有数据。</p>
-  </div>
-
-  <div class="context-box">
-    <div class="context-box-title">对于 AWS 工程师</div>
-    <p>AI 基础设施投资的长期逻辑未变，但短期估值压力确实存在。行业共识在向"效率优先"和"专有数据壁垒"转移——这也正是云基础设施和推理优化的机会所在。</p>
-  </div>
-
-  <div class="story-footer">
-    <span class="story-source">华尔街见闻 · 东吴证券 · 花旗 · 7 月 26 日</span>
-    <a href="https://wallstreetcn.com/articles/3777943" class="story-link" target="_blank">阅读原文 →</a>
-  </div>
-</article>
-
-<hr class="story-separator">
-
-<!-- Story 9: ESP32 edge LLM -->
-<article class="story-card">
-  <div class="story-number">09</div>
-  <span class="story-category cat-tech">技术·边缘 AI</span>
-  <h2 class="story-title">8 美元芯片跑大模型</h2>
-  <div class="story-subtitle">ESP32-S3 成功运行 28.9M 参数 LLM，速度 9.5 tok/s</div>
-  <div class="story-body">
-    <p>开发者 slvDev 在售价约 8 美元的 ESP32-S3 微控制器上成功运行了一个 28.9M 参数的大语言模型，完全在芯片本地运行，无需联网。生成速度约 9.5 tok/s，其中 2500 万参数存储在闪存查找表中。</p>
-    <p>与此前同类芯片上只能跑约 26 万参数的模型相比，这是一个约 100 倍的规模提升。项目基于 Karpathy 的 llama2.c，通过 4-bit 量化和算子优化实现。虽然 28.9M 参数在当下的 LLM 生态中算小型，但对于 IoT 设备、智能传感器和离线场景而言，这是边缘推理的一个里程碑。</p>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-value">$8</div>
-      <div class="stat-label">芯片成本</div>
+  <!-- Page 8: Tech Layoffs -->
+  <div class="page" data-index="7">
+    <span class="category-tag">科技 · 产业</span>
+    <h1>美国科技巨头年内裁员近14万人，为AI投资腾出资金</h1>
+    <p class="lead">据英国《金融时报》分析，自2026年初以来美国科技行业裁员占全美已宣布裁员总数的三分之一以上，亚马逊、甲骨文、Meta和微软裁员近5万人，约占员工总数的6%。</p>
+    <p>与此同时，四大科技巨头（亚马逊、Alphabet、Meta、微软）今年预计在数据中心等AI基础设施上投入高达7250亿美元的资本支出。RBC分析师指出，科技公司正在通过裁员弥补早期过度招聘，并为AI投资释放资本。甲骨文3月裁员后员工数同比减少2.1万人，标普本月将其信用评级下调至仅比垃圾级高出一档。</p>
+    <p>有趣的是，将裁员归因于AI的公司宣布后30个交易日内股价落后纳斯达克指数近10%——市场并不买账"AI提效"的叙事。伯克利经济学家Enrico Moretti认为，AI裁员更多是管理层纠正疫情期间过度招聘的借口。与此同时，OpenAI和Anthropic等AI原生公司正在迅速扩招。</p>
+    <div class="fact-box">
+      <strong>关键事实：</strong>科技行业年内裁员14万；AI基础设施支出7250亿美元；AI原生公司（OpenAI、Anthropic）逆势扩招。
     </div>
-    <div class="stat-card">
-      <div class="stat-value">28.9M</div>
-      <div class="stat-label">参数量</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">9.5 tok/s</div>
-      <div class="stat-label">生成速度</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">100×</div>
-      <div class="stat-label">规模提升</div>
+    <div class="meta">
+      来源：华尔街见闻/英国金融时报 · 2026-07-25 10:19 UTC<br>
+      <a href="https://wallstreetcn.com/articles/3777930" target="_blank">阅读原文 →</a>
     </div>
   </div>
 
-  <div class="story-footer">
-    <span class="story-source">AI HOT · 7 月 26 日</span>
-    <a href="https://aihot.virxact.com/items/cms1ao381037kro0wqp7mg4x3" class="story-link" target="_blank">阅读原文 →</a>
-  </div>
-</article>
-
-<hr class="story-separator">
-
-<!-- Story 10: Huang Korea chip 10x -->
-<article class="story-card">
-  <div class="story-number">10</div>
-  <span class="story-category cat-industry">半导体·产业</span>
-  <h2 class="story-title">黄仁勋：韩国进入黄金时代，芯片有 10 倍空间</h2>
-  <div class="story-subtitle">英伟达与 SK 集团签下 5000 亿美元存储大单</div>
-  <div class="story-body">
-    <p>黄仁勋在韩国宣布与 SK 集团达成超过 5000 亿美元的合作——共同构建全球 AI 基础设施供应链，这被称为"存储大单"。黄仁勋在公开场合表示"韩国进入了黄金时代"，并预测半导体行业规模在未来十年必须扩大至现在的十倍。</p>
-    <p>他提出 AI 时代将出现千亿级的 AI 代理和机器人，它们都需要芯片——"计算机不再只为人服务"。这一论断与 Burry 的做空形成鲜明对比：长期看多者看到的是十倍扩张，短期看空者看到的是泡沫和循环融资。两条逻辑在未来几个季度会持续拉扯。</p>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-value">$5000亿+</div>
-      <div class="stat-label">合作金额</div>
+  <!-- Page 9: AI Correction -->
+  <div class="page" data-index="8">
+    <span class="category-tag">资本市场 · 深度</span>
+    <h1>AI还要跌多久？三只时钟决定调整节奏</h1>
+    <p class="lead">7月以来A股AI板块经历快速估值压缩，CPO概念跌超30%，PCB板块跌超36%。东吴证券分析认为，这轮调整由三重压力共振引发。</p>
+    <p><strong>第一，美国提出利润问题。</strong>市场从"还有多少算力需求"转向"这些算力究竟能赚多少钱"。英伟达确认收入时，云厂商确认的是必须收回的投资，上游利润越高，下游回收成本压力越大。</p>
+    <p><strong>第二，韩国暴露杠杆问题。</strong>韩国去杠杆引发全球AI主题基金整体减仓，由于这些基金同时持有中日韩科技资产，韩国去杠杆的卖盘外溢到A股和港股。</p>
+    <p><strong>第三，中东局势带来利率问题。</strong>能源风险推高通胀预期，限制降息空间，让等待AI利润的"时间变得更贵"。</p>
+    <p>东吴证券判断：急跌可能进入后半段，但估值消化需要更长时间——杠杆出清最快（几周），估值调整更慢，盈利周期最慢。真正的底部开始于利润分化，而非所有股票同时见底。下周三（7月29-30日）微软、Meta、亚马逊、苹果集中发布财报，将成为验证"急跌进入分化"的第一个关键节点。</p>
+    <div class="fact-box">
+      <strong>关键事实：</strong>三只时钟：杠杆（几周出清）→ 估值（需消化）→ 盈利（最慢）。下周云厂商财报是关键验证节点。
     </div>
-    <div class="stat-card">
-      <div class="stat-value">10×</div>
-      <div class="stat-label">十年扩张预期</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">SK</div>
-      <div class="stat-label">合作方</div>
+    <div class="meta">
+      来源：华尔街见闻/东吴证券 · 2026-07-26 04:01 UTC<br>
+      <a href="https://wallstreetcn.com/articles/3777943" target="_blank">阅读原文 →</a>
     </div>
   </div>
 
-  <div class="story-footer">
-    <span class="story-source">华尔街见闻 · 7 月 26 日</span>
-    <a href="https://wallstreetcn.com/charts/41959459" class="story-link" target="_blank">阅读原文 →</a>
+  <!-- Page 10: ESP32 LLM -->
+  <div class="page" data-index="9">
+    <span class="category-tag">AI · 边缘计算</span>
+    <h1>8美元微控制器成功运行28.9M参数LLM</h1>
+    <p class="lead">开发者slvDev在售价约8美元的ESP32-S3微控制器上运行了一个2890万参数的语言模型，完全在设备本地推理，无需联网，速度约9.5 tok/s。</p>
+    <p>ESP32-S3仅有512KB SRAM和8MB PSRAM，此前同类芯片上最大的模型仅26万参数。关键在于利用Google Gemma的"逐层嵌入"技术：将2500万参数存储在慢速闪存中，每次推理只从嵌入表中读取约450字节，计算核心留在快速SRAM中。模型在4位量化下仅14.9MB。</p>
+    <p>该模型基于TinyStories数据集训练，能撰写简短连贯的故事，但无法回答问题或编写代码。这项突破的真正意义不在模型能力，而在于架构：证明了大模型可以通过分层存储"塞进"极低成本的微控制器，为离线、低功耗、隐私敏感的AI场景打开可能性。</p>
+    <div class="fact-box">
+      <strong>关键事实：</strong>ESP32-S3 ($8) + 逐层嵌入技术 = 28.9M参数LLM，9.5 tok/s全本地运行。参数量是此前记录的~100倍。
+    </div>
+    <div class="meta">
+      来源：AI HOT / GitHub (slvDev/esp32-ai) · 2026-07-26 03:54 UTC<br>
+      <a href="https://aihot.virxact.com/items/cms1ao381037kro0wqp7mg4x3" target="_blank">阅读原文 →</a>
+    </div>
   </div>
-</article>
 
-</main>
+  <!-- Page 11: Huang Korea -->
+  <div class="page" data-index="10">
+    <span class="category-tag">AI · 半导体</span>
+    <h1>黄仁勋：韩国进入黄金时代，芯片还有10倍扩张</h1>
+    <p class="lead">英伟达CEO黄仁勋在韩国公开表示，随着AI时代到来，计算机不再只为人服务，未来将有千亿级AI代理和机器人共同使用算力。半导体行业规模必须在未来十年扩大十倍。</p>
+    <p>英伟达已与SK集团达成超过5000亿美元的合作，共同构建全球AI基础设施供应链。黄仁勋认为，韩国凭借强大的半导体制造能力和工业基础正迎来"黄金时代"。</p>
+    <p>这一观点与Burry的看空形成鲜明对比——一边是产业领袖对未来十年10倍扩张的宏大叙事，一边是金融大鳄质疑需求真实性和融资结构。两种视角的碰撞，正是当前AI板块剧烈博弈的核心所在。</p>
+    <div class="fact-box">
+      <strong>关键事实：</strong>英伟达与SK集团达成$5000亿+合作；黄仁勋预测半导体规模10年扩大10倍；韩国被视为AI时代核心受益者。
+    </div>
+    <div class="meta">
+      来源：华尔街见闻 · 2026-07-26<br>
+      <a href="https://wallstreetcn.com/charts/41959459" target="_blank">阅读原文 →</a>
+    </div>
+  </div>
 </div>
 
-<footer class="site-footer">
-  <p>每日新闻简报 · 2026 年 7 月 26 日 · 由 AI 自动生成</p>
-</footer>
-
+<!-- Navigation -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" disabled>← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <span class="page-counter" id="pageCounter">01 / 11</span>
+  <button class="nav-btn" id="nextBtn">下一页 →</button>
 </div>
 
+<script>
+(function() {
+  const pages = document.querySelectorAll('.page');
+  const total = pages.length;
+  let current = 0;
+  let throttleTimer = null;
+
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const pageCounter = document.getElementById('pageCounter');
+  const dotsContainer = document.getElementById('dots');
+
+  // Build dots
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('span');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dotsContainer.appendChild(dot);
+  }
+  const dots = dotsContainer.querySelectorAll('.dot');
+
+  function show(index) {
+    if (index < 0 || index >= total) return;
+    pages.forEach((page, i) => {
+      page.classList.remove('active', 'past');
+      if (i < index) page.classList.add('past');
+      else if (i === index) page.classList.add('active');
+    });
+    current = index;
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === total - 1;
+    pageCounter.textContent = String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === index);
+    });
+  }
+
+  // Keyboard
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft') { show(current - 1); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { show(current + 1); e.preventDefault(); }
+  });
+
+  // Buttons
+  prevBtn.addEventListener('click', function() { show(current - 1); });
+  nextBtn.addEventListener('click', function() { show(current + 1); });
+
+  // Touch swipe
+  let startX = 0, startY = 0;
+  document.addEventListener('pointerdown', function(e) {
+    if (e.pointerType !== 'touch') return;
+    startX = e.clientX;
+    startY = e.clientY;
+  });
+  document.addEventListener('pointerup', function(e) {
+    if (e.pointerType !== 'touch') return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    if (Math.abs(dx) > 46 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) show(current + 1);
+      else show(current - 1);
+    }
+  });
+
+  // Trackpad horizontal scroll
+  document.addEventListener('wheel', function(e) {
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 10) {
+      if (throttleTimer) return;
+      throttleTimer = setTimeout(function() { throttleTimer = null; }, 450);
+      if (e.deltaX > 0) show(current + 1);
+      else show(current - 1);
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  // Init
+  show(0);
+})();
+</script>
 </body>
 </html>
