@@ -5,765 +5,379 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>每日简报 · 2026年7月26日</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface-2: #1a1a26;
-    --ink: #e8e6e0;
-    --ink-muted: #9a9aa8;
-    --ink-dim: #6a6a78;
-    --accent: #d4a554;
-    --accent-dim: #8a6d36;
-    --accent-glow: rgba(212, 165, 84, 0.08);
-    --danger: #e85d5d;
-    --border: rgba(255,255,255,0.06);
-    --serif: 'Noto Serif SC', 'Songti SC', serif;
-    --sans: 'Inter', 'Noto Sans SC', -apple-system, sans-serif;
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Inter','Noto Sans SC',sans-serif;background:#0a0a0f;color:#e8e6e3;line-height:1.7;-webkit-font-smoothing:antialiased}
+::selection{background:#d4a554;color:#0a0a0f}
 
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+/* Header / Hero */
+.hero{position:relative;min-height:80vh;display:flex;flex-direction:column;justify-content:center;padding:4rem 2rem;background:linear-gradient(135deg,#0a0a0f 0%,#14141e 40%,#1a1a2e 100%);overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 30% 40%,rgba(212,165,84,0.04) 0%,transparent 60%),radial-gradient(ellipse at 70% 60%,rgba(212,165,84,0.02) 0%,transparent 50%);pointer-events:none}
+.hero-content{position:relative;z-index:1;max-width:900px;margin:0 auto;width:100%}
+.hero-label{font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:#d4a554;margin-bottom:1.5rem;font-weight:600}
+.hero-title{font-family:'Noto Serif SC','Playfair Display',serif;font-size:clamp(2.5rem,6vw,4.5rem);font-weight:900;line-height:1.15;margin-bottom:1.5rem;color:#fff}
+.hero-title em{font-style:normal;color:#d4a554}
+.hero-sub{font-size:clamp(1rem,2vw,1.25rem);color:#a0a0a8;max-width:600px;line-height:1.6;font-weight:300}
+.hero-date{font-size:.85rem;color:#666;margin-top:2rem;letter-spacing:.05em}
 
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--sans);
-    line-height: 1.75;
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-  }
+/* Main Layout */
+.container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+.articles-grid{display:grid;grid-template-columns:1fr;gap:2rem;padding:3rem 0}
 
-  /* --- MASTHEAD --- */
-  .masthead {
-    border-bottom: 1px solid var(--border);
-    padding: 20px 0;
-    position: sticky;
-    top: 0;
-    background: rgba(10,10,15,0.92);
-    backdrop-filter: blur(12px);
-    z-index: 100;
-  }
-  .masthead-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .logo {
-    font-family: var(--serif);
-    font-weight: 900;
-    font-size: 22px;
-    letter-spacing: 2px;
-    color: var(--accent);
-  }
-  .logo span { color: var(--ink-muted); font-weight: 400; font-size: 13px; margin-left: 8px; }
-  .issue-info {
-    font-size: 12px;
-    color: var(--ink-dim);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
+/* Sidebar nav */
+.sidebar-nav{display:none}
 
-  /* --- HERO --- */
-  .hero {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 60px 32px 48px;
-    position: relative;
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 50%;
-    width: 1px; height: 40px;
-    background: var(--accent);
-    transform: translateX(-50%);
-  }
-  .hero-tag {
-    text-align: center;
-    font-size: 11px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 20px;
-  }
-  .hero-headline {
-    font-family: var(--serif);
-    font-weight: 700;
-    font-size: clamp(32px, 5vw, 52px);
-    line-height: 1.25;
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto 24px;
-    letter-spacing: -0.5px;
-  }
-  .hero-headline em {
-    font-style: normal;
-    color: var(--accent);
-  }
-  .hero-deck {
-    text-align: center;
-    max-width: 640px;
-    margin: 0 auto;
-    font-size: 16px;
-    color: var(--ink-muted);
-    line-height: 1.8;
-  }
-  .hero-meta {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    margin-top: 32px;
-    font-size: 12px;
-    color: var(--ink-dim);
-    letter-spacing: 1px;
-  }
-  .hero-meta span::before {
-    content: '·';
-    margin-right: 24px;
-    color: var(--accent-dim);
-  }
-  .hero-meta span:first-child::before { display: none; }
+/* Article Cards */
+.article-card{position:relative;background:linear-gradient(135deg,#12121a 0%,#181824 100%);border-radius:1.25rem;overflow:hidden;border:1px solid rgba(255,255,255,0.04);transition:border-color .3s,border .3s}
+.article-card:hover{border-color:rgba(212,165,84,0.2)}
+.article-card-inner{padding:2.5rem;position:relative}
+.article-number{font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;color:rgba(212,165,84,0.12);position:absolute;top:.75rem;right:1.5rem;line-height:1;pointer-events:none;user-select:none}
 
-  /* --- LAYOUT --- */
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 32px 80px;
-  }
+/* Hero article (first) */
+.article-hero{grid-column:1/-1}
+.article-hero .article-card{background:linear-gradient(135deg,#1a1a2e 0%,#1e1e32 50%,#222238 100%);border-color:rgba(212,165,84,0.15)}
+.article-hero .article-card-inner{padding:3rem}
+.article-hero .article-title{font-size:clamp(1.5rem,3vw,2.4rem)}
 
-  /* --- TOC --- */
-  .toc {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 32px 48px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .toc-item {
-    background: var(--bg);
-    padding: 20px 24px;
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    text-decoration: none;
-    color: var(--ink-muted);
-    transition: background 0.2s, color 0.2s;
-  }
-  .toc-item:hover {
-    background: var(--accent-glow);
-    color: var(--ink);
-  }
-  .toc-num {
-    font-family: var(--serif);
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--accent-dim);
-    line-height: 1;
-    min-width: 36px;
-  }
-  .toc-text {
-    font-size: 13px;
-    line-height: 1.5;
-  }
+/* Category tag */
+.category-tag{display:inline-block;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:2rem;margin-bottom:1.25rem;border:1px solid}
+.category-tag.berlin{border-color:rgba(212,165,84,0.3);color:#d4a554}
+.category-tag.europe{border-color:rgba(100,200,255,0.3);color:#64c8ff}
+.category-tag.geopolitics{border-color:rgba(255,100,100,0.3);color:#ff6464}
+.category-tag.economy{border-color:rgba(100,255,150,0.3);color:#64ff96}
+.category-tag.tech{border-color:rgba(180,120,255,0.3);color:#b478ff}
+.category-tag.climate{border-color:rgba(255,180,50,0.3);color:#ffb432}
 
-  /* --- ARTICLE CARDS --- */
-  .articles {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 48px;
-    margin-top: 48px;
-  }
+/* Article title */
+.article-title{font-family:'Noto Serif SC','Playfair Display',serif;font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:700;color:#fff;line-height:1.3;margin-bottom:.75rem}
+.article-quote{font-family:'Noto Serif SC',serif;font-style:italic;color:#d4a554;font-size:.95rem;padding:.75rem 0 .75rem 1.25rem;border-left:2px solid rgba(212,165,84,0.3);margin-bottom:1rem}
 
-  .article {
-    position: relative;
-  }
+/* Article body */
+.article-body{color:#b0b0b8;font-size:.95rem;line-height:1.75;margin-bottom:1.25rem}
+.article-body p{margin-bottom:.75rem}
 
-  .article-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  .article-num {
-    font-family: var(--serif);
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--accent);
-    letter-spacing: 1px;
-  }
-  .article-cat {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--ink-dim);
-    padding: 3px 10px;
-    border: 1px solid var(--border);
-    border-radius: 2px;
-  }
-  .article-cat.urgent { color: var(--danger); border-color: rgba(232,93,93,0.3); }
-  .article-cat.tech { color: var(--accent); border-color: rgba(212,165,84,0.3); }
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.75rem;margin:1.25rem 0}
+.stat-card{background:rgba(255,255,255,0.03);border-radius:.75rem;padding:1rem;text-align:center;border:1px solid rgba(255,255,255,0.04)}
+.stat-value{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#d4a554;display:block}
+.stat-label{font-size:.7rem;color:#888;margin-top:.25rem;letter-spacing:.02em}
 
-  .article-title {
-    font-family: var(--serif);
-    font-weight: 700;
-    font-size: clamp(22px, 3vw, 30px);
-    line-height: 1.35;
-    margin-bottom: 12px;
-    letter-spacing: -0.3px;
-  }
+/* Context box */
+.context-box{background:rgba(255,255,255,0.02);border-radius:.75rem;padding:1.25rem;margin:1rem 0;border-left:3px solid rgba(212,165,84,0.2)}
+.context-title{font-size:.75rem;font-weight:600;color:#d4a554;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}
+.context-text{font-size:.85rem;color:#999;line-height:1.5}
 
-  .article-lede {
-    font-size: 16px;
-    color: var(--ink-muted);
-    margin-bottom: 20px;
-    font-style: italic;
-    border-left: 2px solid var(--accent);
-    padding-left: 16px;
-  }
+/* Source & link */
+.article-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.04);margin-top:.5rem}
+.source-name{font-size:.75rem;color:#666}
+.article-link{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;color:#d4a554;text-decoration:none;padding:.4rem .8rem;border:1px solid rgba(212,165,84,0.2);border-radius:2rem;transition:all .3s}
+.article-link:hover{background:rgba(212,165,84,0.1);border-color:#d4a554}
+.article-link svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
-  .article-body {
-    font-size: 15px;
-    color: var(--ink);
-    line-height: 1.85;
-    max-width: 680px;
-  }
-  .article-body p { margin-bottom: 14px; }
+/* Footer */
+.page-footer{border-top:1px solid rgba(255,255,255,0.04);padding:2rem 1.5rem;text-align:center;color:#444;font-size:.8rem;margin-top:2rem}
 
-  .article-body p:first-of-type::first-letter {
-    font-family: var(--serif);
-    font-size: 48px;
-    font-weight: 700;
-    float: left;
-    line-height: 0.9;
-    margin: 6px 8px 0 0;
-    color: var(--accent);
-  }
+/* Desktop: two-column + sticky sidebar */
+@media(min-width:1024px){
+.container{max-width:1400px;padding:0 2rem}
+.articles-grid{grid-template-columns:220px 1fr;gap:2rem;padding:4rem 0}
+.sidebar-nav{display:block;position:sticky;top:2rem;align-self:start}
+.sidebar-nav ol{list-style:none;padding:0;margin:0}
+.sidebar-nav li{margin-bottom:.5rem;font-size:.8rem}
+.sidebar-nav a{color:#666;text-decoration:none;transition:color .3s;display:flex;align-items:center;gap:.5rem}
+.sidebar-nav a:hover{color:#d4a554}
+.sidebar-nav .nav-num{font-family:'Playfair Display',serif;color:#d4a554;font-weight:600;font-size:.85rem;min-width:1.5rem}
+.sidebar-nav .nav-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.main-articles{min-width:0}
+.article-hero{grid-column:1/-1}
+}
 
-  .data-callout {
-    background: var(--surface);
-    border-radius: 6px;
-    padding: 20px 24px;
-    margin: 20px 0;
-    border-left: 3px solid var(--accent);
-  }
-  .data-callout .label {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 8px;
-  }
-  .data-callout .stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 16px;
-  }
-  .stat-item .num {
-    font-family: var(--serif);
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--ink);
-    display: block;
-  }
-  .stat-item .desc {
-    font-size: 12px;
-    color: var(--ink-dim);
-    margin-top: 2px;
-  }
+@media(min-width:768px)and(max-width:1023px){
+.articles-grid{gap:1.5rem}
+.article-card-inner{padding:2rem}
+}
 
-  .relevance-box {
-    margin-top: 20px;
-    padding: 16px 20px;
-    background: var(--accent-glow);
-    border-radius: 6px;
-    border: 1px solid rgba(212,165,84,0.15);
-  }
-  .relevance-box .label {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 6px;
-  }
-  .relevance-box .text {
-    font-size: 14px;
-    color: var(--ink-muted);
-  }
-
-  .article-footer {
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    align-items: center;
-    font-size: 12px;
-    color: var(--ink-dim);
-  }
-  .article-footer .source {
-    color: var(--ink-muted);
-    font-weight: 500;
-  }
-  .article-footer a {
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-  .article-footer a:hover { color: #f0c878; text-decoration: underline; }
-
-  /* --- DIVIDER --- */
-  .divider {
-    text-align: center;
-    margin: 48px 0;
-    color: var(--accent-dim);
-    font-size: 16px;
-    letter-spacing: 8px;
-  }
-
-  /* --- COLOPHON --- */
-  .colophon {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 48px 32px;
-    border-top: 1px solid var(--border);
-    text-align: center;
-  }
-  .colophon p {
-    font-size: 12px;
-    color: var(--ink-dim);
-    line-height: 1.8;
-  }
-  .colophon .brand {
-    font-family: var(--serif);
-    font-size: 14px;
-    color: var(--accent);
-    margin-bottom: 8px;
-  }
-
-  /* --- RESPONSIVE --- */
-  @media (max-width: 768px) {
-    .masthead-inner { padding: 0 20px; }
-    .logo { font-size: 18px; }
-    .logo span { display: none; }
-    .issue-info { font-size: 10px; }
-    .hero { padding: 40px 20px 32px; }
-    .hero-headline { font-size: 28px; }
-    .hero-deck { font-size: 15px; }
-    .hero-meta { flex-direction: column; gap: 8px; align-items: center; }
-    .hero-meta span::before { display: none; }
-    .container { padding: 0 20px 60px; }
-    .toc { grid-template-columns: 1fr; padding: 0 20px 32px; }
-    .article-title { font-size: 22px; }
-    .article-lede { font-size: 15px; }
-    .article-body { font-size: 15px; }
-    .article-body p:first-of-type::first-letter { font-size: 40px; }
-    .data-callout .stats { grid-template-columns: 1fr 1fr; }
-  }
-
-  @media (min-width: 1024px) {
-    .article {
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      gap: 48px;
-    }
-    .article-header {
-      flex-direction: column;
-      align-items: flex-start;
-      position: sticky;
-      top: 80px;
-      align-self: start;
-    }
-    .article-num { font-size: 36px; }
-    .article-content { max-width: 680px; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; animation: none !important; }
-  }
+@media(max-width:767px){
+.hero{padding:2.5rem 1.25rem;min-height:60vh}
+.article-card-inner{padding:1.5rem}
+.article-hero .article-card-inner{padding:2rem 1.5rem}
+.stats-grid{grid-template-columns:repeat(2,1fr)}
+.container{padding:0 1rem}
+}
 </style>
 </head>
 <body>
 
-<!-- MASTHEAD -->
-<header class="masthead">
-  <div class="masthead-inner">
-    <div class="logo">每日简报<span>Daily Briefing</span></div>
-    <div class="issue-info">Vol. 0726 · Sun, Jul 26, 2026 · Berlin</div>
+<header class="hero">
+  <div class="hero-content">
+    <div class="hero-label">Daily Briefing</div>
+    <h1 class="hero-title">柏林之夜 · <em>山火与战火</em></h1>
+    <p class="hero-sub">骄傲游行遭遇冲撞，波尔多20万人疏散，美伊战争扩散至红海——周日世界的关键画面。</p>
+    <div class="hero-date">2026年7月26日 · 星期日 · Berlin</div>
   </div>
 </header>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-tag">今日要目</div>
-  <h1 class="hero-headline">柏林骄傲游行遭遇<em>车辆袭击</em>，欧洲山火与旱情加剧，AI 军备竞赛进入新回合</h1>
-  <p class="hero-deck">周六的柏林 Christopher Street Day 游行被一场车辆冲撞事件打断；法国波尔多山火迫使超过十四万人疏散；从 Claude Opus 5 到 AMD 机器可读 ISA，AI 模型与基础设施的竞争正在重塑技术格局。</p>
-  <div class="hero-meta">
-    <span>10 篇报道</span>
-    <span>7 个来源</span>
-    <span>柏林时间 07:00 截稿</span>
-  </div>
-</section>
+<div class="container">
+  <div class="articles-grid">
 
-<!-- TOC -->
-<nav class="toc">
-  <a class="toc-item" href="#s1"><span class="toc-num">01</span><span class="toc-text">柏林骄傲游行车辆冲入人群，多人受伤</span></a>
-  <a class="toc-item" href="#s2"><span class="toc-num">02</span><span class="toc-text">法国波尔多山火，十四万人疏散</span></a>
-  <a class="toc-item" href="#s3"><span class="toc-num">03</span><span class="toc-text">塞尔维亚最大水电站产能骤降三分之二</span></a>
-  <a class="toc-item" href="#s4"><span class="toc-num">04</span><span class="toc-text">特朗普宣布第四次竞选总统</span></a>
-  <a class="toc-item" href="#s5"><span class="toc-num">05</span><span class="toc-text">SpaceX 上市后星舰首次试飞成功</span></a>
-  <a class="toc-item" href="#s6"><span class="toc-num">06</span><span class="toc-text">Claude Opus 5：半价追平顶级模型</span></a>
-  <a class="toc-item" href="#s7"><span class="toc-num">07</span><span class="toc-text">AMD 机器可读 ISA：AI 直接写 GPU 内核</span></a>
-  <a class="toc-item" href="#s8"><span class="toc-num">08</span><span class="toc-text">国产超节点商业化大幕拉开</span></a>
-  <a class="toc-item" href="#s9"><span class="toc-num">09</span><span class="toc-text">宁德时代日赚 2.4 亿，储能暴涨 30 倍</span></a>
-  <a class="toc-item" href="#s10"><span class="toc-num">10</span><span class="toc-text">特斯拉 Robotaxi 里程数不升反降</span></a>
-</nav>
+    <!-- Sidebar (desktop) -->
+    <nav class="sidebar-nav">
+      <ol>
+        <li><a href="#berlin"><span class="nav-num">01</span><span class="nav-title">柏林冲撞</span></a></li>
+        <li><a href="#bordeaux"><span class="nav-num">02</span><span class="nav-title">波尔多山火</span></a></li>
+        <li><a href="#iran"><span class="nav-num">03</span><span class="nav-title">美伊战争扩散</span></a></li>
+        <li><a href="#trump-campaign"><span class="nav-num">04</span><span class="nav-title">特朗普四度参选</span></a></li>
+        <li><a href="#tariff"><span class="nav-num">05</span><span class="nav-title">301关税新框架</span></a></li>
+        <li><a href="#claude"><span class="nav-num">06</span><span class="nav-title">Claude Opus 5</span></a></li>
+        <li><a href="#spacex"><span class="nav-num">07</span><span class="nav-title">星舰试飞</span></a></li>
+        <li><a href="#amd"><span class="nav-num">08</span><span class="nav-title">AMD机器可读ISA</span></a></li>
+        <li><a href="#supernode"><span class="nav-num">09</span><span class="nav-title">国产超节点</span></a></li>
+        <li><a href="#catl"><span class="nav-num">10</span><span class="nav-title">宁德时代半年报</span></a></li>
+      </ol>
+    </nav>
 
-<!-- ARTICLES -->
-<main class="container">
-<div class="articles">
+    <div class="main-articles">
 
-<!-- 01 -->
-<article class="article" id="s1">
-  <div class="article-header">
-    <div class="article-num">01</div>
-    <span class="article-cat urgent">突发 · 柏林</span>
-  </div>
-  <div class="article-content">
-    <h2 class="article-title">柏林骄傲游行车辆冲入人群，多人受伤</h2>
-    <p class="article-lede">一辆汽车冲入市中心 Tiergarten 公园附近的人群，年度骄傲游行被迫取消，警方展开大规模搜捕。</p>
-    <div class="article-body">
-      <p>7 月 25 日周六，柏林 Christopher Street Day 骄傲游行期间，一辆汽车冲入市中心 Tiergarten 公园附近的人群。警方称已展开大规模搜捕行动，伤者在现场接受紧急救治，但官方尚未公布具体的伤亡人数。作为预防措施，年度骄傲活动已被取消。</p>
-      <p>BBC 报道指出，警方在现场发现了爆炸物，一名嫌疑人已在都柏林刑事法院出庭。事件已被官方定性为"重大事件"。</p>
-    </div>
-    <div class="relevance-box">
-      <div class="label">与你的关联</div>
-      <div class="text">发生在你所在的城市。市中心交通管制可能持续，出行前务必查看实时路况和 BVG 公告。</div>
-    </div>
-    <div class="article-footer">
-      <span class="source">BBC News · 卫报 · 路透社</span>
-      <span>2026-07-25 21:33 UTC</span>
-      <a href="https://www.bbc.co.uk/news/articles/clyqzylz3zno" target="_blank">阅读原文 →</a>
-    </div>
-  </div>
-</article>
-
-<div class="divider">◆ ◆ ◆</div>
-
-<!-- 02 -->
-<article class="article" id="s2">
-  <div class="article-header">
-    <div class="article-num">02</div>
-    <span class="article-cat urgent">欧洲 · 气候</span>
-  </div>
-  <div class="article-content">
-    <h2 class="article-title">波尔多山火失控，法国西班牙逾二十五万人流离失所</h2>
-    <p class="article-lede">过火面积超过 31 平方公里，七百名消防员投入救援，吉伦特省进入紧急状态。</p>
-    <div class="article-body">
-      <p>7 月 23 日，法国西南部波尔多附近 Lège-Cap Ferret 森林爆发大规模山火。截至 7 月 25 日，过火面积已超过 31 平方公里，约 700 名消防员被派往现场。火势已蔓延至波尔多市郊，吉伦特省约 14.1 万人被迫撤离。</p>
-      <p>法国与西班牙两国合计已有超过 25 万人因山火流离失所。这是欧洲近年来最严重的夏季山火之一。</p>
-    </div>
-    <div class="data-callout">
-      <div class="label">关键数据</div>
-      <div class="stats">
-        <div class="stat-item"><span class="num">31 km²</span><span class="desc">过火面积</span></div>
-        <div class="stat-item"><span class="num">14.1 万</span><span class="desc">吉伦特省疏散人数</span></div>
-        <div class="stat-item"><span class="num">25 万+</span><span class="desc">法西合计流离失所</span></div>
+      <!-- 1: Berlin Pride car crash — Hero -->
+      <div class="article-hero" id="berlin">
+        <div class="article-card">
+          <div class="article-card-inner">
+            <span class="article-number">01</span>
+            <span class="category-tag berlin">柏林</span>
+            <h2 class="article-title">骄傲游行遭汽车冲撞，1死16伤，嫌犯在逃</h2>
+            <div class="article-quote">"柏林是一座自由之城——而今天，我们的自由以最可怕的方式遭到攻击。"——柏林市长凯·韦格纳</div>
+            <div class="article-body">
+              <p>7月25日晚间，柏林年度Christopher Street Day骄傲游行期间，一辆白色车辆在蒂尔加滕公园附近高速冲入人群，造成至少1人死亡、16人受伤，其中多人伤势危及生命。警方确认嫌犯为21岁的Abdul B，身材偏瘦、黑发，身穿黑色连帽衫和白色长裤，已知是警方记录的"柏林伊斯兰主义圈子"成员。嫌犯作案后弃车逃跑，警方出动直升机和热成像摄像机将搜捕范围扩大至全市。</p>
+              <p>克里斯托弗街日是柏林规模最大的年度骄傲活动，通常吸引约100万人参与。事发后游行与所有后续活动立即取消，勃兰登堡门现场屏幕直接显示"疏散"字样。德国总理梅尔茨称这是"可怕的行为"，承诺全面调查。这也是近年来德国系列车辆冲撞事件的最新一起——从2016年柏林圣诞市场13死卡车袭击，到2024年马格德堡圣诞市场6死冲撞，德国大型集会的安保压力持续升级。</p>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <span class="stat-value">1</span>
+                <span class="stat-label">死亡</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-value">16</span>
+                <span class="stat-label">受伤</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-value">21岁</span>
+                <span class="stat-label">嫌犯年龄</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-value">在逃</span>
+                <span class="stat-label">嫌犯状态</span>
+              </div>
+            </div>
+            <div class="article-footer">
+              <span class="source-name">BBC 中文 · 2026-07-26 03:19</span>
+              <a class="article-link" href="https://www.bbc.com/zhongwen/articles/cly5q2r3pyyo/trad" target="_blank" rel="noopener">阅读原文 <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="article-footer">
-      <span class="source">AP News · France 24</span>
-      <span>2026-07-25</span>
-      <a href="https://www.france24.com/en/europe/20260725-thousands-evacuated-as-wildfires-approach-the-city-of-bordeaux" target="_blank">阅读原文 →</a>
-    </div>
-  </div>
-</article>
 
-<div class="divider">◆ ◆ ◆</div>
-
-<!-- 03 -->
-<article class="article" id="s3">
-  <div class="article-header">
-    <div class="article-num">03</div>
-    <span class="article-cat">欧洲 · 能源</span>
-  </div>
-  <div class="article-content">
-    <h2 class="article-title">多瑙河水位创纪录新低，塞尔维亚最大水电站产能骤降</h2>
-    <p class="article-lede">Djerdap 1 水电站日产量仅为正常水平的三分之一，创下 1970 年投产以来的最低纪录。</p>
-    <div class="article-body">
-      <p>塞尔维亚最大的水电站 Djerdap 1 因多瑙河水位持续走低，目前日产量仅约 5000 MWh，仅为平均日产量的三分之一。该电站装机容量 1140 MW，今年 5 月和 6 月均创下了自 1970 年投产以来的最低产量纪录。</p>
-      <p>更严峻的是，气象预报显示 8 月初多瑙河入流量将降至每秒 1500 立方米的"生物最低值"——低于这一阈值，生态系统将遭受不可逆损害。</p>
-    </div>
-    <div class="data-callout">
-      <div class="label">关键数据</div>
-      <div class="stats">
-        <div class="stat-item"><span class="num">5000 MWh</span><span class="desc">当前日产量（正常约 15000）</span></div>
-        <div class="stat-item"><span class="num">1140 MW</span><span class="desc">装机容量</span></div>
-        <div class="stat-item"><span class="num">56 年</span><span class="desc">最低产量纪录（1970 年以来）</span></div>
+      <!-- 2: Bordeaux wildfires -->
+      <div class="article-card" id="bordeaux">
+        <div class="article-card-inner">
+          <span class="article-number">02</span>
+          <span class="category-tag climate">气候</span>
+          <h2 class="article-title">波尔多山火：20万人疏散，9.8万公顷被焚</h2>
+          <div class="article-body">
+            <p>法国西南部波尔多地区山火形势急剧恶化。截至7月26日，过火面积已达约9.8万公顷，约20万居民被迫疏散——此前的报道仅为"数千人"。大火已迫使波尔多机场关闭，法国政府正向国际社会请求增援。消防人员仍在与火势搏斗，火势控制的前景尚不明朗。</p>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-value">200,000</span>
+              <span class="stat-label">疏散人数</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value">98,000 ha</span>
+              <span class="stat-label">过火面积</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value">关闭</span>
+              <span class="stat-label">波尔多机场</span>
+            </div>
+          </div>
+          <div class="article-footer">
+            <span class="source-name">Al Jazeera · 2026-07-26</span>
+            <a class="article-link" href="https://www.aljazeera.com/video/newsfeed/2026/7/26/french-wildfires-trigger-mass-evacuations-around-bordeaux" target="_blank" rel="noopener">阅读原文 <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="relevance-box">
-      <div class="label">与你的关联</div>
-      <div class="text">欧洲能源供应紧张可能推高电价，间接影响数据中心运营成本——这正是你工作的领域。</div>
-    </div>
-    <div class="article-footer">
-      <span class="source">Reuters</span>
-      <span>2026-07-25</span>
-      <a href="https://www.reuters.com/world/europe/output-serbias-biggest-hydropower-plant-falls-third-due-low-danube-levels-2026-07-25/" target="_blank">阅读原文 →</a>
-    </div>
-  </div>
-</article>
 
-<div class="divider">◆ ◆ ◆</div>
-
-<!-- 04 -->
-<article class="article" id="s4">
-  <div class="article-header">
-    <div class="article-num">04</div>
-    <span class="article-cat">国际 · 政治</span>
-  </div>
-  <div class="article-content">
-    <h2 class="article-title">特朗普戴"2028"红帽宣布第四次竞选，民调跌至历史新低</h2>
-    <p class="article-lede">总体支持率 37%，"强烈支持"比例仅 15%，近七成民众不认可其伊朗政策。</p>
-    <div class="article-body">
-      <p>7 月 24 日，特朗普在白宫记者协会晚宴上戴上印有"特朗普 2028"字样的红帽，正式宣布将第四次竞选总统，称"我已经很有经验了，将再次出马"。</p>
-      <p>然而《华盛顿邮报》与益普索的联合民调给出了截然不同的画面：总体支持率跌至 37%，"强烈支持"比例降至 15% 的历史新低。69% 的受访者不认可其伊朗政策，67% 对美国经济前景感到悲观。</p>
-    </div>
-    <div class="data-callout">
-      <div class="label">民调数据</div>
-      <div class="stats">
-        <div class="stat-item"><span class="num">37%</span><span class="desc">总体支持率</span></div>
-        <div class="stat-item"><span class="num">15%</span><span class="desc">强烈支持（历史新低）</span></div>
-        <div class="stat-item"><span class="num">69%</span><span class="desc">不认可伊朗政策</span></div>
+      <!-- 3: US-Iran/Houthi escalation -->
+      <div class="article-card" id="iran">
+        <div class="article-card-inner">
+          <span class="article-number">03</span>
+          <span class="category-tag geopolitics">地缘</span>
+          <h2 class="article-title">美伊战争扩散至红海，胡塞武装攻击沙特石油设施</h2>
+          <div class="article-quote">"胡塞武装可能封锁曼德海峡——若与霍尔木兹海峡同时关闭，全球供应链将面临灾难性冲击。"</div>
+          <div class="article-body">
+            <p>也门胡塞武装向沙特红海沿岸的吉赞和延布两处阿美石油设施发射了导弹和无人机。沙特部署的希腊操作爱国者系统在延布成功拦截了两枚弹道导弹，但吉赞方向据报有浓烟升起。这是美伊战争自7月11日爆发以来最严重的区域外溢——此前13轮美军空袭已重创伊朗，但双方仍通过中间人保持沟通渠道。</p>
+            <p>冲突进一步蔓延至里海：伊朗指控乌克兰袭击了其商业船只，造成1死1伤，伊朗外交部召见了乌克兰驻德黑兰临时代办。乌克兰总统泽连斯基则表示，乌军在里海取得了"非常强有力的成果"，击中了一艘涉及伊朗军事货运的船只和一艘军舰。</p>
+          </div>
+          <div class="context-box">
+            <div class="context-title">为什么重要</div>
+            <div class="context-text">若胡塞武装封锁曼德海峡（连接红海与亚丁湾）、叠加伊朗对霍尔木兹海峡的压力，全球约30%的石油运输将面临中断风险，可能引发新一轮能源价格飙升和粮食安全危机。</div>
+          </div>
+          <div class="article-footer">
+            <span class="source-name">Al Jazeera · 2026-07-26 04:40</span>
+            <a class="article-link" href="https://www.aljazeera.com/news/2026/7/26/new-front-in-us-iran-war-escalates-as-houthis-fire-at-saudi-oil-facilities" target="_blank" rel="noopener">阅读原文 <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="article-footer">
-      <span class="source">华尔街见闻 · 华盛顿邮报</span>
-      <span>2026-07-25</span>
-      <a href="https://wallstreetcn.com/articles/3777927" target="_blank">阅读原文 →</a>
-    </div>
-  </div>
-</article>
 
-<div class="divider">◆ ◆ ◆</div>
-
-<!-- 05 -->
-<article class="article" id="s5">
-  <div class="article-header">
-    <div class="article-num">05</div>
-    <span class="article-cat tech">科技 · 航天</span>
-  </div>
-  <div class="article-content">
-    <h2 class="article-title">SpaceX 上市后星舰首次试飞，成功部署二十颗星链 V3 卫星</h2>
-    <p class="article-lede">助推器在墨西哥湾实现"有史以来最轻柔的溅落"，新一代卫星功率翻倍。</p>
-    <div class="article-body">
-      <p>当地时间周五晚间，SpaceX 在得克萨斯州星际基地发射了星舰巨型火箭，这是自上月完成创纪录 IPO 后的首次试飞。火箭飞行约两分钟后实现助推器与星舰飞船分离，助推器在墨西哥湾进行可控溅落，被描述为"有史以来最轻柔的溅落"。</p>
-      <p>约 18 分钟后，试飞成功将 20 颗新型星链 V3 卫星送入轨道。这批卫星体积更大、功率更高，配备双倍发电量的太阳能电池阵列。SpaceX 表示星舰完好无损并正在传输遥测数据。</p>
-    </div>
-    <div class="relevance-box">
-      <div class="label">与你的关联</div>
-      <div class="text">星舰的可重复使用架构和星链星座的持续扩张，是分布式系统与大规模基础设施工程的教科书级案例。</div>
-    </div>
-    <div class="article-footer">
-      <span class="source">BestBlogs · 综合</span>
-      <span>2026-07-25 06:43 UTC</span>
-      <a href="https://www.bestblogs.dev/article/ba83370ed9" target="_blank">阅读原文 →</a>
-    </div>
-  </div>
-</article>
-
-<div class="divider">◆ ◆ ◆</div>
-
-<!-- 06 -->
-<article class="article" id="s6">
-  <div class="article-header">
-    <div class="article-num">06</div>
-    <span class="article-cat tech">AI · 模型</span>
-  </div>
-  <div class="article-content">
-    <h2 class="article-title">Claude Opus 5：半价追平顶级模型，安全分类器触发减少 85%</h2>
-    <p class="article-lede">在 agentic 编码、计算机操作和长程知识任务上大幅超越前代，价格仅为竞品的一半。</p>
-    <div class="article-body">
-      <p>Anthropic 发布 Claude Opus 5，在 agentic 编码、计算机操作和长程知识工作上大幅超越 Opus 4.8，多个第三方基准测试达到 SOTA。性能可与 Fable 5 和 Mythos 5 媲美，但价格仅为其一半，速度更快。</p>
-      <p>安全性方面，Opus 5 的安全分类器触发频率较 Fable 降低 85%（FrontierBench 从 42% 降至 5%），提示注入攻击成功率从 5.5% 降至 2.0%，是"评估过的最稳健模型"。Anthropic ECI 评分 162.1，略高于 Fable 的 161。</p>
-    </div>
-    <div class="data-callout">
-      <div class="label">核心指标</div>
-      <div class="stats">
-        <div class="stat-item"><span class="num">-85%</span><span class="desc">安全分类器触发频率</span></div>
-        <div class="stat-item"><span class="num">2.0%</span><span class="desc">提示注入成功率（原 5.5%）</span></div>
-        <div class="stat-item"><span class="num">162.1</span><span class="desc">ECI 评分（Fable: 161）</span></div>
-        <div class="stat-item"><span class="num">½</span><span class="desc">竞品价格</span></div>
+      <!-- 4: Trump fourth campaign -->
+      <div class="article-card" id="trump-campaign">
+        <div class="article-card-inner">
+          <span class="article-number">04</span>
+          <span class="category-tag geopolitics">政治</span>
+          <h2 class="article-title">特朗普宣布第四次竞选总统，支持率跌至37%</h2>
+          <div class="article-body">
+            <p>特朗普戴着印有"2028"字样的小红帽高调宣布将第四次竞选美国总统。然而民调数据并不乐观——其总体支持率已跌至37%，"强烈支持"比例创历史新低。69%的民众不认可其伊朗政策，67%对经济前景感到悲观。特朗普自称"已经很有经验了，将再次出马"。</p>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-value">37%</span>
+              <span class="stat-label">支持率</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value">69%</span>
+              <span class="stat-label">不认可伊朗政策</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value">67%</span>
+              <span class="stat-label">对经济悲观</span>
+            </div>
+          </div>
+          <div class="article-footer">
+            <span class="source-name">华尔街见闻 · 2026-07-25</span>
+            <a class="article-link" href="https://wallstreetcn.com/articles/3777927" target="_blank" rel="noopener">阅读原文 <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="relevance-box">
-      <div class="label">与你的关联</div>
-      <div class="text">模型定价持续下探直接影响云端推理成本和技术选型，agentic 编码能力提升也意味着 AI 辅助开发的效率将有质变。</div>
-    </div>
-    <div class="article-footer">
-      <span class="source">Zvi's Blog · Hacker News</span>
-      <span>2026-07-25</span>
-      <a href="https://thezvi.substack.com/p/claude-opus-5-the-system-card" target="_blank">阅读原文 →</a>
-    </div>
-  </div>
-</article>
 
-<div class="divider">◆ ◆ ◆</div>
-
-<!-- 07 -->
-<article class="article" id="s7">
-  <div class="article-header">
-    <div class="article-num">07</div>
-    <span class="article-cat tech">AI · 基础设施</span>
-  </div>
-  <div class="article-content">
-    <h2 class="article-title">AMD 发布机器可读 ISA，让 AI 模型直接编写 GPU 内核</h2>
-    <p class="article-lede">"Hey Claude, optimize this model for me"——ROCm.AI 平台意图绕开 CUDA 生态护城河。</p>
-    <div class="article-body">
-      <p>AMD 在旧金山 Advancing AI 活动上发布 ROCm.AI 平台，让开发者通过自然语言提示（如"用 Hyperloom 优化 MiniMax M3"）让前沿大模型自动为 AMD Instinct GPU 生成和调优内核。核心工具 Hyperloom 可自动启动推理服务器、性能分析、瓶颈识别并动态生成定制内核，在 AMD 新发布的 Helios 机架上实测将模型性能提升 38%。</p>
-      <p>更关键的是，AMD 每代 GPU 均发布机器可读 ISA（非仅文档），并深度合作 OpenAI、Anthropic 使前沿模型"原生理解 AMD 编程"。ROCm.AI 将作为插件接入 Claude Code、OpenAI Codex、Google Antigravity 和 Cursor——这意味着开发者无需手写底层代码，AI 会自动生成。</p>
-    </div>
-    <div class="data-callout">
-      <div class="label">关键数据</div>
-      <div class="stats">
-        <div class="stat-item"><span class="num">+38%</span><span class="desc">Hyperloom 实测性能提升</span></div>
-        <div class="stat-item"><span class="num">4 个</span><span class="desc">IDE 插件接入（Claude/Codex/Cursor/Antigravity）</span></div>
+      <!-- 5: Trump 301 tariff -->
+      <div class="article-card" id="tariff">
+        <div class="article-card-inner">
+          <span class="article-number">05</span>
+          <span class="category-tag economy">贸易</span>
+          <h2 class="article-title">301关税接棒122关税，9500亿新框架落地</h2>
+          <div class="article-quote">"与IEEPA关税和122关税不同，301关税法律基础更坚实，一旦实施更难取消——对供应链的重塑更为持久。"——华泰证券</div>
+          <div class="article-body">
+            <p>随着122条款150天期限于7月24日到期，特朗普政府基于301调查推出"强制劳动关税"，覆盖60个经济体，占美国进口的99.2%。对未能实施强制劳动禁令的经济体加征12.5%（较此前高2.5个百分点），对已采纳但未有效执行的加征10%。欧盟和中国台湾地区限定总关税10%，日本、韩国、瑞士限定12.5%。</p>
+            <p>豁免范围扩大：食品、化工药品、纺织、关键矿产、电池与半导体等六类商品获豁免，占美国进口约40%。AI链核心产品（服务器、半导体设备、储能材料等）大多豁免。对华加权平均关税从18.5%小幅升至20.6-20.8%，但考虑豁免因素，实际有效税率低于表观水平。</p>
+          </div>
+          <div class="context-box">
+            <div class="context-title">关键判断</div>
+            <div class="context-text">301/232关税已成为特朗普政府的主要关税工具。虽然短期冲击比IEEPA关税更"可预测"，但法律基础坚实意味着取消难度更大，对全球供应链的扰动将更持久。后续还需关注"过剩产能"301调查结果及关键商品232调查。</div>
+          </div>
+          <div class="article-footer">
+            <span class="source-name">华尔街见闻 · 华泰证券 · 2026-07-26</span>
+            <a class="article-link" href="https://wallstreetcn.com/articles/3777940" target="_blank" rel="noopener">阅读原文 <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="relevance-box">
-      <div class="label">与你的关联</div>
-      <div class="text">你在 AWS 做 AI 基础设施，AMD ROCm 生态成熟度的变化直接影响 Inferentia/Trainium 以外的硬件选型策略和成本结构。如果 AI 能自动生成高质量 GPU 内核，CUDA 的生态壁垒将被根本性削弱。</div>
-    </div>
-    <div class="article-footer">
-      <span class="source">The Register</span>
-      <span>2026-07-24</span>
-      <a href="https://www.theregister.com/ai-and-ml/2026/07/24/amd-vibe-codes-its-way-past-the-cuda-moat-with-rocmai/5278580" target="_blank">阅读原文 →</a>
-    </div>
-  </div>
-</article>
 
-<div class="divider">◆ ◆ ◆</div>
-
-<!-- 08 -->
-<article class="article" id="s8">
-  <div class="article-header">
-    <div class="article-num">08</div>
-    <span class="article-cat tech">AI · 芯片</span>
-  </div>
-  <div class="article-content">
-    <h2 class="article-title">国产超节点商业化：华为、中科曙光、阿里云三条路径齐发</h2>
-    <p class="article-lede">WAIC 2026 上超 20 家企业发布方案，2028 年市场规模预计达 3414 亿元。</p>
-    <div class="article-body">
-      <p>WAIC 2026 上，超过 20 家企业发布了超节点方案。华为 Atlas 950（1024 卡版本，1 EFLOPS FP8 算力，256TB 统一内存，满配 8192 卡四季度上市）以真机亮相。中科曙光在郑州落成全国产十万卡曙光 8000 超集群。阿里云 M890 成为首个在公共云上运行 2.4 万亿参数大模型的超节点产品。</p>
-      <p>商业模式已分化为三条路径：卖整柜硬件（华为，三大运营商 2026 年算力资本开支合计超 800 亿元）、自建自运营算力服务（中科曙光，定价每卡时 1.2-3.5 元）、公共云按需付费（阿里云每小时 120 元）。</p>
-      <p>据 DeepSeek 创始人梁文锋评价，华为 950 超节点在任务层面可平替英伟达 GB200 NVL72。华泰证券测算 2028 年中国超节点市场规模将达 3414 亿元，2026-2028 年复合增长率 194%。</p>
-    </div>
-    <div class="data-callout">
-      <div class="label">市场规模</div>
-      <div class="stats">
-        <div class="stat-item"><span class="num">3414 亿</span><span class="desc">2028 年市场规模预测（元）</span></div>
-        <div class="stat-item"><span class="num">194%</span><span class="desc">2026-2028 年复合增长率</span></div>
-        <div class="stat-item"><span class="num">1 EFLOPS</span><span class="desc">华为 Atlas 950 FP8 算力</span></div>
+      <!-- 6: Claude Opus 5 -->
+      <div class="article-card" id="claude">
+        <div class="article-card-inner">
+          <span class="article-number">06</span>
+          <span class="category-tag tech">AI</span>
+          <h2 class="article-title">Anthropic发布Claude Opus 5，性能持平Fable 5价格减半</h2>
+          <div class="article-body">
+            <p>Anthropic发布Claude Opus 5，性能追平Google DeepMind的Fable 5，但价格仅为后者的一半。这一策略性定价或将引发AI模型市场的又一轮价格战，进一步加速企业级AI应用的部署成本下降。</p>
+          </div>
+          <div class="article-footer">
+            <span class="source-name">多项来源 · 2026-07-25</span>
+            <a class="article-link" href="https://www.bestblogs.dev/" target="_blank" rel="noopener">查看报道 <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="article-footer">
-      <span class="source">经济观察网 · BestBlogs</span>
-      <span>2026-07-25</span>
-      <a href="https://www.bestblogs.dev/article/064e0517db" target="_blank">阅读原文 →</a>
-    </div>
-  </div>
-</article>
 
-<div class="divider">◆ ◆ ◆</div>
-
-<!-- 09 -->
-<article class="article" id="s9">
-  <div class="article-header">
-    <div class="article-num">09</div>
-    <span class="article-cat">产业 · 新能源</span>
-  </div>
-  <div class="article-content">
-    <h2 class="article-title">宁德时代日赚 2.4 亿元，储能锂电池订单暴涨 30 倍</h2>
-    <p class="article-lede">上半年营收 2769 亿同比增长 55%，产能利用率近 95%，AI 算力驱动储能需求爆发。</p>
-    <div class="article-body">
-      <p>宁德时代 2026 年半年度报告显示，上半年营业总收入 2769.17 亿元，同比增长 54.80%；归母净利润 432.84 亿元，同比增长 41.98%，折合日赚约 2.4 亿元。产能利用率高达 94.86%，在建产能 764GWh 为现有产能的 1.46 倍。</p>
-      <p>动力电池系统营收 1921.25 亿元。但最引人注目的是储能业务：AI 算力数据中心对毫秒级储能的刚性需求推动储能锂电池订单上半年暴涨 30 倍，储能正在成为算力基建的标配组件。</p>
-    </div>
-    <div class="data-callout">
-      <div class="label">半年报核心数据</div>
-      <div class="stats">
-        <div class="stat-item"><span class="num">2769 亿</span><span class="desc">营收（+54.8% YoY）</span></div>
-        <div class="stat-item"><span class="num">432.8 亿</span><span class="desc">净利润（+42.0% YoY）</span></div>
-        <div class="stat-item"><span class="num">94.86%</span><span class="desc">产能利用率</span></div>
-        <div class="stat-item"><span class="num">30×</span><span class="desc">储能订单增长</span></div>
+      <!-- 7: SpaceX Starship -->
+      <div class="article-card" id="spacex">
+        <div class="article-card-inner">
+          <span class="article-number">07</span>
+          <span class="category-tag tech">航天</span>
+          <h2 class="article-title">SpaceX上市后首次星舰试飞成功，部署20颗星链V3</h2>
+          <div class="article-body">
+            <p>SpaceX在IPO后完成了首次星舰试飞，成功部署20颗星链V3卫星。这是星舰商业化进程的重要里程碑，标志着超大载荷发射能力从测试阶段进入实用阶段。</p>
+          </div>
+          <div class="article-footer">
+            <span class="source-name">多项来源 · 2026-07-25</span>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="relevance-box">
-      <div class="label">与你的关联</div>
-      <div class="text">储能锂电池暴涨 30 倍的背后驱动力正是 AI 算力数据中心——你参与的 AI 基础设施工作正在直接拉动这个市场。</div>
-    </div>
-    <div class="article-footer">
-      <span class="source">BestBlogs · 财联社</span>
-      <span>2026-07-25</span>
-      <a href="https://www.bestblogs.dev/article/58bbf02bbb" target="_blank">阅读原文 →</a>
-    </div>
-  </div>
-</article>
 
-<div class="divider">◆ ◆ ◆</div>
-
-<!-- 10 -->
-<article class="article" id="s10">
-  <div class="article-header">
-    <div class="article-num">10</div>
-    <span class="article-cat">产业 · 自动驾驶</span>
-  </div>
-  <div class="article-content">
-    <h2 class="article-title">特斯拉 Robotaxi 里程数不升反降，Q2 付费里程下滑 36%</h2>
-    <p class="article-lede">尽管扩展至更多城市，付费 Robotaxi 里程却环比下降 36%，商业模式面临质疑。</p>
-    <div class="article-body">
-      <p>TechCrunch 报道，特斯拉 Robotaxi 网络 2026 年 Q2 付费行驶里程约 70 万英里，较 Q1 的约 110 万英里下降约 36%——尽管同期从扩张到了得州和佛州的 6 个城市。马斯克在财报电话会上承认，Cybercab 量产前需先积累大量搭载临时方向盘和踏板的改装车行驶数据来校准底盘，这与公司多年宣称"近 1000 万辆客户车已在后台收集数据训练 Robotaxi"的叙事相矛盾。</p>
-      <p>消息公布后特斯拉股价周四早盘暴跌超 13%。公司向 NHTSA 报告了试运营一年来的 22 起事故，AI 副总裁 Elluswamy 称无人监督行驶"超 38 万英里零重大事故"。</p>
-    </div>
-    <div class="data-callout">
-      <div class="label">关键数据</div>
-      <div class="stats">
-        <div class="stat-item"><span class="num">-36%</span><span class="desc">Q2 付费里程环比（110万→70万英里）</span></div>
-        <div class="stat-item"><span class="num">-13%</span><span class="desc">股价暴跌</span></div>
-        <div class="stat-item"><span class="num">22 起</span><span class="desc">一年内报告事故数</span></div>
+      <!-- 8: AMD machine-readable ISA -->
+      <div class="article-card" id="amd">
+        <div class="article-card-inner">
+          <span class="article-number">08</span>
+          <span class="category-tag tech">芯片</span>
+          <h2 class="article-title">AMD发布机器可读ISA，AI可直接编写GPU内核</h2>
+          <div class="article-body">
+            <p>AMD发布了机器可读指令集架构（ISA），允许AI模型直接编写GPU内核。这一突破有望大幅降低CUDA生态的壁垒，加速ROCm生态发展，重构GPU编程范式。</p>
+          </div>
+          <div class="article-footer">
+            <span class="source-name">多项来源 · 2026-07-25</span>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="relevance-box">
-      <div class="label">与你的关联</div>
-      <div class="text">你即将加入 Wolt / DoorDash，配送和出行平台的自动化走向与你的新工作直接相关。Robotaxi 的困境说明自动驾驶在物流场景的落地远比预期复杂。</div>
-    </div>
-    <div class="article-footer">
-      <span class="source">TechCrunch</span>
-      <span>2026-07-23</span>
-      <a href="https://techcrunch.com/2026/07/23/teslas-robotaxis-are-moving-in-reverse/" target="_blank">阅读原文 →</a>
+
+      <!-- 9: China AI supernode -->
+      <div class="article-card" id="supernode">
+        <div class="article-card-inner">
+          <span class="article-number">09</span>
+          <span class="category-tag tech">AI基础设施</span>
+          <h2 class="article-title">国产AI超节点商业化大幕拉开</h2>
+          <div class="article-body">
+            <p>华为昇腾、中科曙光、阿里云等国产超节点AI计算集群正式进入商业化阶段。在进口芯片受限的背景下，国产AI基础设施生态加速成熟，从政企试点向行业规模化部署迈进。</p>
+          </div>
+          <div class="article-footer">
+            <span class="source-name">多项来源 · 2026-07-25</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10: CATL -->
+      <div class="article-card" id="catl">
+        <div class="article-card-inner">
+          <span class="article-number">10</span>
+          <span class="category-tag economy">产业</span>
+          <h2 class="article-title">宁德时代半年报：日赚2.4亿，产能再扩1.5倍</h2>
+          <div class="article-body">
+            <p>宁德时代上半年营收2769亿元，净利润433亿元——相当于每天净赚约2.4亿元。公司同时宣布产能将再扩1.5倍，巩固其在动力电池和储能领域的全球龙头地位。</p>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-value">2769亿</span>
+              <span class="stat-label">上半年营收</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value">433亿</span>
+              <span class="stat-label">净利润</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value">+150%</span>
+              <span class="stat-label">产能扩增</span>
+            </div>
+          </div>
+          <div class="article-footer">
+            <span class="source-name">多项来源 · 2026-07-25</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
-</article>
-
 </div>
-</main>
 
-<!-- COLOPHON -->
-<footer class="colophon">
-  <div class="brand">每日简报 · Daily Briefing</div>
-  <p>数据来源：Hacker News · BBC · 卫报 · 路透社 · 华尔街见闻 · BestBlogs · TechCrunch · The Register<br>
-  自动生成 · 仅供个人参考 · Berlin, 2026-07-26</p>
+<footer class="page-footer">
+  <p>每日简报 · 2026年7月26日 · 由 Hermes Agent 自动生成</p>
 </footer>
 
 </body>
