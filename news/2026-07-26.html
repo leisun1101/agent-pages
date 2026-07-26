@@ -5,106 +5,385 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>每日简报 · 2026年7月26日</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:16px;scroll-behavior:smooth}
-body{font-family:'Inter','Noto Sans SC',sans-serif;background:#0a0a0f;color:#e8e6e3;line-height:1.7;-webkit-font-smoothing:antialiased}
-::selection{background:#d4a554;color:#0a0a0f}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  background: #0a0a0f;
+  color: #e8e6e0;
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
 
-/* Header / Hero */
-.hero{position:relative;min-height:80vh;display:flex;flex-direction:column;justify-content:center;padding:4rem 2rem;background:linear-gradient(135deg,#0a0a0f 0%,#14141e 40%,#1a1a2e 100%);overflow:hidden}
-.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 30% 40%,rgba(212,165,84,0.04) 0%,transparent 60%),radial-gradient(ellipse at 70% 60%,rgba(212,165,84,0.02) 0%,transparent 50%);pointer-events:none}
-.hero-content{position:relative;z-index:1;max-width:900px;margin:0 auto;width:100%}
-.hero-label{font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:#d4a554;margin-bottom:1.5rem;font-weight:600}
-.hero-title{font-family:'Noto Serif SC','Playfair Display',serif;font-size:clamp(2.5rem,6vw,4.5rem);font-weight:900;line-height:1.15;margin-bottom:1.5rem;color:#fff}
-.hero-title em{font-style:normal;color:#d4a554}
-.hero-sub{font-size:clamp(1rem,2vw,1.25rem);color:#a0a0a8;max-width:600px;line-height:1.6;font-weight:300}
-.hero-date{font-size:.85rem;color:#666;margin-top:2rem;letter-spacing:.05em}
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0a0a0f; }
+::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #d4a554; }
 
-/* Main Layout */
-.container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
-.articles-grid{display:grid;grid-template-columns:1fr;gap:2rem;padding:3rem 0}
+/* Hero */
+.hero {
+  position: relative;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f0f18 100%);
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 50%, rgba(212,165,84,0.06) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 30%, rgba(212,165,84,0.03) 0%, transparent 40%);
+  animation: heroGlow 20s ease-in-out infinite alternate;
+}
+@keyframes heroGlow {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-5%, 5%); }
+}
+.hero-content { position: relative; z-index: 1; max-width: 900px; }
+.hero-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #d4a554;
+  margin-bottom: 1.5rem;
+}
+.hero h1 {
+  font-family: 'Noto Serif SC', 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #f0ede8 0%, #d4a554 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p {
+  font-size: 1.05rem;
+  color: #8a887e;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+  font-weight: 300;
+}
+.hero-meta {
+  margin-top: 2rem;
+  font-size: 0.85rem;
+  color: #5a5a5a;
+  letter-spacing: 0.05em;
+}
+.hero-meta span { margin: 0 0.5rem; color: #d4a554; }
 
-/* Sidebar nav */
-.sidebar-nav{display:none}
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
 
-/* Article Cards */
-.article-card{position:relative;background:linear-gradient(135deg,#12121a 0%,#181824 100%);border-radius:1.25rem;overflow:hidden;border:1px solid rgba(255,255,255,0.04);transition:border-color .3s,border .3s}
-.article-card:hover{border-color:rgba(212,165,84,0.2)}
-.article-card-inner{padding:2.5rem;position:relative}
-.article-number{font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;color:rgba(212,165,84,0.12);position:absolute;top:.75rem;right:1.5rem;line-height:1;pointer-events:none;user-select:none}
+/* Desktop: two-column layout */
+@media (min-width: 1024px) {
+  .news-grid {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 2rem;
+  }
+  .sidebar-sticky {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+  }
+  .sidebar-numbers {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .sidebar-number {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #2a2a3a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #5a5a5a;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+    cursor: default;
+  }
+  .sidebar-number.active { border-color: #d4a554; color: #d4a554; background: rgba(212,165,84,0.08); }
+  .story-card { margin-bottom: 3rem; }
+}
 
-/* Hero article (first) */
-.article-hero{grid-column:1/-1}
-.article-hero .article-card{background:linear-gradient(135deg,#1a1a2e 0%,#1e1e32 50%,#222238 100%);border-color:rgba(212,165,84,0.15)}
-.article-hero .article-card-inner{padding:3rem}
-.article-hero .article-title{font-size:clamp(1.5rem,3vw,2.4rem)}
+@media (max-width: 1023px) {
+  .sidebar-sticky { display: none; }
+  .story-card { margin-bottom: 2rem; }
+}
+
+/* Story card */
+.story-card {
+  position: relative;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+.story-card:last-child { margin-bottom: 0; }
+
+/* Hero story — first card */
+.story-hero {
+  background: linear-gradient(135deg, #12121f 0%, #1a1a2e 100%);
+  border: 1px solid #2a2a3a;
+  border-radius: 16px;
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.story-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(212,165,84,0.05) 0%, transparent 70%);
+}
+.story-hero .story-category { background: rgba(212,165,84,0.15); color: #d4a554; }
+.story-hero .story-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 4rem;
+  font-weight: 700;
+  color: rgba(212,165,84,0.08);
+  position: absolute;
+  top: 0.5rem; right: 1.5rem;
+  line-height: 1;
+}
+
+/* Regular card */
+.story-card:not(.story-hero) {
+  background: linear-gradient(135deg, #0f0f18 0%, #141420 100%);
+  border: 1px solid #1e1e2e;
+  border-radius: 12px;
+  padding: 2rem;
+  position: relative;
+  transition: border-color 0.3s;
+}
+.story-card:not(.story-hero):hover { border-color: #2a2a3a; }
+.story-card:not(.story-hero) .story-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: rgba(212,165,84,0.06);
+  position: absolute;
+  top: 0.5rem; right: 1.5rem;
+  line-height: 1;
+}
 
 /* Category tag */
-.category-tag{display:inline-block;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:2rem;margin-bottom:1.25rem;border:1px solid}
-.category-tag.berlin{border-color:rgba(212,165,84,0.3);color:#d4a554}
-.category-tag.europe{border-color:rgba(100,200,255,0.3);color:#64c8ff}
-.category-tag.geopolitics{border-color:rgba(255,100,100,0.3);color:#ff6464}
-.category-tag.economy{border-color:rgba(100,255,150,0.3);color:#64ff96}
-.category-tag.tech{border-color:rgba(180,120,255,0.3);color:#b478ff}
-.category-tag.climate{border-color:rgba(255,180,50,0.3);color:#ffb432}
+.story-category {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+}
+.cat-local { background: rgba(100,200,255,0.1); color: #64c8ff; }
+.cat-climate { background: rgba(255,160,60,0.1); color: #ffa03c; }
+.cat-geopolitics { background: rgba(255,80,80,0.1); color: #ff5050; }
+.cat-economy { background: rgba(80,200,120,0.1); color: #50c878; }
+.cat-market { background: rgba(200,180,100,0.1); color: #c8b464; }
+.cat-tech { background: rgba(160,120,255,0.1); color: #a078ff; }
+.cat-industry { background: rgba(100,200,200,0.1); color: #64c8c8; }
 
-/* Article title */
-.article-title{font-family:'Noto Serif SC','Playfair Display',serif;font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:700;color:#fff;line-height:1.3;margin-bottom:.75rem}
-.article-quote{font-family:'Noto Serif SC',serif;font-style:italic;color:#d4a554;font-size:.95rem;padding:.75rem 0 .75rem 1.25rem;border-left:2px solid rgba(212,165,84,0.3);margin-bottom:1rem}
+/* Typography */
+.story-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.2rem, 2vw, 1.65rem);
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 0.75rem;
+  color: #f0ede8;
+  position: relative;
+  z-index: 1;
+}
+.story-hero .story-title { font-size: clamp(1.5rem, 2.5vw, 2rem); }
+.story-subtitle {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-size: 0.95rem;
+  font-style: italic;
+  color: #8a887e;
+  margin-bottom: 1rem;
+  font-weight: 300;
+  padding-left: 1rem;
+  border-left: 2px solid rgba(212,165,84,0.3);
+}
+.story-body {
+  font-size: 0.92rem;
+  line-height: 1.8;
+  color: #c8c5bc;
+  font-weight: 300;
+  margin-bottom: 1.25rem;
+}
+.story-body p { margin-bottom: 0.75rem; }
+.story-body p:last-child { margin-bottom: 0; }
 
-/* Article body */
-.article-body{color:#b0b0b8;font-size:.95rem;line-height:1.75;margin-bottom:1.25rem}
-.article-body p{margin-bottom:.75rem}
+/* Dropcap on first paragraph */
+.story-hero .story-body p:first-child:first-letter,
+.story-card:not(.story-hero) .story-body p:first-child:first-letter {
+  font-family: 'Noto Serif SC', 'Playfair Display', serif;
+  font-size: 2.8em;
+  font-weight: 700;
+  float: left;
+  line-height: 0.85;
+  margin-right: 0.4rem;
+  margin-top: 0.15rem;
+  color: #d4a554;
+}
 
 /* Stats grid */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.75rem;margin:1.25rem 0}
-.stat-card{background:rgba(255,255,255,0.03);border-radius:.75rem;padding:1rem;text-align:center;border:1px solid rgba(255,255,255,0.04)}
-.stat-value{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#d4a554;display:block}
-.stat-label{font-size:.7rem;color:#888;margin-top:.25rem;letter-spacing:.02em}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+.stat-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #1e1e2e;
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: center;
+}
+.stat-value {
+  font-family: 'Playfair Display', 'Noto Serif SC', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #d4a554;
+  line-height: 1.2;
+}
+.stat-label {
+  font-size: 0.7rem;
+  color: #6a6a6a;
+  margin-top: 0.25rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
 
 /* Context box */
-.context-box{background:rgba(255,255,255,0.02);border-radius:.75rem;padding:1.25rem;margin:1rem 0;border-left:3px solid rgba(212,165,84,0.2)}
-.context-title{font-size:.75rem;font-weight:600;color:#d4a554;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}
-.context-text{font-size:.85rem;color:#999;line-height:1.5}
+.context-box {
+  background: rgba(212,165,84,0.04);
+  border: 1px solid rgba(212,165,84,0.12);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+}
+.context-box-title {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #d4a554;
+  margin-bottom: 0.5rem;
+}
+.context-box p {
+  font-size: 0.85rem;
+  color: #a8a69e;
+  line-height: 1.6;
+}
 
-/* Source & link */
-.article-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.04);margin-top:.5rem}
-.source-name{font-size:.75rem;color:#666}
-.article-link{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;color:#d4a554;text-decoration:none;padding:.4rem .8rem;border:1px solid rgba(212,165,84,0.2);border-radius:2rem;transition:all .3s}
-.article-link:hover{background:rgba(212,165,84,0.1);border-color:#d4a554}
-.article-link svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Source + link */
+.story-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #1a1a2a;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.story-source {
+  font-size: 0.75rem;
+  color: #5a5a5a;
+}
+.story-link {
+  font-size: 0.75rem;
+  color: #d4a554;
+  text-decoration: none;
+  border: 1px solid rgba(212,165,84,0.2);
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+.story-link:hover { background: rgba(212,165,84,0.1); border-color: #d4a554; }
+
+/* Separator between stories */
+.story-separator {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #2a2a3a, transparent);
+  margin: 0 0 2rem 0;
+  border: none;
+}
+
+/* Mobile adjustments */
+@media (max-width: 767px) {
+  .container { padding: 1.5rem 1rem; }
+  .hero { min-height: 50vh; padding: 3rem 1.25rem; }
+  .story-hero { padding: 1.5rem; border-radius: 12px; }
+  .story-card:not(.story-hero) { padding: 1.5rem; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Divider for section */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 2.5rem 0;
+  color: #2a2a3a;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #2a2a3a, transparent);
+}
+.section-divider span { color: #5a5a5a; }
 
 /* Footer */
-.page-footer{border-top:1px solid rgba(255,255,255,0.04);padding:2rem 1.5rem;text-align:center;color:#444;font-size:.8rem;margin-top:2rem}
-
-/* Desktop: two-column + sticky sidebar */
-@media(min-width:1024px){
-.container{max-width:1400px;padding:0 2rem}
-.articles-grid{grid-template-columns:220px 1fr;gap:2rem;padding:4rem 0}
-.sidebar-nav{display:block;position:sticky;top:2rem;align-self:start}
-.sidebar-nav ol{list-style:none;padding:0;margin:0}
-.sidebar-nav li{margin-bottom:.5rem;font-size:.8rem}
-.sidebar-nav a{color:#666;text-decoration:none;transition:color .3s;display:flex;align-items:center;gap:.5rem}
-.sidebar-nav a:hover{color:#d4a554}
-.sidebar-nav .nav-num{font-family:'Playfair Display',serif;color:#d4a554;font-weight:600;font-size:.85rem;min-width:1.5rem}
-.sidebar-nav .nav-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.main-articles{min-width:0}
-.article-hero{grid-column:1/-1}
+.site-footer {
+  text-align: center;
+  padding: 3rem 2rem;
+  border-top: 1px solid #1a1a2a;
+  margin-top: 3rem;
 }
-
-@media(min-width:768px)and(max-width:1023px){
-.articles-grid{gap:1.5rem}
-.article-card-inner{padding:2rem}
-}
-
-@media(max-width:767px){
-.hero{padding:2.5rem 1.25rem;min-height:60vh}
-.article-card-inner{padding:1.5rem}
-.article-hero .article-card-inner{padding:2rem 1.5rem}
-.stats-grid{grid-template-columns:repeat(2,1fr)}
-.container{padding:0 1rem}
+.site-footer p {
+  font-size: 0.75rem;
+  color: #3a3a3a;
+  letter-spacing: 0.05em;
 }
 </style>
 </head>
@@ -113,272 +392,371 @@ body{font-family:'Inter','Noto Sans SC',sans-serif;background:#0a0a0f;color:#e8e
 <header class="hero">
   <div class="hero-content">
     <div class="hero-label">Daily Briefing</div>
-    <h1 class="hero-title">柏林之夜 · <em>山火与战火</em></h1>
-    <p class="hero-sub">骄傲游行遭遇冲撞，波尔多20万人疏散，美伊战争扩散至红海——周日世界的关键画面。</p>
-    <div class="hero-date">2026年7月26日 · 星期日 · Berlin</div>
+    <h1>每日简报</h1>
+    <p>地缘风险与市场压力交织的一周——柏林恐袭、法国山火、美伊冲突扩大，AI 市场深度回调，但半导体长期信号依然强劲。</p>
+    <div class="hero-meta">2026 年 7 月 26 日 <span>·</span> 10 条新闻 <span>·</span> 柏林</div>
   </div>
 </header>
 
 <div class="container">
-  <div class="articles-grid">
 
-    <!-- Sidebar (desktop) -->
-    <nav class="sidebar-nav">
-      <ol>
-        <li><a href="#berlin"><span class="nav-num">01</span><span class="nav-title">柏林冲撞</span></a></li>
-        <li><a href="#bordeaux"><span class="nav-num">02</span><span class="nav-title">波尔多山火</span></a></li>
-        <li><a href="#iran"><span class="nav-num">03</span><span class="nav-title">美伊战争扩散</span></a></li>
-        <li><a href="#trump-campaign"><span class="nav-num">04</span><span class="nav-title">特朗普四度参选</span></a></li>
-        <li><a href="#tariff"><span class="nav-num">05</span><span class="nav-title">301关税新框架</span></a></li>
-        <li><a href="#claude"><span class="nav-num">06</span><span class="nav-title">Claude Opus 5</span></a></li>
-        <li><a href="#spacex"><span class="nav-num">07</span><span class="nav-title">星舰试飞</span></a></li>
-        <li><a href="#amd"><span class="nav-num">08</span><span class="nav-title">AMD机器可读ISA</span></a></li>
-        <li><a href="#supernode"><span class="nav-num">09</span><span class="nav-title">国产超节点</span></a></li>
-        <li><a href="#catl"><span class="nav-num">10</span><span class="nav-title">宁德时代半年报</span></a></li>
-      </ol>
-    </nav>
+<div class="news-grid">
 
-    <div class="main-articles">
+<!-- Sidebar -->
+<aside class="sidebar-sticky">
+  <div class="sidebar-numbers">
+    <div class="sidebar-number">1</div>
+    <div class="sidebar-number">2</div>
+    <div class="sidebar-number">3</div>
+    <div class="sidebar-number">4</div>
+    <div class="sidebar-number">5</div>
+    <div class="sidebar-number">6</div>
+    <div class="sidebar-number">7</div>
+    <div class="sidebar-number">8</div>
+    <div class="sidebar-number">9</div>
+    <div class="sidebar-number">10</div>
+  </div>
+</aside>
 
-      <!-- 1: Berlin Pride car crash — Hero -->
-      <div class="article-hero" id="berlin">
-        <div class="article-card">
-          <div class="article-card-inner">
-            <span class="article-number">01</span>
-            <span class="category-tag berlin">柏林</span>
-            <h2 class="article-title">骄傲游行遭汽车冲撞，1死16伤，嫌犯在逃</h2>
-            <div class="article-quote">"柏林是一座自由之城——而今天，我们的自由以最可怕的方式遭到攻击。"——柏林市长凯·韦格纳</div>
-            <div class="article-body">
-              <p>7月25日晚间，柏林年度Christopher Street Day骄傲游行期间，一辆白色车辆在蒂尔加滕公园附近高速冲入人群，造成至少1人死亡、16人受伤，其中多人伤势危及生命。警方确认嫌犯为21岁的Abdul B，身材偏瘦、黑发，身穿黑色连帽衫和白色长裤，已知是警方记录的"柏林伊斯兰主义圈子"成员。嫌犯作案后弃车逃跑，警方出动直升机和热成像摄像机将搜捕范围扩大至全市。</p>
-              <p>克里斯托弗街日是柏林规模最大的年度骄傲活动，通常吸引约100万人参与。事发后游行与所有后续活动立即取消，勃兰登堡门现场屏幕直接显示"疏散"字样。德国总理梅尔茨称这是"可怕的行为"，承诺全面调查。这也是近年来德国系列车辆冲撞事件的最新一起——从2016年柏林圣诞市场13死卡车袭击，到2024年马格德堡圣诞市场6死冲撞，德国大型集会的安保压力持续升级。</p>
-            </div>
-            <div class="stats-grid">
-              <div class="stat-card">
-                <span class="stat-value">1</span>
-                <span class="stat-label">死亡</span>
-              </div>
-              <div class="stat-card">
-                <span class="stat-value">16</span>
-                <span class="stat-label">受伤</span>
-              </div>
-              <div class="stat-card">
-                <span class="stat-value">21岁</span>
-                <span class="stat-label">嫌犯年龄</span>
-              </div>
-              <div class="stat-card">
-                <span class="stat-value">在逃</span>
-                <span class="stat-label">嫌犯状态</span>
-              </div>
-            </div>
-            <div class="article-footer">
-              <span class="source-name">BBC 中文 · 2026-07-26 03:19</span>
-              <a class="article-link" href="https://www.bbc.com/zhongwen/articles/cly5q2r3pyyo/trad" target="_blank" rel="noopener">阅读原文 <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
-            </div>
-          </div>
-        </div>
-      </div>
+<main>
 
-      <!-- 2: Bordeaux wildfires -->
-      <div class="article-card" id="bordeaux">
-        <div class="article-card-inner">
-          <span class="article-number">02</span>
-          <span class="category-tag climate">气候</span>
-          <h2 class="article-title">波尔多山火：20万人疏散，9.8万公顷被焚</h2>
-          <div class="article-body">
-            <p>法国西南部波尔多地区山火形势急剧恶化。截至7月26日，过火面积已达约9.8万公顷，约20万居民被迫疏散——此前的报道仅为"数千人"。大火已迫使波尔多机场关闭，法国政府正向国际社会请求增援。消防人员仍在与火势搏斗，火势控制的前景尚不明朗。</p>
-          </div>
-          <div class="stats-grid">
-            <div class="stat-card">
-              <span class="stat-value">200,000</span>
-              <span class="stat-label">疏散人数</span>
-            </div>
-            <div class="stat-card">
-              <span class="stat-value">98,000 ha</span>
-              <span class="stat-label">过火面积</span>
-            </div>
-            <div class="stat-card">
-              <span class="stat-value">关闭</span>
-              <span class="stat-label">波尔多机场</span>
-            </div>
-          </div>
-          <div class="article-footer">
-            <span class="source-name">Al Jazeera · 2026-07-26</span>
-            <a class="article-link" href="https://www.aljazeera.com/video/newsfeed/2026/7/26/french-wildfires-trigger-mass-evacuations-around-bordeaux" target="_blank" rel="noopener">阅读原文 <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
-          </div>
-        </div>
-      </div>
+<!-- Story 1: Berlin Pride -->
+<article class="story-card story-hero">
+  <div class="story-number">01</div>
+  <span class="story-category cat-local">柏林·本地</span>
+  <h2 class="story-title">柏林骄傲游行遭汽车冲撞，1 死 16 伤</h2>
+  <div class="story-subtitle">嫌犯为 21 岁伊斯兰主义背景男子，全城搜捕中</div>
+  <div class="story-body">
+    <p>周六下午，柏林 Christopher Street Day 同志骄傲游行期间，一辆汽车冲入人群。事件造成 1 人死亡、至少 16 人受伤，部分伤者伤势严重。嫌犯被确认为 21 岁的 Abdul B，已知是柏林伊斯兰主义圈子成员。警方出动直升机并使用热成像夜间搜捕，目前仍在追捕中。</p>
+    <p>总理梅尔茨在社交媒体上谴责这一"可怕行为"，柏林市长韦格纳称这是"对自由开放社会的攻击"，呼吁民众保持警惕。CDU 政治局也已宣布将全面审查下周末所有大型活动的安保方案。</p>
+  </div>
 
-      <!-- 3: US-Iran/Houthi escalation -->
-      <div class="article-card" id="iran">
-        <div class="article-card-inner">
-          <span class="article-number">03</span>
-          <span class="category-tag geopolitics">地缘</span>
-          <h2 class="article-title">美伊战争扩散至红海，胡塞武装攻击沙特石油设施</h2>
-          <div class="article-quote">"胡塞武装可能封锁曼德海峡——若与霍尔木兹海峡同时关闭，全球供应链将面临灾难性冲击。"</div>
-          <div class="article-body">
-            <p>也门胡塞武装向沙特红海沿岸的吉赞和延布两处阿美石油设施发射了导弹和无人机。沙特部署的希腊操作爱国者系统在延布成功拦截了两枚弹道导弹，但吉赞方向据报有浓烟升起。这是美伊战争自7月11日爆发以来最严重的区域外溢——此前13轮美军空袭已重创伊朗，但双方仍通过中间人保持沟通渠道。</p>
-            <p>冲突进一步蔓延至里海：伊朗指控乌克兰袭击了其商业船只，造成1死1伤，伊朗外交部召见了乌克兰驻德黑兰临时代办。乌克兰总统泽连斯基则表示，乌军在里海取得了"非常强有力的成果"，击中了一艘涉及伊朗军事货运的船只和一艘军舰。</p>
-          </div>
-          <div class="context-box">
-            <div class="context-title">为什么重要</div>
-            <div class="context-text">若胡塞武装封锁曼德海峡（连接红海与亚丁湾）、叠加伊朗对霍尔木兹海峡的压力，全球约30%的石油运输将面临中断风险，可能引发新一轮能源价格飙升和粮食安全危机。</div>
-          </div>
-          <div class="article-footer">
-            <span class="source-name">Al Jazeera · 2026-07-26 04:40</span>
-            <a class="article-link" href="https://www.aljazeera.com/news/2026/7/26/new-front-in-us-iran-war-escalates-as-houthis-fire-at-saudi-oil-facilities" target="_blank" rel="noopener">阅读原文 <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4: Trump fourth campaign -->
-      <div class="article-card" id="trump-campaign">
-        <div class="article-card-inner">
-          <span class="article-number">04</span>
-          <span class="category-tag geopolitics">政治</span>
-          <h2 class="article-title">特朗普宣布第四次竞选总统，支持率跌至37%</h2>
-          <div class="article-body">
-            <p>特朗普戴着印有"2028"字样的小红帽高调宣布将第四次竞选美国总统。然而民调数据并不乐观——其总体支持率已跌至37%，"强烈支持"比例创历史新低。69%的民众不认可其伊朗政策，67%对经济前景感到悲观。特朗普自称"已经很有经验了，将再次出马"。</p>
-          </div>
-          <div class="stats-grid">
-            <div class="stat-card">
-              <span class="stat-value">37%</span>
-              <span class="stat-label">支持率</span>
-            </div>
-            <div class="stat-card">
-              <span class="stat-value">69%</span>
-              <span class="stat-label">不认可伊朗政策</span>
-            </div>
-            <div class="stat-card">
-              <span class="stat-value">67%</span>
-              <span class="stat-label">对经济悲观</span>
-            </div>
-          </div>
-          <div class="article-footer">
-            <span class="source-name">华尔街见闻 · 2026-07-25</span>
-            <a class="article-link" href="https://wallstreetcn.com/articles/3777927" target="_blank" rel="noopener">阅读原文 <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 5: Trump 301 tariff -->
-      <div class="article-card" id="tariff">
-        <div class="article-card-inner">
-          <span class="article-number">05</span>
-          <span class="category-tag economy">贸易</span>
-          <h2 class="article-title">301关税接棒122关税，9500亿新框架落地</h2>
-          <div class="article-quote">"与IEEPA关税和122关税不同，301关税法律基础更坚实，一旦实施更难取消——对供应链的重塑更为持久。"——华泰证券</div>
-          <div class="article-body">
-            <p>随着122条款150天期限于7月24日到期，特朗普政府基于301调查推出"强制劳动关税"，覆盖60个经济体，占美国进口的99.2%。对未能实施强制劳动禁令的经济体加征12.5%（较此前高2.5个百分点），对已采纳但未有效执行的加征10%。欧盟和中国台湾地区限定总关税10%，日本、韩国、瑞士限定12.5%。</p>
-            <p>豁免范围扩大：食品、化工药品、纺织、关键矿产、电池与半导体等六类商品获豁免，占美国进口约40%。AI链核心产品（服务器、半导体设备、储能材料等）大多豁免。对华加权平均关税从18.5%小幅升至20.6-20.8%，但考虑豁免因素，实际有效税率低于表观水平。</p>
-          </div>
-          <div class="context-box">
-            <div class="context-title">关键判断</div>
-            <div class="context-text">301/232关税已成为特朗普政府的主要关税工具。虽然短期冲击比IEEPA关税更"可预测"，但法律基础坚实意味着取消难度更大，对全球供应链的扰动将更持久。后续还需关注"过剩产能"301调查结果及关键商品232调查。</div>
-          </div>
-          <div class="article-footer">
-            <span class="source-name">华尔街见闻 · 华泰证券 · 2026-07-26</span>
-            <a class="article-link" href="https://wallstreetcn.com/articles/3777940" target="_blank" rel="noopener">阅读原文 <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 6: Claude Opus 5 -->
-      <div class="article-card" id="claude">
-        <div class="article-card-inner">
-          <span class="article-number">06</span>
-          <span class="category-tag tech">AI</span>
-          <h2 class="article-title">Anthropic发布Claude Opus 5，性能持平Fable 5价格减半</h2>
-          <div class="article-body">
-            <p>Anthropic发布Claude Opus 5，性能追平Google DeepMind的Fable 5，但价格仅为后者的一半。这一策略性定价或将引发AI模型市场的又一轮价格战，进一步加速企业级AI应用的部署成本下降。</p>
-          </div>
-          <div class="article-footer">
-            <span class="source-name">多项来源 · 2026-07-25</span>
-            <a class="article-link" href="https://www.bestblogs.dev/" target="_blank" rel="noopener">查看报道 <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 7: SpaceX Starship -->
-      <div class="article-card" id="spacex">
-        <div class="article-card-inner">
-          <span class="article-number">07</span>
-          <span class="category-tag tech">航天</span>
-          <h2 class="article-title">SpaceX上市后首次星舰试飞成功，部署20颗星链V3</h2>
-          <div class="article-body">
-            <p>SpaceX在IPO后完成了首次星舰试飞，成功部署20颗星链V3卫星。这是星舰商业化进程的重要里程碑，标志着超大载荷发射能力从测试阶段进入实用阶段。</p>
-          </div>
-          <div class="article-footer">
-            <span class="source-name">多项来源 · 2026-07-25</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 8: AMD machine-readable ISA -->
-      <div class="article-card" id="amd">
-        <div class="article-card-inner">
-          <span class="article-number">08</span>
-          <span class="category-tag tech">芯片</span>
-          <h2 class="article-title">AMD发布机器可读ISA，AI可直接编写GPU内核</h2>
-          <div class="article-body">
-            <p>AMD发布了机器可读指令集架构（ISA），允许AI模型直接编写GPU内核。这一突破有望大幅降低CUDA生态的壁垒，加速ROCm生态发展，重构GPU编程范式。</p>
-          </div>
-          <div class="article-footer">
-            <span class="source-name">多项来源 · 2026-07-25</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 9: China AI supernode -->
-      <div class="article-card" id="supernode">
-        <div class="article-card-inner">
-          <span class="article-number">09</span>
-          <span class="category-tag tech">AI基础设施</span>
-          <h2 class="article-title">国产AI超节点商业化大幕拉开</h2>
-          <div class="article-body">
-            <p>华为昇腾、中科曙光、阿里云等国产超节点AI计算集群正式进入商业化阶段。在进口芯片受限的背景下，国产AI基础设施生态加速成熟，从政企试点向行业规模化部署迈进。</p>
-          </div>
-          <div class="article-footer">
-            <span class="source-name">多项来源 · 2026-07-25</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 10: CATL -->
-      <div class="article-card" id="catl">
-        <div class="article-card-inner">
-          <span class="article-number">10</span>
-          <span class="category-tag economy">产业</span>
-          <h2 class="article-title">宁德时代半年报：日赚2.4亿，产能再扩1.5倍</h2>
-          <div class="article-body">
-            <p>宁德时代上半年营收2769亿元，净利润433亿元——相当于每天净赚约2.4亿元。公司同时宣布产能将再扩1.5倍，巩固其在动力电池和储能领域的全球龙头地位。</p>
-          </div>
-          <div class="stats-grid">
-            <div class="stat-card">
-              <span class="stat-value">2769亿</span>
-              <span class="stat-label">上半年营收</span>
-            </div>
-            <div class="stat-card">
-              <span class="stat-value">433亿</span>
-              <span class="stat-label">净利润</span>
-            </div>
-            <div class="stat-card">
-              <span class="stat-value">+150%</span>
-              <span class="stat-label">产能扩增</span>
-            </div>
-          </div>
-          <div class="article-footer">
-            <span class="source-name">多项来源 · 2026-07-25</span>
-          </div>
-        </div>
-      </div>
-
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">1</div>
+      <div class="stat-label">死亡</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">16+</div>
+      <div class="stat-label">受伤</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">21岁</div>
+      <div class="stat-label">嫌犯年龄</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">全城</div>
+      <div class="stat-label">搜捕范围</div>
     </div>
   </div>
+
+  <div class="story-footer">
+    <span class="story-source">BBC 中文 · 7 月 26 日</span>
+    <a href="https://www.bbc.com/zhongwen/articles/cly5q2r3pyyo/trad" class="story-link" target="_blank">阅读原文 →</a>
+  </div>
+</article>
+
+<!-- Story 2: Bordeaux wildfires -->
+<article class="story-card">
+  <div class="story-number">02</div>
+  <span class="story-category cat-climate">气候·欧洲</span>
+  <h2 class="story-title">法国波尔多山火，20 万人疏散</h2>
+  <div class="story-subtitle">近 10 万公顷土地被焚，机场关闭</div>
+  <div class="story-body">
+    <p>法国西南部波尔多地区爆发大规模野火，火势在强风助推下迅速蔓延。约 20 万居民被迫疏散，近 10 万公顷土地化为焦土。波尔多机场已关闭，航班取消。法国政府向欧盟及邻国发出国际援助请求，多个国家已派出消防飞机和人员。</p>
+    <p>这是法国近年来最严重的山火之一。气象部门警告，未来数日持续高温干旱将进一步增大灭火难度。</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">20万</div>
+      <div class="stat-label">疏散人数</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">9.8万</div>
+      <div class="stat-label">公顷被焚</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">关闭</div>
+      <div class="stat-label">波尔多机场</div>
+    </div>
+  </div>
+
+  <div class="story-footer">
+    <span class="story-source">Al Jazeera · 7 月 26 日</span>
+    <a href="https://www.aljazeera.com/video/newsfeed/2026/7/26/french-wildfires-trigger-mass-evacuations-around-bordeaux" class="story-link" target="_blank">阅读原文 →</a>
+  </div>
+</article>
+
+<hr class="story-separator">
+
+<!-- Story 3: US-Iran-Houthi -->
+<article class="story-card">
+  <div class="story-number">03</div>
+  <span class="story-category cat-geopolitics">地缘·中东</span>
+  <h2 class="story-title">美伊冲突扩大至红海与里海</h2>
+  <div class="story-subtitle">胡塞武装攻击沙特石油设施，伊朗船只遭乌克兰袭击</div>
+  <div class="story-body">
+    <p>美伊战争周末进一步升级。胡塞武装向沙特吉赞和延布的阿美石油设施发射了导弹和无人机。部署在沙特的希腊操作爱国者防空系统成功拦截了部分导弹。与此同时，美国军方在波斯湾拦截了一艘被指控试图突破伊朗封锁的油轮，并公布了登船视频。</p>
+    <p>在另一个方向，伊朗指控乌克兰使用无人机袭击了其在里海的一艘商船，造成 1 人死亡、1 人受伤。伊朗外交部召见了乌克兰外交官。乌克兰方面尚未正式回应。这场冲突的战线正向多个方向扩展。</p>
+  </div>
+
+  <div class="context-box">
+    <div class="context-box-title">为什么重要</div>
+    <p>霍尔木兹海峡是全球最重要的石油运输通道。冲突扩大直接推高全球能源价格和通胀预期，也影响了美联储和 ECB 的利率决策。花旗的最新报告中也将霍尔木兹风险列为 AI 板块调整的三大因素之一。</p>
+  </div>
+
+  <div class="story-footer">
+    <span class="story-source">Al Jazeera · BBC · Reuters · 7 月 26 日</span>
+    <a href="https://www.aljazeera.com/news/2026/7/26/new-front-in-us-iran-war-escalates-as-houthis-fire-at-saudi-oil-facilities" class="story-link" target="_blank">阅读原文 →</a>
+  </div>
+</article>
+
+<hr class="story-separator">
+
+<!-- Story 4: Trump 4th campaign -->
+<article class="story-card">
+  <div class="story-number">04</div>
+  <span class="story-category cat-geopolitics">政治·美国</span>
+  <h2 class="story-title">特朗普宣布将第四次竞选总统</h2>
+  <div class="story-subtitle">支持率跌至 37%，"强烈支持"比例创历史新低</div>
+  <div class="story-body">
+    <p>特朗普戴着印有"2028"字样的红色帽子高调宣布将第四次角逐美国总统。然而同一天发布的民调显示：总体支持率已降至 37%，"强烈支持"的比例更是创下历史新低。69% 的受访者不认可其伊朗政策，67% 对美国经济前景感到悲观。</p>
+    <p>特朗普在发言中表示"我已经很有经验了"，强调自己仍然是共和党内最具影响力的人物。但党内已经有声音质疑这一定。2028 年的党内初选格局正在成型。</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">37%</div>
+      <div class="stat-label">总体支持率</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">69%</div>
+      <div class="stat-label">不认可伊朗政策</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">67%</div>
+      <div class="stat-label">对经济悲观</div>
+    </div>
+  </div>
+
+  <div class="story-footer">
+    <span class="story-source">华尔街见闻 · 7 月 25 日</span>
+    <a href="https://wallstreetcn.com/articles/3777927" class="story-link" target="_blank">阅读原文 →</a>
+  </div>
+</article>
+
+<hr class="story-separator">
+
+<!-- Story 5: Trump 301 tariffs -->
+<article class="story-card">
+  <div class="story-number">05</div>
+  <span class="story-category cat-economy">经济·贸易</span>
+  <h2 class="story-title">9500 亿美元关税新框架生效</h2>
+  <div class="story-subtitle">301 条款接棒，AI 芯片和服务器获豁免</div>
+  <div class="story-body">
+    <p>7 月 24 日 122 关税到期后，特朗普政府立即启用 301 条款重建关税框架。"强制劳动关税"正式生效，对 60 个经济体加征 10-12.5% 的关税。对中国的实际税率从 20% 左右小幅升至 20.6-20.8%。</p>
+    <p>关键变化在于豁免范围大幅扩大，涵盖了 AI 链核心产品——服务器、半导体设备、储能材料等。华泰证券分析认为，新框架的法律基础更坚实、更难通过行政命令取消，因此对全球供应链的长期重塑影响更大。后续还需关注"过剩产能"301 调查结果。</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">$9500亿</div>
+      <div class="stat-label">涉及贸易额</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">60</div>
+      <div class="stat-label">经济体涉及</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">10-12.5%</div>
+      <div class="stat-label">加征税率</div>
+    </div>
+  </div>
+
+  <div class="story-footer">
+    <span class="story-source">华尔街见闻 · 7 月 26 日</span>
+    <a href="https://wallstreetcn.com/member/articles/3777944" class="story-link" target="_blank">阅读原文 →</a>
+  </div>
+</article>
+
+<hr class="story-separator">
+
+<!-- Story 6: Burry shorts Nvidia -->
+<article class="story-card">
+  <div class="story-number">06</div>
+  <span class="story-category cat-market">市场·半导体</span>
+  <h2 class="story-title">"大空头"Burry 加码做空英伟达</h2>
+  <div class="story-subtitle">指控需求由表外融资循环驱动</div>
+  <div class="story-body">
+    <p>Michael Burry——电影《大空头》原型——在 Substack 披露最新持仓。他加码做空英伟达（$210.28/股）、美光科技（$933.86/股）和费城半导体 ETF，新增做空卡特彼勒，维持做空特斯拉和 Palantir，并继续持有纳斯达克 100 看跌期权。</p>
+    <p>Burry 的核心看空逻辑令人关注：他认为英伟达当前及未来的大量需求并非来自真实的终端客户，而是通过表外融资安排循环驱动，并援引 2026 年国际清算银行年度报告作为佐证。与他相反，多仓他买入 Flutter Entertainment 和 DraftKings，押注体育博彩/预测市场。</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">$210.28</div>
+      <div class="stat-label">英伟达做空价位</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">$933.86</div>
+      <div class="stat-label">美光做空价位</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">做多</div>
+      <div class="stat-label">DraftKings + Flutter</div>
+    </div>
+  </div>
+
+  <div class="context-box">
+    <div class="context-box-title">AI 市场背景</div>
+    <p>Burry 的加码做空发生在 AI 板块深度回调的背景下。东吴证券的分析指出，三重压力（美股盈利担忧、韩国去杠杆、霍尔木兹风险）正在集体释放。英伟达自本轮高点已回落明显，多空分歧进一步加剧。</p>
+  </div>
+
+  <div class="story-footer">
+    <span class="story-source">华尔街见闻 · 7 月 26 日</span>
+    <a href="https://wallstreetcn.com/articles/3777945" class="story-link" target="_blank">阅读原文 →</a>
+  </div>
+</article>
+
+<hr class="story-separator">
+
+<!-- Story 7: US tech layoffs -->
+<article class="story-card">
+  <div class="story-number">07</div>
+  <span class="story-category cat-economy">行业·科技</span>
+  <h2 class="story-title">科技巨头年内裁员 14 万，AI 投资 7250 亿</h2>
+  <div class="story-subtitle">裁员瘦身 vs 豪赌 AI 基础设施</div>
+  <div class="story-body">
+    <p>美国科技行业 2026 年至今已宣布裁员近 14 万人，占全美裁员总数的三分之一以上。亚马逊、甲骨文、Meta、微软四家巨头合计裁员约 5 万人，约占其员工总数的 6%。</p>
+    <p>但同日发布的资本支出计划显示，光是亚马逊、Alphabet、Meta、微软四大巨头的 AI 数据中心基础设施投资就高达 7250 亿美元。分析指出，科技公司正在借"AI 提效"之名裁减疫情期间过度招聘的岗位，同时释放资本用于 AI 基础设施竞赛。而 AI 原生创业公司 Anthropic、OpenAI 则在迅猛扩张人员规模。</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">14万</div>
+      <div class="stat-label">裁员总数</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">$7250亿</div>
+      <div class="stat-label">AI 资本支出</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">6%</div>
+      <div class="stat-label">四大巨头裁员比例</div>
+    </div>
+  </div>
+
+  <div class="story-footer">
+    <span class="story-source">华尔街见闻 · 7 月 26 日</span>
+    <a href="https://wallstreetcn.com/articles/3777930" class="story-link" target="_blank">阅读原文 →</a>
+  </div>
+</article>
+
+<hr class="story-separator">
+
+<!-- Story 8: AI correction analysis -->
+<article class="story-card">
+  <div class="story-number">08</div>
+  <span class="story-category cat-tech">市场·AI</span>
+  <h2 class="story-title">AI 还要跌多久？</h2>
+  <div class="story-subtitle">东吴证券：急跌近尾声，估值消化仍需 3-5 周</div>
+  <div class="story-body">
+    <p>东吴证券发布专题报告，认为本轮 A 股 AI 板块调整由三重压力共振引发：第一，美股投资者对 AI 利润分配产生质疑；第二，韩国市场去杠杆将盈利怀疑转化为真实卖盘；第三，霍尔木兹海峡地缘风险推高利率预期，抬高了等待 AI 利润的"时间成本"。</p>
+    <p>报告判断，杠杆出清导致的急跌可能已在 1-3 周内完成了大部分跌幅，但估值消化仍将持续 3-5 周，市场会经历高波动、反弹和重新探底的过程。下一轮上涨需要寻找"新盈利加速度"——聚焦高增长硬件（如 CPO、先进封装）和已兑现商业化利润的下游应用（如 AI 广告、企业软件）。花旗同日也发布 AI 追踪报告，认为竞争护城河将从算力获取转向效率与专有数据。</p>
+  </div>
+
+  <div class="context-box">
+    <div class="context-box-title">对于 AWS 工程师</div>
+    <p>AI 基础设施投资的长期逻辑未变，但短期估值压力确实存在。行业共识在向"效率优先"和"专有数据壁垒"转移——这也正是云基础设施和推理优化的机会所在。</p>
+  </div>
+
+  <div class="story-footer">
+    <span class="story-source">华尔街见闻 · 东吴证券 · 花旗 · 7 月 26 日</span>
+    <a href="https://wallstreetcn.com/articles/3777943" class="story-link" target="_blank">阅读原文 →</a>
+  </div>
+</article>
+
+<hr class="story-separator">
+
+<!-- Story 9: ESP32 edge LLM -->
+<article class="story-card">
+  <div class="story-number">09</div>
+  <span class="story-category cat-tech">技术·边缘 AI</span>
+  <h2 class="story-title">8 美元芯片跑大模型</h2>
+  <div class="story-subtitle">ESP32-S3 成功运行 28.9M 参数 LLM，速度 9.5 tok/s</div>
+  <div class="story-body">
+    <p>开发者 slvDev 在售价约 8 美元的 ESP32-S3 微控制器上成功运行了一个 28.9M 参数的大语言模型，完全在芯片本地运行，无需联网。生成速度约 9.5 tok/s，其中 2500 万参数存储在闪存查找表中。</p>
+    <p>与此前同类芯片上只能跑约 26 万参数的模型相比，这是一个约 100 倍的规模提升。项目基于 Karpathy 的 llama2.c，通过 4-bit 量化和算子优化实现。虽然 28.9M 参数在当下的 LLM 生态中算小型，但对于 IoT 设备、智能传感器和离线场景而言，这是边缘推理的一个里程碑。</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">$8</div>
+      <div class="stat-label">芯片成本</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">28.9M</div>
+      <div class="stat-label">参数量</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">9.5 tok/s</div>
+      <div class="stat-label">生成速度</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">100×</div>
+      <div class="stat-label">规模提升</div>
+    </div>
+  </div>
+
+  <div class="story-footer">
+    <span class="story-source">AI HOT · 7 月 26 日</span>
+    <a href="https://aihot.virxact.com/items/cms1ao381037kro0wqp7mg4x3" class="story-link" target="_blank">阅读原文 →</a>
+  </div>
+</article>
+
+<hr class="story-separator">
+
+<!-- Story 10: Huang Korea chip 10x -->
+<article class="story-card">
+  <div class="story-number">10</div>
+  <span class="story-category cat-industry">半导体·产业</span>
+  <h2 class="story-title">黄仁勋：韩国进入黄金时代，芯片有 10 倍空间</h2>
+  <div class="story-subtitle">英伟达与 SK 集团签下 5000 亿美元存储大单</div>
+  <div class="story-body">
+    <p>黄仁勋在韩国宣布与 SK 集团达成超过 5000 亿美元的合作——共同构建全球 AI 基础设施供应链，这被称为"存储大单"。黄仁勋在公开场合表示"韩国进入了黄金时代"，并预测半导体行业规模在未来十年必须扩大至现在的十倍。</p>
+    <p>他提出 AI 时代将出现千亿级的 AI 代理和机器人，它们都需要芯片——"计算机不再只为人服务"。这一论断与 Burry 的做空形成鲜明对比：长期看多者看到的是十倍扩张，短期看空者看到的是泡沫和循环融资。两条逻辑在未来几个季度会持续拉扯。</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">$5000亿+</div>
+      <div class="stat-label">合作金额</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">10×</div>
+      <div class="stat-label">十年扩张预期</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">SK</div>
+      <div class="stat-label">合作方</div>
+    </div>
+  </div>
+
+  <div class="story-footer">
+    <span class="story-source">华尔街见闻 · 7 月 26 日</span>
+    <a href="https://wallstreetcn.com/charts/41959459" class="story-link" target="_blank">阅读原文 →</a>
+  </div>
+</article>
+
+</main>
 </div>
 
-<footer class="page-footer">
-  <p>每日简报 · 2026年7月26日 · 由 Hermes Agent 自动生成</p>
+<footer class="site-footer">
+  <p>每日新闻简报 · 2026 年 7 月 26 日 · 由 AI 自动生成</p>
 </footer>
+
+</div>
 
 </body>
 </html>
