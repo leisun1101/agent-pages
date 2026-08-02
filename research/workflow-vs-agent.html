@@ -536,6 +536,11 @@ body {
 
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
+  html { font-size: 15px; }
+  .hero { min-height: 90vh; padding: 1.5rem; }
+  .hero h1 { font-size: 1.8rem; }
+  .hero-sub { font-size: 1rem; }
+  .hero-meta { gap: 1rem; font-size: 0.7rem; }
   .def-grid, .decision-grid { grid-template-columns: 1fr; }
   .crystal-diagram { flex-direction: column; gap: 1rem; }
   .crystal-stage:not(:last-child)::after {
@@ -545,12 +550,44 @@ body {
     bottom: -20px;
     transform: translateX(50%);
   }
-  .bar-label { width: 100px; font-size: 0.75rem; }
-  .metric-header { flex-direction: column; }
+  .bar-label { width: 90px; font-size: 0.7rem; }
+  .bar-fill { font-size: 0.75rem; padding-right: 6px; }
+  .bar-value { width: 50px; font-size: 0.7rem; }
+  .bar-row { gap: 0.5rem; }
+  .metric-header { flex-direction: column; gap: 0.5rem; }
   .metric-source { text-align: left; }
-  .section { padding: 3rem 1.2rem; }
-  .compound-table { font-size: 0.8rem; }
-  .compound-table th, .compound-table td { padding: 0.5rem; }
+  .metric-section { padding: 1.5rem 1rem; }
+  .section { padding: 2.5rem 1rem; }
+  .section-title { font-size: 1.3rem; }
+  .section-intro { font-size: 0.95rem; }
+  .compound-table { font-size: 0.75rem; }
+  .compound-table th, .compound-table td { padding: 0.5rem 0.4rem; }
+  .data-table { font-size: 0.75rem; }
+  .data-table th, .data-table td { padding: 0.5rem 0.4rem; }
+  .big-num .num { font-size: 1.8rem; }
+  .big-num .label { font-size: 0.7rem; }
+  .big-num { padding: 1rem 0.5rem; }
+  .big-num-grid { gap: 0.8rem; }
+  .def-card, .decision-card { padding: 1.2rem; }
+  .quote-block { padding: 1.2rem; margin: 1rem 0; }
+  .quote-block p { font-size: 0.95rem; }
+  .callout { padding: 0.8rem 1rem; }
+  .callout p { font-size: 0.85rem; }
+  .refs-section { padding: 2rem 1rem 3rem; }
+  .ref-item { font-size: 0.75rem; }
+  /* Code blocks scroll horizontally on mobile */
+  pre, code { font-size: 0.75rem; }
+  /* Tables scroll horizontally */
+  .data-table, .compound-table { display: block; overflow-x: auto; white-space: nowrap; }
+}
+
+@media (max-width: 400px) {
+  html { font-size: 14px; }
+  .hero h1 { font-size: 1.5rem; }
+  .bar-label { width: 70px; }
+  .bar-value { width: 40px; font-size: 0.65rem; }
+  .bar-fill { font-size: 0.65rem; }
+  .big-num-grid { grid-template-columns: 1fr 1fr; }
 }
 
 /* Animations */
@@ -600,7 +637,7 @@ body {
     <div class="def-card wf">
       <h3>Workflow + Graph Engineering</h3>
       <p>LLM 和工具通过<strong>预定义代码路径</strong>编排。图结构显式声明、可编译、可分析、可审计。</p>
-      <div class="examples">FlowCraft · GitHub Actions · COVENANT · VADAOrchestra</div>
+      <div class="examples">GitHub Actions · COVENANT · VADAOrchestra</div>
       <blockquote>
         "Workflows are systems where LLMs and tools are orchestrated through <strong>predefined code paths</strong>."<br>
         — Anthropic [13]
@@ -1015,7 +1052,7 @@ body {
 <section class="section">
   <div class="section-label">维度七</div>
   <h2 class="section-title">多模型优化：每个节点用最合适的模型</h2>
-  <p class="section-intro">FlowCraft 的 YAML schema 让每个节点独立配置模型——简单分类用便宜的小模型，复杂推理才用贵的大模型。Agent Loop（Codex/Claude Code）锁死单一模型，不管任务简单还是复杂，每一步都烧同一个模型。</p>
+  <p class="section-intro">声明式 YAML schema 让每个节点独立配置模型——简单分类用便宜的小模型，复杂推理才用贵的大模型。Agent Loop（Codex/Claude Code）锁死单一模型，不管任务简单还是复杂，每一步都烧同一个模型。</p>
 
   <div class="metric-section fade-in">
     <div class="metric-header">
@@ -1028,7 +1065,7 @@ body {
       <thead>
         <tr>
           <th>维度</th>
-          <th>Workflow DAG（FlowCraft）</th>
+          <th>Workflow DAG（声明式 YAML）</th>
           <th>Agent Loop（Codex）</th>
         </tr>
       </thead>
@@ -1068,7 +1105,7 @@ body {
         <h3>真实场景：文档审核 Workflow 的成本优化</h3>
         <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.3rem;">同一任务，两种模型策略的成本对比</p>
       </div>
-      <div class="metric-source">FlowCraft YAML 架构</div>
+      <div class="metric-source">声明式 YAML 架构</div>
     </div>
 
     <div class="bar-compare">
@@ -1105,7 +1142,7 @@ body {
     </div>
 
     <div class="callout">
-      <p><strong>为什么 Agent Loop 做不到：</strong>Codex 绑定 <code>gpt-5.3-codex</code>（272k context），Claude Code 绑定 Claude Sonnet/Opus——<strong>整个循环用同一个模型处理所有步骤</strong>。一个简单的"判断邮件是否是垃圾邮件"的步骤，也在消耗最贵的模型 token。O'Reilly [19] 指出：硬编码在一个模型供应商上的切换成本在内存、eval 和集成方面复合增长。FlowCraft 的逐节点模型选择从根本上消除了这个问题。</p>
+      <p><strong>为什么 Agent Loop 做不到：</strong>Codex 绑定 <code>gpt-5.3-codex</code>（272k context），Claude Code 绑定 Claude Sonnet/Opus——<strong>整个循环用同一个模型处理所有步骤</strong>。一个简单的"判断邮件是否是垃圾邮件"的步骤，也在消耗最贵的模型 token。O'Reilly [19] 指出：硬编码在一个模型供应商上的切换成本在内存、eval 和集成方面复合增长。声明式 YAML 的逐节点模型选择从根本上消除了这个问题。</p>
     </div>
   </div>
 
@@ -1176,7 +1213,7 @@ body {
     </div>
 
     <div class="callout">
-      <p><strong>对 FlowCraft 的直接意义：</strong>FlowCraft 的 YAML→LangGraph 编译模式天然占据 Stage 3 位置——Agent 探索验证完毕后的"结晶产物"就是一份 <code>workflow.yaml</code>。这不是 Agent 的替代品，而是 Agent 行为的<strong>编译目标</strong>。</p>
+      <p><strong>声明式 YAML→LangGraph 编译模式天然占据 Stage 3 位置——Agent 探索验证完毕后的"结晶产物"就是一份 <code>workflow.yaml</code>。这不是 Agent 的替代品，而是 Agent 行为的<strong>编译目标</strong>。</p>
     </div>
   </div>
 </section>
@@ -1268,7 +1305,7 @@ body {
 <!-- ===== SUMMARY ===== -->
 <section class="section">
   <div class="section-label">总结</div>
-  <h2 class="section-title">5 大结构性优势</h2>
+  <h2 class="section-title">7 大结构性优势</h2>
 
   <div class="metric-section fade-in">
     <table class="data-table">
@@ -1303,7 +1340,7 @@ body {
           <td class="num-cell" style="color:var(--accent);">4</td>
           <td>多模型优化</td>
           <td>每节点独立选模型，成本再降 10x</td>
-          <td style="font-size:0.75rem;color:var(--text-mute);">FlowCraft YAML 架构</td>
+          <td style="font-size:0.75rem;color:var(--text-mute);">YAML 声明式架构</td>
         </tr>
         <tr>
           <td class="num-cell" style="color:var(--accent);">5</td>
@@ -1328,7 +1365,7 @@ body {
   </div>
 
   <div class="quote-block fade-in">
-    <p>Agent Loop 是探索阶段的发现工具，Workflow DAG 是生产环境的运行时。它们不是竞争对手，而是 <strong>Progressive Crystallization 生命周期的不同阶段</strong>。FlowCraft 的 YAML→LangGraph 编译模式天然占据 Stage 3 的位置——这是成本最低、可靠性最高、可审计性最强的阶段。</p>
+    <p>Agent Loop 是探索阶段的发现工具，Workflow DAG 是生产环境的运行时。它们不是竞争对手，而是 <strong>Progressive Crystallization 生命周期的不同阶段</strong>。声明式 YAML→LangGraph 编译模式天然占据 Stage 3 的位置——这是成本最低、可靠性最高、可审计性最强的阶段。</p>
     <cite>— 本报告核心结论</cite>
   </div>
 </section>
