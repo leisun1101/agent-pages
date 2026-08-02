@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>企业流程智能 + AI Agent 工作流：市场与估值分析</title>
+<style>
+:root {
+  --bg: #0a0b0f;
+  --surface: #13141a;
+  --surface-elev: #1a1c25;
+  --border: #262836;
+  --text: #e8e9ed;
+  --text-dim: #8b8d99;
+  --text-mute: #5a5d6b;
+  --accent: #00d4aa;
+  --accent-dim: #008f76;
+  --accent-glow: rgba(0, 212, 170, 0.12);
+  --warn: #ff6b35;
+  --warn-dim: #cc5429;
+  --warn-glow: rgba(255, 107, 53, 0.1);
+  --gold: #f0b429;
+  --gold-dim: #c4910a;
+  --gold-glow: rgba(240, 180, 41, 0.1);
+  --blue: #4a9eff;
+  --blue-dim: #2b6cc4;
+  --blue-glow: rgba(74, 158, 255, 0.1);
+  --serif: 'Georgia', 'Songti SC', 'Noto Serif SC', serif;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Noto Sans SC', sans-serif;
+  --mono: 'SF Mono', 'Fira Code', 'Menlo', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* === HERO === */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, var(--gold-glow), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 20% 80%, var(--accent-glow), transparent 50%);
+  z-index: 0;
+}
+.hero-grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.12;
+  mask-image: radial-gradient(ellipse 70% 70% at center, black, transparent);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, black, transparent);
+  z-index: 0;
+}
+.hero-content { position: relative; z-index: 1; max-width: 900px; text-align: center; }
+.hero-eyebrow {
+  font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 1.5rem; font-weight: 600;
+}
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 5vw, 3.5rem);
+  line-height: 1.2; font-weight: 400; margin-bottom: 1.5rem; letter-spacing: -0.01em;
+}
+.hero-sub {
+  font-size: 1.05rem; color: var(--text-dim);
+  max-width: 600px; margin: 0 auto 2rem; line-height: 1.8;
+}
+/* Hero conclusion box */
+.hero-conclusion {
+  background: var(--surface);
+  border: 1px solid var(--gold-dim);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+}
+.hero-conclusion::before {
+  content: '结论';
+  position: absolute;
+  top: -12px; left: 24px;
+  background: var(--bg);
+  padding: 0 12px;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  font-weight: 600;
+}
+.hero-conclusion p {
+  font-size: 1rem;
+  color: var(--text);
+  line-height: 1.8;
+}
+.hero-conclusion strong { color: var(--gold); }
+.hero-meta {
+  display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;
+  font-size: 0.75rem; color: var(--text-mute); margin-top: 2rem;
+}
+.hero-meta span { display: flex; align-items: center; gap: 0.4rem; }
+.hero-meta strong { color: var(--text); font-weight: 500; }
+
+/* === SECTIONS === */
+.section { max-width: 1000px; margin: 0 auto; padding: 5rem 2rem; }
+.section-label {
+  font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 0.5rem; font-weight: 600;
+}
+.section-title {
+  font-family: var(--serif); font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+  font-weight: 400; margin-bottom: 1rem; line-height: 1.3;
+}
+.section-intro {
+  color: var(--text-dim); font-size: 1rem;
+  max-width: 650px; margin-bottom: 2.5rem;
+}
+
+/* === TERM GLOSSARY === */
+.glossary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+.term-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.2rem;
+  transition: border-color 0.3s;
+}
+.term-card:hover { border-color: var(--accent-dim); }
+.term-card h4 {
+  font-size: 0.9rem; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;
+}
+.term-card h4 .badge {
+  font-family: var(--mono); font-size: 0.65rem; padding: 2px 8px;
+  border-radius: 4px; background: var(--surface-elev); color: var(--accent);
+}
+.term-card p { font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; }
+.term-card .example {
+  font-size: 0.75rem; color: var(--text-mute); margin-top: 0.5rem; font-family: var(--mono);
+}
+
+/* === METRIC / DATA BLOCKS === */
+.metric-section {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+}
+.metric-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 1.5rem; gap: 1.5rem;
+}
+.metric-header h3 { font-family: var(--serif); font-size: 1.3rem; font-weight: 400; }
+.metric-source {
+  font-size: 0.7rem; color: var(--text-mute); text-align: right;
+  white-space: nowrap; font-family: var(--mono);
+}
+
+/* === BAR COMPARE === */
+.bar-compare { display: flex; flex-direction: column; gap: 0.8rem; }
+.bar-row { display: flex; align-items: center; gap: 1rem; }
+.bar-label {
+  width: 170px; font-size: 0.82rem; text-align: right;
+  flex-shrink: 0; color: var(--text-dim);
+}
+.bar-track {
+  flex: 1; height: 34px; background: var(--surface-elev);
+  border-radius: 6px; overflow: hidden; position: relative;
+}
+.bar-fill {
+  height: 100%; border-radius: 6px;
+  display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 10px; font-size: 0.85rem; font-weight: 600;
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap; min-width: 40px;
+}
+.bar-fill.accent { background: linear-gradient(90deg, var(--accent-dim), var(--accent)); color: #002820; }
+.bar-fill.warn { background: linear-gradient(90deg, var(--warn-dim), var(--warn)); color: #1a0a00; }
+.bar-fill.gold { background: linear-gradient(90deg, var(--gold-dim), var(--gold)); color: #1a1500; }
+.bar-fill.blue { background: linear-gradient(90deg, var(--blue-dim), var(--blue)); color: #001a33; }
+.bar-fill.muted { background: linear-gradient(90deg, #444, #666); color: #ccc; }
+.bar-value {
+  font-family: var(--mono); font-size: 0.82rem; width: 60px;
+  text-align: left; flex-shrink: 0;
+}
+
+/* === BIG NUMBERS === */
+.big-num-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem; margin: 1.5rem 0;
+}
+.big-num {
+  text-align: center; padding: 1.5rem 1rem;
+  background: var(--surface-elev); border-radius: 12px; border: 1px solid var(--border);
+}
+.big-num .num {
+  font-family: var(--serif); font-size: 2.2rem; font-weight: 700; display: block;
+}
+.big-num .num.accent { color: var(--accent); }
+.big-num .num.warn { color: var(--warn); }
+.big-num .num.gold { color: var(--gold); }
+.big-num .num.blue { color: var(--blue); }
+.big-num .label {
+  font-size: 0.72rem; color: var(--text-dim); margin-top: 0.4rem; line-height: 1.4;
+}
+
+/* === TABLE === */
+.data-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.82rem; margin: 1rem 0;
+}
+.data-table th {
+  text-align: left; padding: 0.7rem 0.8rem; background: var(--surface-elev);
+  color: var(--text-mute); font-size: 0.68rem;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  font-weight: 600; border-bottom: 1px solid var(--border);
+}
+.data-table td {
+  padding: 0.7rem 0.8rem; border-bottom: 1px solid var(--border); color: var(--text-dim);
+}
+.data-table td:first-child { color: var(--text); font-weight: 500; }
+.data-table tr:last-child td { border-bottom: none; }
+
+/* === CALLOUT === */
+.callout {
+  background: var(--accent-glow); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0; padding: 1rem 1.2rem; margin: 1rem 0;
+}
+.callout.gold { background: var(--gold-glow); border-color: var(--gold); }
+.callout.warn { background: var(--warn-glow); border-color: var(--warn); }
+.callout.blue { background: var(--blue-glow); border-color: var(--blue); }
+.callout p { font-size: 0.88rem; }
+.callout strong { color: var(--text); }
+
+/* === QUOTE === */
+.quote-block {
+  margin: 1.5rem 0; padding: 1.5rem; background: var(--surface);
+  border-radius: 12px; border: 1px solid var(--border); position: relative;
+}
+.quote-block::before {
+  content: '"'; position: absolute; top: -8px; left: 16px;
+  font-family: var(--serif); font-size: 3rem; color: var(--gold); opacity: 0.3; line-height: 1;
+}
+.quote-block p {
+  font-family: var(--serif); font-size: 1rem; font-style: italic;
+  color: var(--text); margin-bottom: 0.5rem; padding-left: 1rem;
+}
+.quote-block cite { font-size: 0.78rem; color: var(--text-mute); padding-left: 1rem; }
+
+/* === ARCHITECTURE DIAGRAM === */
+.arch-layer {
+  padding: 1.2rem 1.5rem; border-radius: 10px; margin-bottom: 0.8rem;
+  border: 1px solid var(--border); position: relative;
+}
+.arch-layer.layer-1 { background: var(--blue-glow); border-color: var(--blue-dim); }
+.arch-layer.layer-2 { background: var(--accent-glow); border-color: var(--accent-dim); }
+.arch-layer.layer-3 { background: var(--gold-glow); border-color: var(--gold-dim); }
+.arch-layer .layer-tag {
+  font-family: var(--mono); font-size: 0.65rem; color: var(--text-mute); margin-bottom: 0.3rem;
+}
+.arch-layer .layer-title { font-size: 0.95rem; font-weight: 500; margin-bottom: 0.3rem; }
+.arch-layer.layer-1 .layer-title { color: var(--blue); }
+.arch-layer.layer-2 .layer-title { color: var(--accent); }
+.arch-layer.layer-3 .layer-title { color: var(--gold); }
+.arch-layer .layer-desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.6; }
+
+/* === VALUATION TABLE === */
+.valuation-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.valuation-card.highlight { border-color: var(--gold-dim); background: var(--gold-glow); }
+.valuation-stage { flex: 1; }
+.valuation-stage .stage-name { font-size: 0.9rem; font-weight: 500; margin-bottom: 0.2rem; }
+.valuation-stage .stage-desc { font-size: 0.78rem; color: var(--text-dim); }
+.valuation-range {
+  font-family: var(--serif); font-size: 1.4rem; font-weight: 700;
+  text-align: right; white-space: nowrap;
+}
+.valuation-range.gold { color: var(--gold); }
+.valuation-range.accent { color: var(--accent); }
+.valuation-range.muted { color: var(--text-dim); }
+
+/* === COMPETITOR MAP === */
+.competitor-section {
+  margin: 2rem 0;
+}
+.competitor-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.2rem; margin-bottom: 0.8rem;
+}
+.competitor-card .comp-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; gap: 1rem;
+}
+.competitor-card .comp-name { font-size: 0.95rem; font-weight: 500; }
+.competitor-card .comp-val { font-family: var(--mono); font-size: 0.85rem; color: var(--gold); }
+.competitor-card .comp-desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.6; }
+.competitor-card .comp-tag {
+  display: inline-block; font-size: 0.65rem; padding: 2px 8px; border-radius: 4px;
+  background: var(--surface-elev); color: var(--text-mute); margin-top: 0.5rem;
+}
+
+/* === MARKET SIZING FORMULA === */
+.formula-box {
+  background: var(--surface-elev); border-radius: 10px; padding: 1.5rem;
+  font-family: var(--mono); font-size: 0.82rem; line-height: 2; margin: 1rem 0;
+  overflow-x: auto;
+}
+.formula-line { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.formula-result { color: var(--gold); font-weight: 700; }
+
+/* === REFS === */
+.refs-section { max-width: 1000px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+.refs-section h2 { font-family: var(--serif); font-size: 1.5rem; margin-bottom: 1rem; font-weight: 400; }
+.ref-item {
+  padding: 0.5rem 0; border-bottom: 1px solid var(--border);
+  font-size: 0.8rem; color: var(--text-dim); display: flex; gap: 0.6rem;
+}
+.ref-num { font-family: var(--mono); color: var(--accent); flex-shrink: 0; width: 28px; }
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  html { font-size: 15px; }
+  .hero { min-height: 90vh; padding: 1.5rem; }
+  .hero h1 { font-size: 1.6rem; }
+  .hero-sub { font-size: 0.95rem; }
+  .hero-conclusion { padding: 1.2rem; }
+  .hero-conclusion p { font-size: 0.9rem; }
+  .hero-meta { gap: 0.8rem; font-size: 0.65rem; }
+  .glossary { grid-template-columns: 1fr; }
+  .bar-label { width: 90px; font-size: 0.7rem; }
+  .bar-fill { font-size: 0.72rem; padding-right: 6px; }
+  .bar-value { width: 50px; font-size: 0.7rem; }
+  .bar-row { gap: 0.4rem; }
+  .metric-header { flex-direction: column; gap: 0.4rem; }
+  .metric-source { text-align: left; }
+  .metric-section { padding: 1.5rem 1rem; }
+  .section { padding: 2.5rem 1rem; }
+  .section-title { font-size: 1.25rem; }
+  .section-intro { font-size: 0.9rem; }
+  .data-table { font-size: 0.72rem; display: block; overflow-x: auto; white-space: nowrap; }
+  .data-table th, .data-table td { padding: 0.5rem 0.4rem; }
+  .big-num .num { font-size: 1.6rem; }
+  .big-num .label { font-size: 0.68rem; }
+  .big-num { padding: 1rem 0.5rem; }
+  .big-num-grid { gap: 0.6rem; }
+  .term-card { padding: 1rem; }
+  .quote-block { padding: 1rem; }
+  .quote-block p { font-size: 0.9rem; }
+  .callout { padding: 0.8rem 1rem; }
+  .callout p { font-size: 0.82rem; }
+  .valuation-card { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .valuation-range { font-size: 1.1rem; text-align: left; }
+  .formula-box { font-size: 0.72rem; padding: 1rem; }
+  .competitor-card { padding: 1rem; }
+  .refs-section { padding: 2rem 1rem 3rem; }
+  .ref-item { font-size: 0.72rem; }
+}
+@media (max-width: 400px) {
+  html { font-size: 14px; }
+  .hero h1 { font-size: 1.35rem; }
+  .bar-label { width: 70px; }
+  .bar-value { width: 40px; font-size: 0.62rem; }
+  .bar-fill { font-size: 0.62rem; }
+  .big-num-grid { grid-template-columns: 1fr 1fr; }
+  .big-num .num { font-size: 1.3rem; }
+}
+
+/* Animations */
+.fade-in {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">市场分析 · 估值推导 · 2026-08</div>
+    <h1>企业流程智能 + AI Agent 工作流<br>市场与估值分析</h1>
+    <p class="hero-sub">从德国双雄 Celonis 和 SAP Signavio 出发，推算全球与中国流程智能市场规模，分析竞争格局，推导合理估值区间。</p>
+
+    <div class="hero-conclusion">
+      <p>
+        如果产品成功落地"从文档自动生成 Agent 工作流"的核心能力，并在中国市场做到该细分领域的领先地位，<strong>保守估计长期估值可达 10-30 亿人民币</strong>（约 1.5-4 亿美元）。早期种子轮估值 3,000-8,000 万人民币，A 轮 1-3 亿人民币。这一判断基于全球流程挖掘市场 ~150-250 亿人民币的规模，以及 Celonis（估值 930 亿人民币）作为天花板参考。
+      </p>
+    </div>
+
+    <div class="hero-meta">
+      <span>📊 全球 RPA 市场 <strong>$283 亿</strong></span>
+      <span>🏢 Celonis 估值 <strong>$130 亿</strong></span>
+      <span>🇨🇳 中国市场 <strong>~$3-5 亿</strong></span>
+      <span>📈 CAGR <strong>30-40%</strong></span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== GLOSSARY ===== -->
+<section class="section">
+  <div class="section-label">名词解释</div>
+  <h2 class="section-title">这些术语是什么意思？</h2>
+  <p class="section-intro">这份报告涉及很多专业术语。如果你不熟悉这个领域，先看这里。</p>
+
+  <div class="glossary">
+    <div class="term-card">
+      <h4>流程挖掘 <span class="badge">Process Mining</span></h4>
+      <p>从企业 IT 系统（ERP、CRM）的日志数据中，自动"挖掘"出业务流程实际是怎么运行的——哪个步骤最慢、哪里有瓶颈、多少流程偏离了标准。</p>
+      <div class="example">举例：从 SAP 日志发现采购审批平均比规定流程多了 3 个步骤</div>
+    </div>
+    <div class="term-card">
+      <h4>RPA <span class="badge">Robotic Process Automation</span></h4>
+      <p>"机器人流程自动化"——用软件模拟人的鼠标和键盘操作，自动执行重复性任务。不是物理机器人，是软件机器人。</p>
+      <div class="example">举例：自动从邮件提取发票信息并录入财务系统</div>
+    </div>
+    <div class="term-card">
+      <h4>超自动化 <span class="badge">Hyperautomation</span></h4>
+      <p>Gartner 提出的概念——把 RPA、AI、流程挖掘、低代码等多种技术组合起来，实现端到端的业务流程自动化。是比 RPA 更大的概念。</p>
+    </div>
+    <div class="term-card">
+      <h4>流程智能 <span class="badge">Process Intelligence</span></h4>
+      <p>2026 年 Gartner 将"流程挖掘"升级为的新品类名——不再只是挖掘/分析，还包含建模、模拟、执行、监控、治理。覆盖流程的全生命周期。</p>
+    </div>
+    <div class="term-card">
+      <h4>Agent 工作流 <span class="badge">Agent Workflow</span></h4>
+      <p>由 AI Agent（而不是固定脚本）执行的工作流。每个节点可以是 LLM 调用、API 请求或自主 Agent 推理。比传统 RPA 更灵活，比纯 Agent Loop 更可控。</p>
+      <div class="example">举例：上传一份 SOP 文档 → 自动生成多步骤审批工作流 → 执行</div>
+    </div>
+    <div class="term-card">
+      <h4>声明式 YAML <span class="badge">Declarative YAML</span></h4>
+      <p>用 YAML 格式声明"做什么"（节点、连接、条件），而不是"怎么做"（代码）。类似 GitHub Actions 的 workflow YAML。好处是可读、可版本化、可让 AI 生成。</p>
+    </div>
+    <div class="term-card">
+      <h4>PS 倍数 <span class="badge">Price-to-Sales</span></h4>
+      <p>估值 ÷ 年收入（ARR）。用来衡量公司值多少钱的常用指标。比如估值 100 亿、收入 10 亿，PS 就是 10x。不同赛道的 PS 差异很大——传统 RPA 约 4x，AI Agent 公司可达 79x。</p>
+    </div>
+    <div class="term-card">
+      <h4>MCP <span class="badge">Model Context Protocol</span></h4>
+      <p>Anthropic 提出的标准协议，让 AI Agent 可以连接外部系统获取上下文。Celonis 和 SAP 都已推出 MCP Server，让 Agent 能读取企业流程数据。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WHY THIS FITS ===== -->
+<section class="section">
+  <div class="section-label">核心论证</div>
+  <h2 class="section-title">为什么这个产品贴合流程智能赛道</h2>
+  <p class="section-intro">产品定位"从自然语言和文档自动生成 Agent 工作流"——这恰好命中了流程智能市场的核心痛点和最新趋势。</p>
+
+  <div class="metric-section fade-in">
+    <h3 style="font-family:var(--serif);font-size:1.2rem;margin-bottom:1rem;">三个"刚好命中"</h3>
+
+    <div class="callout">
+      <p><strong>① 刚好命中"SOP 文档→自动化"的鸿沟</strong></p>
+      <p style="margin-top:0.5rem;">企业有大量 SOP（标准操作流程）文档，但把这些文档变成可执行自动化流程需要 <strong>20-80 人时/文档类型</strong>（来源：arXiv:2607.26075 IDP AutoOpt）。产品的"文档→工作流"能力直接跨越这道鸿沟。</p>
+    </div>
+
+    <div class="callout blue">
+      <p><strong>② 刚好命中行业 AI 转型趋势</strong></p>
+      <p style="margin-top:0.5rem;">Celonis 正在发布 MCP Server 和 AI Agent 上下文层；SAP Signavio 推出 Text-to-Process（自然语言→流程模型）和 Agent Mining。行业头部公司都在往"AI + 流程"方向走，但它们的底层是重型企业平台。我们用轻量级 YAML + LangGraph 做同样的事。</p>
+    </div>
+
+    <div class="callout gold">
+      <p><strong>③ 刚好命中 Progressive Crystallization 的 Stage 3</strong></p>
+      <p style="margin-top:0.5rem;">学术论文（arXiv:2607.07052）证明：Agent 自主探索验证完毕后，会"结晶"为确定性 Workflow。产品输出的 workflow.yaml 就是这个结晶产物——成本降 70%+，可靠性大幅提升。</p>
+    </div>
+  </div>
+
+  <div class="metric-section fade-in">
+    <h3 style="font-family:var(--serif);font-size:1.2rem;margin-bottom:1rem;">和德国双雄的差异化定位</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>Celonis / SAP Signavio</th>
+          <th>我们的方案</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>流程发现方式</td>
+          <td>从 ERP/CRM <strong>事件日志</strong>挖掘</td>
+          <td>从<strong>自然语言 + 文档</strong>生成</td>
+        </tr>
+        <tr>
+          <td>输出物</td>
+          <td>分析报告 + 可视化</td>
+          <td><strong>可执行的 Agent 工作流 YAML</strong></td>
+        </tr>
+        <tr>
+          <td>部署周期</td>
+          <td>数月（连接 ERP、配置管道）</td>
+          <td><strong>数分钟</strong>（上传文档即可）</td>
+        </tr>
+        <tr>
+          <td>客户画像</td>
+          <td>Fortune 500 大企业</td>
+          <td><strong>中型企业 + 大企业部门级</strong></td>
+        </tr>
+        <tr>
+          <td>开放性</td>
+          <td>封闭平台</td>
+          <td><strong>MIT 开源 YAML 标准</strong></td>
+        </tr>
+        <tr>
+          <td>定价</td>
+          <td>$10 万-$100 万+/年</td>
+          <td><strong>按使用量 / SaaS 订阅</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <p><strong>关键洞察：</strong>Celonis 和 SAP 的客户是 Fortune 500——这些公司有完整的 SAP/Oracle 系统，日志数据完备。但全球有数百万家中型企业没有完整 ERP，只有 SOP 文档。这是被德国双雄忽略的市场。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CELONIS & SIGNAVIO ===== -->
+<section class="section">
+  <div class="section-label">德国双雄</div>
+  <h2 class="section-title">Celonis 和 SAP Signavio</h2>
+  <p class="section-intro">这两家德国公司定义了流程挖掘赛道。了解它们的业务和估值，是推导我们市场空间的基准。</p>
+
+  <!-- Celonis -->
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div>
+        <h3>Celonis — 流程挖掘全球霸主</h3>
+        <p style="font-size:0.78rem;color:var(--text-dim);margin-top:0.2rem;">2011 年成立，慕尼黑工业大学 spin-off</p>
+      </div>
+      <div class="metric-source">Forbes Cloud 100 2025<br>GetLatka</div>
+    </div>
+
+    <div class="big-num-grid">
+      <div class="big-num">
+        <span class="num gold">$130 亿</span>
+        <span class="label">估值（2022 年 D 轮）</span>
+      </div>
+      <div class="big-num">
+        <span class="num accent">$7.71 亿</span>
+        <span class="label">估测 ARR</span>
+      </div>
+      <div class="big-num">
+        <span class="num">25%+</span>
+        <span class="label">Fortune 500 渗透率</span>
+      </div>
+      <div class="big-num">
+        <span class="num warn">383%</span>
+        <span class="label">3 年 ROI<br><span style="font-size:0.6rem;">Forrester TEI 研究</span></span>
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem;">
+      <div class="arch-layer layer-1">
+        <div class="layer-tag">LAYER 3 — 执行</div>
+        <div class="layer-title">Analyze → Design → Operate</div>
+        <div class="layer-desc">流程分析 → 重设计 → 自动化执行。Orchestration Engine 将洞察转为行动。业界首个流程智能 MCP Server，为 AI Agent 提供运营上下文。</div>
+      </div>
+      <div class="arch-layer layer-2">
+        <div class="layer-tag">LAYER 2 — 智能</div>
+        <div class="layer-title">Process Intelligence Graph</div>
+        <div class="layer-desc">企业运营的实时数字孪生。被 Constellation Research 称为"传统 RAG 的替代方案"——为 AI Agent 提供结构化的业务上下文。</div>
+      </div>
+      <div class="arch-layer layer-3">
+        <div class="layer-tag">LAYER 1 — 数据</div>
+        <div class="layer-title">Data Core（1,000+ 连接器）</div>
+        <div class="layer-desc">从 SAP、Oracle、Salesforce、ServiceNow 等系统提取事件日志。零拷贝集成 Databricks。桌面操作捕获（Task Mining）。</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <p><strong>CPO Daniel Brown：</strong>"企业需要更结构化的方法让 agentic AI 达到所需的准确性和可靠性水平。"——这恰好是我们 YAML 声明式工作流解决的问题。</p>
+    </div>
+  </div>
+
+  <!-- Signavio -->
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div>
+        <h3>SAP Signavio — 被 12 亿美元收购的柏林公司</h3>
+        <p style="font-size:0.78rem;color:var(--text-dim);margin-top:0.2rem;">2009 年成立，HPI 校友团队</p>
+      </div>
+      <div class="metric-source">Wikipedia / Gartner MQ</div>
+    </div>
+
+    <div class="big-num-grid">
+      <div class="big-num">
+        <span class="num gold">$12 亿</span>
+        <span class="label">SAP 收购价（2021）</span>
+      </div>
+      <div class="big-num">
+        <span class="num accent">4 年</span>
+        <span class="label">连续 Gartner 领导者</span>
+      </div>
+      <div class="big-num">
+        <span class="num">30+</span>
+        <span class="label">Joule AI Agent 数量</span>
+      </div>
+    </div>
+
+    <table class="data-table" style="margin-top:1rem;">
+      <thead>
+        <tr>
+          <th>关键产品（2025-2026 新发布）</th>
+          <th>功能</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Text-to-Process</td>
+          <td>用自然语言生成 BPMN 流程模型 ← <strong>和我们的方向最接近</strong></td>
+        </tr>
+        <tr>
+          <td>Agent Mining</td>
+          <td>监控和治理 AI Agent 行为</td>
+        </tr>
+        <tr>
+          <td>Joule AI 集成</td>
+          <td>2,500+ Joule Skills，对话式流程交互</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout blue">
+      <p><strong>SAP 预测：</strong>AI Agent 可能支持 SAP 中 <strong>80% 最常用的业务任务</strong>。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MARKET SIZE ===== -->
+<section class="section">
+  <div class="section-label">市场规模</div>
+  <h2 class="section-title">这个市场有多大？</h2>
+  <p class="section-intro">三个口径看市场规模：RPA、超自动化、流程挖掘。每个口径包含和被包含的关系不同。</p>
+
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div><h3>全球市场规模</h3></div>
+      <div class="metric-source">Precedence Research<br>GMI · Gartner</div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>市场</th>
+          <th>当前规模（2024/2025）</th>
+          <th>预测</th>
+          <th>CAGR</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>RPA（机器人流程自动化）</td>
+          <td class="num-cell" style="color:var(--accent);font-family:var(--mono);">$283.1 亿</td>
+          <td style="font-family:var(--mono);">$2,473 亿（2035）</td>
+          <td class="num-cell" style="color:var(--gold);font-family:var(--mono);">24.2%</td>
+        </tr>
+        <tr>
+          <td>超自动化</td>
+          <td class="num-cell" style="color:var(--accent);font-family:var(--mono);">$464 亿</td>
+          <td style="font-family:var(--mono);">$2,202 亿（2034）</td>
+          <td class="num-cell" style="color:var(--gold);font-family:var(--mono);">17.1%</td>
+        </tr>
+        <tr>
+          <td>流程挖掘</td>
+          <td class="num-cell" style="color:var(--accent);font-family:var(--mono);">~$15-25 亿</td>
+          <td style="font-family:var(--mono);">~$50-100 亿（2030）</td>
+          <td class="num-cell" style="color:var(--gold);font-family:var(--mono);">30-40%</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <p><strong>流程挖掘 CAGR 30-40%，比 RPA（24.2%）和超自动化（17.1%）增速都快</strong>——这是因为流程挖掘基数小（~$15-25 亿），且正在从"分析工具"演变为"智能平台"。Gartner 2026 年已将品类从"Process Mining Tools"更名为"Process Intelligence Platforms"。</p>
+    </div>
+  </div>
+
+  <!-- China Market Sizing -->
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div><h3>中国市场规模推导</h3></div>
+      <div class="metric-source">推导方法见下方</div>
+    </div>
+
+    <p style="font-size:0.88rem;color:var(--text-dim);margin-bottom:1rem;">中国没有权威的独立流程挖掘市场数据。以下用三种方法交叉推导：</p>
+
+    <div class="formula-box">
+      <div style="color:var(--text-mute);margin-bottom:0.5rem;">方法 A：全球占比法</div>
+      <div class="formula-line">
+        <span>全球流程挖掘市场</span>
+        <span style="color:var(--accent);">$15-25 亿</span>
+        <span>×</span>
+        <span>中国 IT 支出全球占比 ~15%</span>
+        <span>=</span>
+        <span class="formula-result">$2.25-3.75 亿</span>
+      </div>
+
+      <div style="color:var(--text-mute);margin-top:1rem;margin-bottom:0.5rem;">方法 B：头部公司倒推法</div>
+      <div class="formula-line">
+        <span>来也 ARR ~$1-2 亿</span>
+        <span>+</span>
+        <span>弘玑 ~$0.5-1 亿</span>
+        <span>+</span>
+        <span>达观 ~$0.3-0.5 亿</span>
+        <span>+</span>
+        <span>其他 5+ 家 ~$1 亿</span>
+        <span>=</span>
+        <span class="formula-result">$2-4.5 亿</span>
+      </div>
+
+      <div style="color:var(--text-mute);margin-top:1rem;margin-bottom:0.5rem;">方法 C：市值比例法</div>
+      <div class="formula-line">
+        <span>美国上市科技公司总市值 ~$40 万亿</span>
+        <span style="font-size:0.7rem;color:var(--text-mute);">/</span>
+        <span>中国 A 股 + 港股科技 ~$6 万亿</span>
+        <span style="font-size:0.7rem;color:var(--text-mute);">=</span>
+        <span>美国 : 中国 ≈ 6.7 : 1</span>
+      </div>
+      <div class="formula-line" style="margin-top:0.3rem;">
+        <span>全球流程挖掘 ~$20 亿</span>
+        <span style="font-size:0.7rem;color:var(--text-mute);">/</span>
+        <span>6.7</span>
+        <span>=</span>
+        <span class="formula-result">~$3 亿</span>
+      </div>
+    </div>
+
+    <div class="callout gold">
+      <p><strong>三种方法交叉验证 → 中国流程挖掘市场约 $3-5 亿（约 20-35 亿人民币），增速与全球一致或更快（30-40% CAGR）。</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== COMPETITORS ===== -->
+<section class="section">
+  <div class="section-label">竞争格局</div>
+  <h2 class="section-title">谁在做类似的事？</h2>
+  <p class="section-intro">中美两国的流程智能/RPA/AI Agent 领域主要玩家。按"和我们方向的重合度"排列。</p>
+
+  <!-- China -->
+  <div class="metric-section fade-in">
+    <h3 style="font-family:var(--serif);font-size:1.15rem;margin-bottom:1rem;">🇨🇳 中国竞品</h3>
+
+    <div class="competitor-card">
+      <div class="comp-header">
+        <span class="comp-name">艺赛旗 (i-Search)</span>
+        <span class="comp-val" style="color:var(--warn);">⚠️ 最直接竞品</span>
+      </div>
+      <p class="comp-desc">2026 年全面转型为 "AI Agent 自动化" 公司。产品 <strong>Magical Automator</strong>："利用业务语言训练 RPA 数字员工，将需求直接转化为自动化程序"——和我们的"自然语言→工作流"理念最接近。但底层是 RPA（UI 自动化），不是 Agent 工作流。</p>
+      <span class="comp-tag">NL → RPA 自动化</span>
+    </div>
+
+    <div class="competitor-card">
+      <div class="comp-header">
+        <span class="comp-name">达观数据 (Datagrand)</span>
+        <span class="comp-val">估值 ~$5-8 亿</span>
+      </div>
+      <p class="comp-desc">"知识管理 + 办公智能体 + 智能文档处理专家"。C 轮融资 5.8 亿 RMB。产品线覆盖文档分类→解析→要素抽取→业务审核→报告生成全流程。重合度第二高。</p>
+      <span class="comp-tag">文档智能 + Agent</span>
+    </div>
+
+    <div class="competitor-card">
+      <div class="comp-header">
+        <span class="comp-name">来也科技 (Laiye)</span>
+        <span class="comp-val">估值 ~$10-15 亿</span>
+      </div>
+      <p class="comp-desc">中国 RPA+AI 龙头。累计融资 ~$1.5-2 亿，300+ 世界 500 强客户。2024 年推出 AI Agent 数字员工产品线。但偏 RPA（录制回放），非声明式工作流。</p>
+      <span class="comp-tag">RPA + AI Agent</span>
+    </div>
+
+    <div class="competitor-card">
+      <div class="comp-header">
+        <span class="comp-name">弘玑 Cyclone</span>
+        <span class="comp-val">~$5-10 亿</span>
+      </div>
+      <p class="comp-desc">"中国超自动化领跑者"。RPA + AI 平台，面向企业级智能自动化。</p>
+      <span class="comp-tag">RPA + 超自动化</span>
+    </div>
+
+    <div class="competitor-card">
+      <div class="comp-header">
+        <span class="comp-name">实在智能 / 金智维 / 影刀</span>
+        <span class="comp-val" style="font-size:0.75rem;">各 $1-5 亿</span>
+      </div>
+      <p class="comp-desc">实在智能推出自研大模型 Agent；金智维已提交港交所 IPO（估值 31 亿 RMB）；影刀面向电商/中小企业。</p>
+    </div>
+  </div>
+
+  <!-- US -->
+  <div class="metric-section fade-in">
+    <h3 style="font-family:var(--serif);font-size:1.15rem;margin-bottom:1rem;">🇺🇸 美国竞品</h3>
+
+    <div class="competitor-card">
+      <div class="comp-header">
+        <span class="comp-name">AWS Strands Agent SOPs</span>
+        <span class="comp-val" style="color:var(--warn);">⚠️ 最直接对标</span>
+      </div>
+      <p class="comp-desc">2025 年 11 月发布。用标准 Markdown 定义 AI Agent 工作流，"将复杂流程转化为可复用的工作流模板"。内部已有数千个 SOP 在使用。偏开发者工具而非企业流程。</p>
+      <span class="comp-tag">NL → Agent SOP</span>
+    </div>
+
+    <div class="competitor-card">
+      <div class="comp-header">
+        <span class="comp-name">Celonis</span>
+        <span class="comp-val">$130 亿</span>
+      </div>
+      <p class="comp-desc">流程挖掘全球霸主。正在转型为 AI Agent 上下文平台（MCP Server + Process Intelligence Graph）。壁垒极深（1,000+ 连接器、5,000+ 企业客户）。</p>
+      <span class="comp-tag">流程挖掘 + AI Agent 上下文</span>
+    </div>
+
+    <div class="competitor-card">
+      <div class="comp-header">
+        <span class="comp-name">UiPath (NYSE: PATH)</span>
+        <span class="comp-val">市值 $66 亿</span>
+      </div>
+      <p class="comp-desc">全球最大上市 RPA 公司。ARR $16.72 亿。正全面转向"Agentic Automation"——Agent Builder + Maestro 编排 + Autopilot。</p>
+      <span class="comp-tag">RPA → Agentic AI</span>
+    </div>
+
+    <div class="competitor-card">
+      <div class="comp-header">
+        <span class="comp-name">Sierra AI</span>
+        <span class="comp-val" style="color:var(--gold);">$158 亿</span>
+      </div>
+      <p class="comp-desc">Bret Taylor 创办的企业 AI Agent 独角兽。ARR $2 亿，PS 倍数 ~79x——验证了 AI Agent 赛道的超高估值。不是流程挖掘，但说明"NL→Agent"的估值天花板。</p>
+      <span class="comp-tag">企业 AI Agent（估值锚点）</span>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p><strong>关键发现：</strong>目前没有任何一家公司做到"从文档/SOP 自动生成可执行的 Agent 工作流 YAML"。最接近的是艺赛旗（NL→RPA）和 AWS Strands（NL→Agent SOP），但底层技术路线不同。这是市场空白。</p>
+  </div>
+</section>
+
+<!-- ===== VALUATION ===== -->
+<section class="section">
+  <div class="section-label">估值推导</div>
+  <h2 class="section-title">合理估值区间是多少？</h2>
+  <p class="section-intro">用 PS 倍数法和可比交易法交叉验证。关键：叙事决定倍数——定位成 RPA 只有 4x，定位成 AI Agent + 流程可以有 20-80x。</p>
+
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div><h3>PS 倍数基准</h3></div>
+      <div class="metric-source">各公司公开数据</div>
+    </div>
+
+    <div class="bar-compare">
+      <div class="bar-row">
+        <div class="bar-label">上市 RPA<br><span style="font-size:0.65rem;color:var(--text-mute);">UiPath</span></div>
+        <div class="bar-track"><div class="bar-fill muted" style="width: 5%;">4x</div></div>
+        <div class="bar-value">$66 亿</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">中国 RPA<br><span style="font-size:0.65rem;color:var(--text-mute);">来也科技</span></div>
+        <div class="bar-track"><div class="bar-fill blue" style="width: 12%;">~10x</div></div>
+        <div class="bar-value">$10-15 亿</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">流程挖掘<br><span style="font-size:0.65rem;color:var(--text-mute);">Celonis</span></div>
+        <div class="bar-track"><div class="bar-fill accent" style="width: 21%;">17x</div></div>
+        <div class="bar-value">$130 亿</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">企业 AI Agent<br><span style="font-size:0.65rem;color:var(--text-mute);">Glean</span></div>
+        <div class="bar-track"><div class="bar-fill gold" style="width: 30%;">~24x</div></div>
+        <div class="bar-value">$72 亿</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">AI Agent 独角兽<br><span style="font-size:0.65rem;color:var(--text-mute);">Sierra AI</span></div>
+        <div class="bar-track"><div class="bar-fill warn" style="width: 98%;">79x</div></div>
+        <div class="bar-value">$158 亿</div>
+      </div>
+    </div>
+
+    <div class="callout gold">
+      <p><strong>核心规律：PS 倍数从 RPA（4x）到流程挖掘（17x）到 AI Agent（79x）递增。</strong>估值叙事决定了落在哪个倍数区间。如果定位为"AI Agent + 企业流程"，适用 15-30x 区间。</p>
+    </div>
+  </div>
+
+  <!-- Valuation Card -->
+  <div class="metric-section fade-in">
+    <h3 style="font-family:var(--serif);font-size:1.2rem;margin-bottom:1rem;">各阶段估值区间</h3>
+
+    <div class="valuation-card">
+      <div class="valuation-stage">
+        <div class="stage-name">种子轮 / Pre-A</div>
+        <div class="stage-desc">当前阶段。无收入或早期 POC。叙事驱动。</div>
+      </div>
+      <div class="valuation-range gold">3,000-8,000 万 RMB</div>
+    </div>
+
+    <div class="valuation-card">
+      <div class="valuation-stage">
+        <div class="stage-name">A 轮</div>
+        <div class="stage-desc">ARR 200-500 万 RMB。已有 2-3 个企业 POC。</div>
+      </div>
+      <div class="valuation-range accent">1-3 亿 RMB</div>
+    </div>
+
+    <div class="valuation-card">
+      <div class="valuation-stage">
+        <div class="stage-name">B 轮</div>
+        <div class="stage-desc">ARR 500-2,000 万 RMB。产品 PMF 验证，收入增长。</div>
+      </div>
+      <div class="valuation-range accent">3-10 亿 RMB</div>
+    </div>
+
+    <div class="valuation-card">
+      <div class="valuation-stage">
+        <div class="stage-name">C 轮 / 长期天花板</div>
+        <div class="stage-desc">ARR 5,000 万+ RMB。中国市场细分领域领先。</div>
+      </div>
+      <div class="valuation-range muted">10-30 亿 RMB</div>
+    </div>
+
+    <div class="callout">
+      <p><strong>天花板推导：</strong>Celonis 占全球流程挖掘市场约 30-40% 份额，估值 930 亿 RMB。如果在中国市场做到类似份额（中国 ~20-35 亿 RMB 市场的 30%），即 ~6-10 亿 RMB 收入，按 3-5x PS 估值 = <strong>20-50 亿 RMB</strong>。保守取一半 = <strong>10-25 亿 RMB</strong>。</p>
+    </div>
+  </div>
+
+  <!-- Premium/Discount -->
+  <div class="metric-section fade-in">
+    <h3 style="font-family:var(--serif);font-size:1.2rem;margin-bottom:1rem;">影响估值的因素</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>因素</th>
+          <th>方向</th>
+          <th>影响幅度</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>LLM 从文档自动生成流程（市场空白）</td>
+          <td style="color:var(--accent);">↑ 溢价</td>
+          <td style="font-family:var(--mono);color:var(--accent);">+50-100%</td>
+        </tr>
+        <tr>
+          <td>Progressive Crystallization 学术验证</td>
+          <td style="color:var(--accent);">↑ 溢价</td>
+          <td style="font-family:var(--mono);color:var(--accent);">+30-50%</td>
+        </tr>
+        <tr>
+          <td>开源 YAML schema 生态</td>
+          <td style="color:var(--accent);">↑ 溢价</td>
+          <td style="font-family:var(--mono);color:var(--accent);">+50-100%</td>
+        </tr>
+        <tr>
+          <td>中国 + 德国双市场</td>
+          <td style="color:var(--accent);">↑ 溢价</td>
+          <td style="font-family:var(--mono);color:var(--accent);">+20-30%</td>
+        </tr>
+        <tr>
+          <td>无企业客户案例</td>
+          <td style="color:var(--warn);">↓ 折扣</td>
+          <td style="font-family:var(--mono);color:var(--warn);">-20-30%</td>
+        </tr>
+        <tr>
+          <td>大厂（Celonis/SAP/AWS）快速跟进</td>
+          <td style="color:var(--warn);">↓ 折扣</td>
+          <td style="font-family:var(--mono);color:var(--warn);">-20-30%</td>
+        </tr>
+        <tr>
+          <td>团队非全建制（缺企业销售）</td>
+          <td style="color:var(--warn);">↓ 折扣</td>
+          <td style="font-family:var(--mono);color:var(--warn);">-10-20%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== STRATEGY ===== -->
+<section class="section">
+  <div class="section-label">战略建议</div>
+  <h2 class="section-title">怎么做才能达到这个估值</h2>
+
+  <div class="metric-section fade-in">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>优先级</th>
+          <th>行动</th>
+          <th>为什么</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--warn);font-family:var(--mono);">P0</td>
+          <td><strong>文档→工作流的生成准确性</strong></td>
+          <td>核心壁垒，直接影响估值溢价 50-100%</td>
+        </tr>
+        <tr>
+          <td style="color:var(--warn);font-family:var(--mono);">P0</td>
+          <td><strong>2-3 个企业 POC 案例</strong></td>
+          <td>没有案例无法融资 A 轮</td>
+        </tr>
+        <tr>
+          <td style="color:var(--gold);font-family:var(--mono);">P1</td>
+          <td><strong>审计追踪 + 成本透明</strong></td>
+          <td>企业硬需求，EU AI Act 合规</td>
+        </tr>
+        <tr>
+          <td style="color:var(--gold);font-family:var(--mono);">P1</td>
+          <td><strong>MCP Server</strong></td>
+          <td>Celonis 和 SAP 都在做，必须跟进</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent);font-family:var(--mono);">P2</td>
+          <td><strong>Crystallization promotion</strong></td>
+          <td>差异化叙事，需要更多研发</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent);font-family:var(--mono);">P2</td>
+          <td><strong>中国市场本地化</strong></td>
+          <td>支持国产模型（通义千问/DeepSeek）</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="quote-block fade-in">
+    <p>"定位叙事决定估值倍数：不要被定位成 RPA（4x PS），要被定位成 AI Agent + 企业流程（15-30x PS）。"</p>
+    <cite>— 本报告核心建议</cite>
+  </div>
+</section>
+
+<!-- ===== REFERENCES ===== -->
+<section class="refs-section">
+  <h2>引用来源</h2>
+  <div class="ref-item"><span class="ref-num">1</span><span>Forbes Cloud 100 2025 — Celonis 估值 $130 亿，融资 $16 亿+</span></div>
+  <div class="ref-item"><span class="ref-num">2</span><span>GetLatka — Celonis ARR ~$7.71 亿（估算）</span></div>
+  <div class="ref-item"><span class="ref-num">3</span><span>Fortune 2026-04 — Celonis Fortune 500 渗透率 25%+</span></div>
+  <div class="ref-item"><span class="ref-num">4</span><span>Forrester TEI 2025-07 — Celonis 3 年 ROI 383%，回报期 6 个月</span></div>
+  <div class="ref-item"><span class="ref-num">5</span><span>Wikipedia /多方报道 — SAP Signavio 收购价 ~€9.5 亿</span></div>
+  <div class="ref-item"><span class="ref-num">6</span><span>StockAnalysis.com — UiPath 市值 $66.1 亿，ARR $16.72 亿</span></div>
+  <div class="ref-item"><span class="ref-num">7</span><span>Precedence Research — RPA 市场 2025 $283 亿 → 2035 $2,473 亿，CAGR 24.2%</span></div>
+  <div class="ref-item"><span class="ref-num">8</span><span>Global Market Insights — 超自动化市场 2024 $464 亿 → 2034 $2,202 亿，CAGR 17.1%</span></div>
+  <div class="ref-item"><span class="ref-num">9</span><span>Gartner MQ 2026-05 — Process Intelligence Platforms 领导者</span></div>
+  <div class="ref-item"><span class="ref-num">10</span><span>Reuters / Forbes — Sierra AI $158 亿估值，$2 亿 ARR</span></div>
+  <div class="ref-item"><span class="ref-num">11</span><span>来也科技官网 / Forbes China — 300+ 世界 500 强客户，C++ 轮 $7,000 万</span></div>
+  <div class="ref-item"><span class="ref-num">12</span><span>达观数据官网 — C 轮 5.8 亿 RMB，300+ 企业客户</span></div>
+  <div class="ref-item"><span class="ref-num">13</span><span>艺赛旗 2026 春季发布会 — Magical Automator</span></div>
+  <div class="ref-item"><span class="ref-num">14</span><span>金智维港交所招股书 — 估值 31 亿 RMB</span></div>
+  <div class="ref-item"><span class="ref-num">15</span><span>arXiv:2607.07052 — Progressive Crystallization, 2026-07</span></div>
+  <div class="ref-item"><span class="ref-num">16</span><span>arXiv:2607.26075 — IDP AutoOpt, 20-80 人时/文档类型</span></div>
+  <div class="ref-item"><span class="ref-num">17</span><span>Celonis 官网 — 累计客户价值 $65 亿</span></div>
+</section>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
