@@ -929,6 +929,202 @@ body {
   </div>
 </section>
 
+<!-- ===== SPEED ===== -->
+<section class="section">
+  <div class="section-label">维度六</div>
+  <h2 class="section-title">速度：每一步都在等模型"想"</h2>
+  <p class="section-intro">Agent Loop 的每一步都需要完整的 LLM 推理往返（prompt → 模型推理 → 工具调用 → 模型再推理）。Workflow DAG 的确定性节点（HTTP / Chat / Custom）不需要 Agent 推理——它们直接执行，延迟可降低一个数量级。</p>
+
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div>
+        <h3>10 步任务的延迟对比（估算）</h3>
+        <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.3rem;">基于典型生产场景的架构推演</p>
+      </div>
+      <div class="metric-source">
+        架构推演<br>
+        非直接 benchmark
+      </div>
+    </div>
+
+    <div class="bar-compare">
+      <div class="bar-row">
+        <div class="bar-label">Agent Loop<br><span style="font-size:0.7rem;color:var(--text-mute);">10 步全走 LLM 推理</span></div>
+        <div class="bar-track">
+          <div class="bar-fill ag" style="width: 100%;">~30–50s</div>
+        </div>
+        <div class="bar-value">10× LLM</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Workflow DAG<br><span style="font-size:0.7rem;color:var(--text-mute);">4 HTTP + 3 Chat + 1 Agent + 2 Custom</span></div>
+        <div class="bar-track">
+          <div class="bar-fill wf" style="width: 24%;">~7–12s</div>
+        </div>
+        <div class="bar-value">1× LLM</div>
+      </div>
+    </div>
+
+    <table class="compound-table" style="margin-top:1.5rem;">
+      <thead>
+        <tr>
+          <th>节点类型</th>
+          <th>典型延迟</th>
+          <th>是否需要 LLM</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>HTTP（API 调用）</td>
+          <td class="num-cell" style="color:var(--accent);">~200–500ms</td>
+          <td><span class="cross">❌ 直接执行</span></td>
+        </tr>
+        <tr>
+          <td>Custom（确定性逻辑）</td>
+          <td class="num-cell" style="color:var(--accent);">&lt;10ms</td>
+          <td><span class="cross">❌ 直接执行</span></td>
+        </tr>
+        <tr>
+          <td>Chat（小模型结构化输出）</td>
+          <td class="num-cell" style="color:var(--gold);">~1–2s</td>
+          <td><span class="partial">⚠️ 轻量 LLM</span></td>
+        </tr>
+        <tr>
+          <td>Agent（DeepAgent 推理+工具）</td>
+          <td class="num-cell" style="color:var(--warn);">~5–15s</td>
+          <td><span class="check">✅ 完整推理</span></td>
+        </tr>
+        <tr>
+          <td>Agent Loop（每步都推理）</td>
+          <td class="num-cell" style="color:var(--warn);">~3–5s × N 步</td>
+          <td><span class="check">✅ 每步都推理</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <p><strong>核心洞察：</strong>Agent Loop 的延迟是<strong>乘法增长</strong>的——每多一步就多一个完整的 LLM 推理往返（prompt 处理 + 模型推理 + 工具执行 + 模型再推理）。Workflow DAG 的延迟是<strong>加法</strong>的——只有真正需要推理的 Agent 节点才调用 LLM，其余节点直接执行。一个 10 步任务里如果只有 1 步真正需要 Agent 推理，Workflow 的延迟大约是 Agent Loop 的 1/4。</p>
+    </div>
+
+    <div class="callout warn">
+      <p><strong>延迟复合效应：</strong>Agent Loop 不仅每步慢，而且不能并行——因为下一步依赖上一步的输出（模型要看到完整 conversation history 才能决策）。Workflow DAG 可以让不互相依赖的节点<strong>并行执行</strong>，进一步压缩总延迟。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MULTI-MODEL ===== -->
+<section class="section">
+  <div class="section-label">维度七</div>
+  <h2 class="section-title">多模型优化：每个节点用最合适的模型</h2>
+  <p class="section-intro">FlowCraft 的 YAML schema 让每个节点独立配置模型——简单分类用便宜的小模型，复杂推理才用贵的大模型。Agent Loop（Codex/Claude Code）锁死单一模型，不管任务简单还是复杂，每一步都烧同一个模型。</p>
+
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div>
+        <h3>模型选择自由度对比</h3>
+      </div>
+      <div class="metric-source">架构分析</div>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>Workflow DAG（FlowCraft）</th>
+          <th>Agent Loop（Codex）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>每步可选模型</td>
+          <td><span class="check">✅ 每节点独立配置 <code>llm.model</code></span></td>
+          <td><span class="cross">❌ 锁死单一模型</span></td>
+        </tr>
+        <tr>
+          <td>成本优化粒度</td>
+          <td><span class="check">✅ 节点级——按需分配预算</span></td>
+          <td><span class="cross">❌ 全局统一——简单步骤也烧大模型</span></td>
+        </tr>
+        <tr>
+          <td>延迟优化</td>
+          <td><span class="check">✅ 简单步骤用快速小模型</span></td>
+          <td><span class="cross">❌ 每步都等大模型推理</span></td>
+        </tr>
+        <tr>
+          <td>供应商锁定</td>
+          <td><span class="check">✅ 混用 OpenAI / DeepSeek / 本地模型</span></td>
+          <td><span class="cross">❌ Codex 锁 OpenAI / Claude Code 锁 Anthropic</span></td>
+        </tr>
+        <tr>
+          <td>供应商迁移灵活性</td>
+          <td><span class="check">✅ 逐节点替换，不影响其他节点</span></td>
+          <td><span class="cross">❌ 整个系统绑定一个供应商</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div>
+        <h3>真实场景：文档审核 Workflow 的成本优化</h3>
+        <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.3rem;">同一任务，两种模型策略的成本对比</p>
+      </div>
+      <div class="metric-source">FlowCraft YAML 架构</div>
+    </div>
+
+    <div class="bar-compare">
+      <div class="bar-row">
+        <div class="bar-label">Agent Loop<br><span style="font-size:0.7rem;color:var(--text-mute);">全程 GPT-4 级模型</span></div>
+        <div class="bar-track">
+          <div class="bar-fill ag" style="width: 100%;">~$0.15 / 次</div>
+        </div>
+        <div class="bar-value">10× 成本</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Workflow 多模型<br><span style="font-size:0.7rem;color:var(--text-mute);">flash 分类 + GPT-4 推理</span></div>
+        <div class="bar-track">
+          <div class="bar-fill wf" style="width: 10%;">~$0.015 / 次</div>
+        </div>
+        <div class="bar-value">1× 成本</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 1.5rem; background: var(--surface-elev); border-radius: 8px; padding: 1.5rem; font-family: var(--mono); font-size: 0.8rem; line-height: 1.8; overflow-x: auto;">
+      <span style="color: var(--text-mute);"># 分类节点——用最便宜最快的模型</span><br>
+      <span style="color: var(--accent);">- name: classify</span><br>
+      &nbsp;&nbsp;<span style="color: var(--text-dim);">type: chat</span><br>
+      &nbsp;&nbsp;<span style="color: var(--text-dim);">config:</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--text-dim);">llm:</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--gold);">model: deepseek-v4-flash</span>&nbsp;&nbsp;<span style="color: var(--text-mute);"># $0.0001/1K tokens</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--text-dim);">api_key_env: DS_KEY</span><br><br>
+      <span style="color: var(--text-mute);"># 推理节点——只在真正需要时用强模型</span><br>
+      <span style="color: var(--accent);">- name: risk_analysis</span><br>
+      &nbsp;&nbsp;<span style="color: var(--text-dim);">type: agent</span><br>
+      &nbsp;&nbsp;<span style="color: var(--text-dim);">config:</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--text-dim);">llm:</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--warn);">model: gpt-4o</span>&nbsp;&nbsp;<span style="color: var(--text-mute);"># $0.005/1K tokens，但只调 1 次</span>
+    </div>
+
+    <div class="callout">
+      <p><strong>为什么 Agent Loop 做不到：</strong>Codex 绑定 <code>gpt-5.3-codex</code>（272k context），Claude Code 绑定 Claude Sonnet/Opus——<strong>整个循环用同一个模型处理所有步骤</strong>。一个简单的"判断邮件是否是垃圾邮件"的步骤，也在消耗最贵的模型 token。O'Reilly [19] 指出：硬编码在一个模型供应商上的切换成本在内存、eval 和集成方面复合增长。FlowCraft 的逐节点模型选择从根本上消除了这个问题。</p>
+    </div>
+  </div>
+
+  <div class="big-num-grid fade-in">
+    <div class="big-num">
+      <span class="num accent">10x</span>
+      <span class="label">同一任务多模型优化<br>vs 单一模型的成本差距</span>
+    </div>
+    <div class="big-num">
+      <span class="num accent">3–4x</span>
+      <span class="label">简单步骤用 flash 模型<br>vs 大模型的延迟缩减</span>
+    </div>
+    <div class="big-num">
+      <span class="num accent">逐节点</span>
+      <span class="label">供应商替换粒度<br>不影响其他节点</span>
+    </div>
+  </div>
+</section>
+
 <!-- ===== CRYSTALLIZATION ===== -->
 <section class="section">
   <div class="section-label">统一理论</div>
@@ -1099,18 +1295,30 @@ body {
         </tr>
         <tr>
           <td class="num-cell" style="color:var(--accent);">3</td>
+          <td>速度</td>
+          <td>加法延迟 vs 乘法延迟（~4x 更快）</td>
+          <td style="font-size:0.75rem;color:var(--text-mute);">架构推演</td>
+        </tr>
+        <tr>
+          <td class="num-cell" style="color:var(--accent);">4</td>
+          <td>多模型优化</td>
+          <td>每节点独立选模型，成本再降 10x</td>
+          <td style="font-size:0.75rem;color:var(--text-mute);">FlowCraft YAML 架构</td>
+        </tr>
+        <tr>
+          <td class="num-cell" style="color:var(--accent);">5</td>
           <td>可审计</td>
           <td>EU AI Act 合规；Agent 无法满足</td>
           <td style="font-size:0.75rem;color:var(--text-mute);">O'Reilly [19] · Nature [20]</td>
         </tr>
         <tr>
-          <td class="num-cell" style="color:var(--asccent);">4</td>
+          <td class="num-cell" style="color:var(--accent);">6</td>
           <td>可调试</td>
           <td>Agent 归因准确率 &lt;30%；Workflow 精确到节点</td>
           <td style="font-size:0.75rem;color:var(--text-mute);">AgentDebugX [4]</td>
         </tr>
         <tr>
-          <td class="num-cell" style="color:var(--accent);">5</td>
+          <td class="num-cell" style="color:var(--accent);">7</td>
           <td>持久化</td>
           <td>Checkpoint / Time Travel / Fault Recovery</td>
           <td style="font-size:0.75rem;color:var(--text-mute);">LangGraph [21] · Diagrid [22]</td>
