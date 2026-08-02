@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workflow + Graph Engineering vs Loop Agent</title>
+<style>
+:root {
+  --bg: #0a0b0f;
+  --surface: #13141a;
+  --surface-elev: #1a1c25;
+  --border: #262836;
+  --text: #e8e9ed;
+  --text-dim: #8b8d99;
+  --text-mute: #5a5d6b;
+  --accent: #00d4aa;
+  --accent-dim: #008f76;
+  --accent-glow: rgba(0, 212, 170, 0.12);
+  --warn: #ff6b35;
+  --warn-dim: #cc5429;
+  --warn-glow: rgba(255, 107, 53, 0.1);
+  --gold: #f0b429;
+  --serif: 'Georgia', 'Songti SC', 'Noto Serif SC', serif;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Noto Sans SC', sans-serif;
+  --mono: 'SF Mono', 'Fira Code', 'Menlo', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* === HERO === */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, var(--accent-glow), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, var(--warn-glow), transparent 50%);
+  z-index: 0;
+}
+.hero-grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.15;
+  mask-image: radial-gradient(ellipse 70% 70% at center, black, transparent);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, black, transparent);
+  z-index: 0;
+}
+.hero-content { position: relative; z-index: 1; max-width: 900px; text-align: center; }
+.hero-eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 5.5vw, 4rem);
+  line-height: 1.15;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.01em;
+}
+.hero h1 .vs {
+  display: inline-block;
+  color: var(--text-mute);
+  font-style: italic;
+  font-size: 0.6em;
+  margin: 0 0.2em;
+}
+.hero h1 .wf { color: var(--accent); }
+.hero h1 .ag { color: var(--warn); }
+.hero-sub {
+  font-size: 1.15rem;
+  color: var(--text-dim);
+  max-width: 600px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.8;
+}
+.hero-meta {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: var(--text-mute);
+}
+.hero-meta span { display: flex; align-items: center; gap: 0.4rem; }
+.hero-meta strong { color: var(--text); font-weight: 500; }
+.scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--text-mute);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%,100% { transform: translateX(-50%) translateY(0); opacity: 0.5; }
+  50% { transform: translateX(-50%) translateY(8px); opacity: 1; }
+}
+
+/* === SECTIONS === */
+.section {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 5rem 2rem;
+}
+.section-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.section-title {
+  font-family: var(--serif);
+  font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+  font-weight: 400;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+.section-intro {
+  color: var(--text-dim);
+  font-size: 1.05rem;
+  max-width: 650px;
+  margin-bottom: 2.5rem;
+}
+
+/* === DEFINITION CARDS === */
+.def-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+.def-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.def-card.wf { border-color: var(--accent-dim); }
+.def-card.ag { border-color: var(--warn-dim); }
+.def-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.def-card.wf::before { background: linear-gradient(90deg, var(--accent), transparent); }
+.def-card.ag::before { background: linear-gradient(90deg, var(--warn), transparent); }
+.def-card h3 {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+  font-weight: 400;
+}
+.def-card.wf h3 { color: var(--accent); }
+.def-card.ag h3 { color: var(--warn); }
+.def-card p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.8; }
+.def-card .examples {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-mute);
+  font-family: var(--mono);
+}
+.def-card blockquote {
+  border-left: 2px solid var(--border);
+  padding-left: 1rem;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--text-dim);
+}
+
+/* === METRIC BLOCK === */
+.metric-section {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border);
+}
+.metric-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  gap: 2rem;
+}
+.metric-header h3 {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+.metric-source {
+  font-size: 0.7rem;
+  color: var(--text-mute);
+  text-align: right;
+  white-space: nowrap;
+  font-family: var(--mono);
+}
+.metric-source a { color: var(--accent); text-decoration: none; }
+
+/* Bar comparison */
+.bar-compare {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.bar-label {
+  width: 180px;
+  font-size: 0.85rem;
+  text-align: right;
+  flex-shrink: 0;
+  color: var(--text-dim);
+}
+.bar-track {
+  flex: 1;
+  height: 36px;
+  background: var(--surface-elev);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+.bar-fill.wf { background: linear-gradient(90deg, var(--accent-dim), var(--accent)); color: #002820; }
+.bar-fill.ag { background: linear-gradient(90deg, var(--warn-dim), var(--warn)); color: #1a0a00; }
+.bar-value {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  width: 60px;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+/* Big number */
+.big-num-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+.big-num {
+  text-align: center;
+  padding: 1.5rem;
+  background: var(--surface-elev);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.big-num .num {
+  font-family: var(--serif);
+  font-size: 2.5rem;
+  font-weight: 700;
+  display: block;
+}
+.big-num .num.accent { color: var(--accent); }
+.big-num .num.warn { color: var(--warn); }
+.big-num .num.gold { color: var(--gold); }
+.big-num .label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+/* Callout */
+.callout {
+  background: var(--accent-glow);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  padding: 1.2rem 1.5rem;
+  margin: 1.5rem 0;
+}
+.callout.warn {
+  background: var(--warn-glow);
+  border-color: var(--warn);
+}
+.callout p { font-size: 0.9rem; }
+.callout strong { color: var(--text); }
+
+/* Compound error table */
+.compound-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+}
+.compound-table th {
+  text-align: left;
+  padding: 0.8rem 1rem;
+  color: var(--text-mute);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+}
+.compound-table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.compound-table tr:last-child td { border-bottom: none; }
+.compound-table .num-cell {
+  font-family: var(--mono);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* === TABLE === */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin: 1.5rem 0;
+}
+.data-table th {
+  text-align: left;
+  padding: 0.8rem 1rem;
+  background: var(--surface-elev);
+  color: var(--text-mute);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+.data-table th:first-child { border-radius: 8px 0 0 0; }
+.data-table th:last-child { border-radius: 0 8px 0 0; }
+.data-table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dim);
+}
+.data-table td:first-child { color: var(--text); font-weight: 500; }
+.data-table .check { color: var(--accent); font-size: 1rem; }
+.data-table .cross { color: var(--warn); font-size: 1rem; }
+.data-table .partial { color: var(--gold); font-size: 1rem; }
+
+/* === CRYSTALLIZATION === */
+.crystal-diagram {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 2rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.crystal-stage {
+  flex: 1;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s;
+}
+.crystal-stage:hover { transform: translateY(-4px); }
+.crystal-stage:nth-child(1) { background: var(--warn-glow); }
+.crystal-stage:nth-child(2) { background: var(--surface-elev); }
+.crystal-stage:nth-child(3) { background: var(--accent-glow); }
+.crystal-stage:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  color: var(--text-mute);
+  z-index: 2;
+}
+.crystal-stage .stage-num {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-mute);
+  margin-bottom: 0.5rem;
+}
+.crystal-stage .stage-title {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+.crystal-stage .stage-desc {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.crystal-stage:nth-child(1) .stage-title { color: var(--warn); }
+.crystal-stage:nth-child(3) .stage-title { color: var(--accent); }
+
+/* === DECISION MATRIX === */
+.decision-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 2rem 0;
+}
+.decision-card {
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.decision-card h4 {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.decision-card.wf h4 { color: var(--accent); }
+.decision-card.ag h4 { color: var(--warn); }
+.decision-card ul {
+  list-style: none;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+.decision-card li {
+  padding: 0.3rem 0;
+  padding-left: 1.2rem;
+  position: relative;
+}
+.decision-card li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+}
+.decision-card.wf li::before { color: var(--accent); }
+.decision-card.ag li::before { color: var(--warn); }
+
+/* === QUOTE === */
+.quote-block {
+  margin: 2rem 0;
+  padding: 2rem;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  position: relative;
+}
+.quote-block::before {
+  content: '"';
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  font-family: var(--serif);
+  font-size: 4rem;
+  color: var(--accent);
+  opacity: 0.3;
+  line-height: 1;
+}
+.quote-block p {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--text);
+  margin-bottom: 0.8rem;
+  padding-left: 1rem;
+}
+.quote-block cite {
+  font-size: 0.8rem;
+  color: var(--text-mute);
+  padding-left: 1rem;
+}
+
+/* === REFERENCES === */
+.refs-section {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+}
+.refs-section h2 {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+}
+.refs-section h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-mute);
+  margin: 2rem 0 1rem;
+}
+.ref-item {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  display: flex;
+  gap: 0.8rem;
+}
+.ref-num {
+  font-family: var(--mono);
+  color: var(--accent);
+  flex-shrink: 0;
+  width: 30px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .def-grid, .decision-grid { grid-template-columns: 1fr; }
+  .crystal-diagram { flex-direction: column; gap: 1rem; }
+  .crystal-stage:not(:last-child)::after {
+    content: '↓';
+    right: 50%;
+    top: auto;
+    bottom: -20px;
+    transform: translateX(50%);
+  }
+  .bar-label { width: 100px; font-size: 0.75rem; }
+  .metric-header { flex-direction: column; }
+  .metric-source { text-align: left; }
+  .section { padding: 3rem 1.2rem; }
+  .compound-table { font-size: 0.8rem; }
+  .compound-table th, .compound-table td { padding: 0.5rem; }
+}
+
+/* Animations */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">范式对比 · 数据驱动 · 2026-08</div>
+    <h1>
+      <span class="wf">Workflow</span> + Graph Engineering<br>
+      <span class="vs">vs</span>
+      <span class="ag">Loop Agent</span>
+    </h1>
+    <p class="hero-sub">
+      声明式 DAG 与自主 Agent Loop 的结构性优劣对比——基于 12 篇 arXiv 论文和 15 份行业报告的量化分析
+    </p>
+    <div class="hero-meta">
+      <span>📄 <strong>12</strong> 篇论文</span>
+      <span>📊 <strong>15</strong> 份行业报告</span>
+      <span>🔬 <strong>3</strong> 路并行调研</span>
+    </div>
+  </div>
+  <div class="scroll-hint">向下滚动</div>
+</section>
+
+<!-- ===== DEFINITIONS ===== -->
+<section class="section">
+  <div class="section-label">定义</div>
+  <h2 class="section-title">两种执行范式</h2>
+  <p class="section-intro">在对比优劣之前，先明确定义。Anthropic 2024 年 12 月发布的 "Building Effective Agents" 是业界公认的分类基准。</p>
+
+  <div class="def-grid">
+    <div class="def-card wf">
+      <h3>Workflow + Graph Engineering</h3>
+      <p>LLM 和工具通过<strong>预定义代码路径</strong>编排。图结构显式声明、可编译、可分析、可审计。</p>
+      <div class="examples">FlowCraft · GitHub Actions · COVENANT · VADAOrchestra</div>
+      <blockquote>
+        "Workflows are systems where LLMs and tools are orchestrated through <strong>predefined code paths</strong>."<br>
+        — Anthropic [13]
+      </blockquote>
+    </div>
+    <div class="def-card ag">
+      <h3>Loop Agent (Codex 范式)</h3>
+      <p>LLM 在 <code>while(tool_call)</code> 循环中<strong>动态决定</strong>下一步。每次执行路径可能不同，不可预测。</p>
+      <div class="examples">OpenAI Codex · Claude Code · Devin · Cursor Agent</div>
+      <blockquote>
+        "Agents are systems where LLMs <strong>dynamically direct their own processes</strong> and tool usage."<br>
+        — Anthropic [13]
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SUCCESS RATE ===== -->
+<section class="section">
+  <div class="section-label">维度一</div>
+  <h2 class="section-title">成功率：83% vs 50%</h2>
+  <p class="section-intro">COVENANT 论文在 120 个案例、三个 benchmark 上做了最直接的同条件对比——同一底层模型，唯一变量是执行范式。</p>
+
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div>
+        <h3>COVENANT 实验：Benchmark 成功率</h3>
+        <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.3rem;">120 个案例 · 三个 benchmark · 同一 LLM</p>
+      </div>
+      <div class="metric-source">
+        arXiv:2607.25400 [2]<br>
+        COVENANT, 2026-07
+      </div>
+    </div>
+    <div class="bar-compare">
+      <div class="bar-row">
+        <div class="bar-label">Workflow 编译执行</div>
+        <div class="bar-track">
+          <div class="bar-fill wf" style="width: 83.3%;">83.3%</div>
+        </div>
+        <div class="bar-value">+66.7%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Agent 自主执行</div>
+        <div class="bar-track">
+          <div class="bar-fill ag" style="width: 50%;">50.0%</div>
+        </div>
+        <div class="bar-value">基线</div>
+      </div>
+    </div>
+    <div class="callout">
+      <p><strong>核心发现：</strong>把 workflow 当 prompt 喂给 agent，模型会同时控制"做什么"和"怎么做"，导致过程失控——跳过必需步骤、走不支持的分支、用错误参数执行。编译成确定性执行路径可以从根本上消除这三类失败。</p>
+    </div>
+  </div>
+
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div>
+        <h3>Workflow Misalignment 失败率</h3>
+        <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.3rem;">Agent 不遵循 workflow 约束的频率</p>
+      </div>
+      <div class="metric-source">arXiv:2607.25400 [2]</div>
+    </div>
+    <div class="bar-compare">
+      <div class="bar-row">
+        <div class="bar-label">Workflow 编译执行</div>
+        <div class="bar-track">
+          <div class="bar-fill wf" style="width: 15.8%;">15.8%</div>
+        </div>
+        <div class="bar-value">-62.7%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Agent 自主执行</div>
+        <div class="bar-track">
+          <div class="bar-fill ag" style="width: 42.5%;">42.5%</div>
+        </div>
+        <div class="bar-value">基线</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div>
+        <h3>复合错误：步数越多，Agent 衰减越快</h3>
+        <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.3rem;">单步 90% 准确率的系统，5 步后成功率降至 59%</p>
+      </div>
+      <div class="metric-source">
+        HackerNoon [14]<br>
+        2026-02
+      </div>
+    </div>
+    <table class="compound-table">
+      <thead>
+        <tr>
+          <th>单步准确率</th>
+          <th>5 步后成功率</th>
+          <th>20 步后成功率</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="num-cell" style="color:var(--warn);">90%</td>
+          <td class="num-cell" style="color:var(--warn);">59% <span style="font-size:0.7rem;color:var(--text-mute);">≈ 抛硬币</span></td>
+          <td class="num-cell" style="color:var(--warn);">12%</td>
+        </tr>
+        <tr>
+          <td class="num-cell" style="color:var(--gold);">95%</td>
+          <td class="num-cell">77%</td>
+          <td class="num-cell">36%</td>
+        </tr>
+        <tr>
+          <td class="num-cell" style="color:var(--accent);">99%</td>
+          <td class="num-cell">95%</td>
+          <td class="num-cell">82%</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout warn">
+      <p><strong>解读：</strong>一个在单步层面看起来 90% 准确的 Agent 系统，在 5 步 workflow 层面变成抛硬币。Workflow DAG 通过用确定性节点替代 agent 决策，直接减少非确定性步数，提升整体成功率。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== COST ===== -->
+<section class="section">
+  <div class="section-label">维度二</div>
+  <h2 class="section-title">成本：15 倍差距</h2>
+  <p class="section-intro">Anthropic 内部研究系统的数据：多 Agent 系统消耗约 15 倍于普通聊天的 token。TDS 按真实定价估算，月成本差距可达 15 倍。</p>
+
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div>
+        <h3>Token 消耗对比</h3>
+        <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.3rem;">以普通聊天为 1x 基线</p>
+      </div>
+      <div class="metric-source">
+        Anthropic [15] · TDS [16]<br>
+        2025-06
+      </div>
+    </div>
+    <div class="bar-compare">
+      <div class="bar-row">
+        <div class="bar-label">基础 Workflow</div>
+        <div class="bar-track">
+          <div class="bar-fill wf" style="width: 6.7%;">1x</div>
+        </div>
+        <div class="bar-value">$500</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">单 Agent 系统</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: 26.7%; background: linear-gradient(90deg, var(--gold), #d49812); color: #1a1500;">4x</div>
+        </div>
+        <div class="bar-value">$2,000</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">多 Agent 系统</div>
+        <div class="bar-track">
+          <div class="bar-fill ag" style="width: 100%;">15x</div>
+        </div>
+        <div class="bar-value">$7,500</div>
+      </div>
+    </div>
+    <div class="callout">
+      <p><strong>Anthropic 原文：</strong>"Token 使用量单独解释了 BrowseComp 评测中 <strong>80%</strong> 的性能方差。"——多 Agent 系统"有效"的一个重要原因是它消耗了 15 倍的 token。但反过来，这也意味着成本是 15 倍。</p>
+    </div>
+  </div>
+
+  <div class="big-num-grid fade-in">
+    <div class="big-num">
+      <span class="num gold">$230–360</span>
+      <span class="label">顶级 SWE-bench Agent<br>单次尝试成本 [14]</span>
+    </div>
+    <div class="big-num">
+      <span class="num warn">3x</span>
+      <span class="label">从单 Agent 迁移到多 Agent<br>后的成本翻倍 [18]</span>
+    </div>
+    <div class="big-num">
+      <span class="num accent">70%+</span>
+      <span class="label">Crystallization 后<br>单事件成本降低 [3]</span>
+    </div>
+  </div>
+
+  <div class="quote-block fade-in">
+    <p>"如果 agent 陷入工具调用循环或误解指令？你会看到让计费仪表盘看起来像加密货币拉高出货图表的峰值。"</p>
+    <cite>— Towards Data Science, "Workflows vs Agents" [16], 2025-06</cite>
+  </div>
+</section>
+
+<!-- ===== AUDIT & COMPLIANCE ===== -->
+<section class="section">
+  <div class="section-label">维度三</div>
+  <h2 class="section-title">可审计性与合规</h2>
+  <p class="section-intro">EU AI Act 2026 年 8 月全面生效。金融、医疗、关键基础设施的 AI 系统必须提供完整审计追踪——Agent Loop 在架构上无法满足。</p>
+
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <h3>Workflow vs Agent：可审计性对比</h3>
+      <div class="metric-source">EU AI Act · Nature [20] · O'Reilly [19]</div>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>能力</th>
+          <th>Workflow DAG</th>
+          <th>Agent Loop</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>执行路径可预测</td>
+          <td><span class="check">✅ 确定性路径</span></td>
+          <td><span class="cross">❌ 每次可能不同</span></td>
+        </tr>
+        <tr>
+          <td>决策可追溯</td>
+          <td><span class="check">✅ 节点级 checkpoint</span></td>
+          <td><span class="cross">❌ 只有 conversation history</span></td>
+        </tr>
+        <tr>
+          <td>回滚行为</td>
+          <td><span class="check">✅ 从 checkpoint 恢复</span></td>
+          <td><span class="cross">❌ 回滚代码 ≠ 回滚行为</span></td>
+        </tr>
+        <tr>
+          <td>满足 EU AI Act 审计要求</td>
+          <td><span class="check">✅ 天然满足</span></td>
+          <td><span class="cross">❌ 架构上不可能</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="quote-block fade-in">
+    <p>"如果失败带有财务或监管成本，概率性执行就难以证明合理。不要自动化你承担不起错误的事情。"</p>
+    <cite>— HackerNoon, "Why AI Agents Work in Demos But Fail in Production" [14], 2026-02</cite>
+  </div>
+
+  <div class="big-num-grid fade-in">
+    <div class="big-num">
+      <span class="num warn">40%</span>
+      <span class="label">Gartner 预测 2027 年底<br>将被取消的 Agentic AI 项目 [23]</span>
+    </div>
+    <div class="big-num">
+      <span class="num warn">1%</span>
+      <span class="label">认为 AI Agent 实现是<br>"成熟的"的企业比例 [25]</span>
+    </div>
+    <div class="big-num">
+      <span class="num warn">47→24%</span>
+      <span class="label">企业自建 AI 方案比例<br>一年内崩塌 23 个百分点 [26]</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DEBUGGABILITY ===== -->
+<section class="section">
+  <div class="section-label">维度四</div>
+  <h2 class="section-title">可调试性与故障恢复</h2>
+  <p class="section-intro">AgentDebugX 论文揭示了一个残酷现实：即使是专门的调试工具，准确找到"哪个 agent 在哪一步出错"的概率也不到 30%。</p>
+
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div>
+        <h3>Agent 失败归因准确率</h3>
+        <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.3rem;">在 Who/When benchmark 上，最佳严格归因准确率</p>
+      </div>
+      <div class="metric-source">
+        AgentDebugX [4]<br>
+        arXiv:2607.18754
+      </div>
+    </div>
+    <div class="bar-compare">
+      <div class="bar-row">
+        <div class="bar-label">最佳 Agent 归因准确率</div>
+        <div class="bar-track">
+          <div class="bar-fill ag" style="width: 28.8%;">28.8%</div>
+        </div>
+        <div class="bar-value"><span style="color:var(--warn);">&lt;30%</span></div>
+      </div>
+    </div>
+    <div class="callout warn">
+      <p><strong>AgentDebugX 原文：</strong>"LLM agent failures are difficult to debug because <strong>the step where an error surfaces is often not the one that caused it</strong>."——错误显现的步骤往往不是导致错误的步骤。</p>
+    </div>
+  </div>
+
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <h3>LangGraph Durable Execution——图结构的独有能力</h3>
+      <div class="metric-source">LangGraph [21] · Diagrid Catalyst 2.0 [22]</div>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>能力</th>
+          <th>Workflow DAG (LangGraph)</th>
+          <th>Agent Loop (Codex)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>节点级 checkpoint</td>
+          <td><span class="check">✅ 每个节点存快照</span></td>
+          <td><span class="cross">❌ 只有 conversation</span></td>
+        </tr>
+        <tr>
+          <td>Time Travel</td>
+          <td><span class="check">✅ fork 任意历史点</span></td>
+          <td><span class="cross">❌ 无法回到中间步骤</span></td>
+        </tr>
+        <tr>
+          <td>Human-in-the-loop</td>
+          <td><span class="check">✅ interrupt() 暂停</span></td>
+          <td><span class="cross">❌ 需额外编码</span></td>
+        </tr>
+        <tr>
+          <td>Fault Recovery</td>
+          <td><span class="check">✅ 从上个成功节点恢复</span></td>
+          <td><span class="cross">❌ 全有或全无</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <p><strong>为什么 Agent Loop 做不到：</strong>Agent loop 的每一步都依赖前一步的全部上下文（conversation history），没有结构化的"状态快照"。你不能"回到第 3 步，修改输入，看不同结果"——因为 loop 没有暴露中间步骤。2026 年 7 月 Diagrid Catalyst 2.0 的发布验证了 durable execution 已成为生产级 agent 系统的刚需 [22]。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CRYSTALLIZATION ===== -->
+<section class="section">
+  <div class="section-label">统一理论</div>
+  <h2 class="section-title">Progressive Crystallization</h2>
+  <p class="section-intro">2026 年 7 月的最重要发现：Agent 不是终态，而是发现机制。验证过的 Agent 行为会"结晶"为确定性 Workflow。这不是对立，而是生命周期。</p>
+
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div>
+        <h3>三阶段生命周期</h3>
+      </div>
+      <div class="metric-source">
+        arXiv:2607.07052 [3]<br>
+        Progressive Crystallization, 2026-07
+      </div>
+    </div>
+
+    <div class="crystal-diagram">
+      <div class="crystal-stage">
+        <div class="stage-num">STAGE 1</div>
+        <div class="stage-title">Agent 探索</div>
+        <div class="stage-desc">Agent 自主探索解决新问题。灵活但昂贵、不可预测。</div>
+      </div>
+      <div class="crystal-stage">
+        <div class="stage-num">STAGE 2</div>
+        <div class="stage-title">Hybrid 混合</div>
+        <div class="stage-desc">部分步骤已验证，转为确定性执行。混合模式。</div>
+      </div>
+      <div class="crystal-stage">
+        <div class="stage-num">STAGE 3</div>
+        <div class="stage-title">Workflow DAG</div>
+        <div class="stage-desc">整个流程固化。确定性、低成本、可审计。</div>
+      </div>
+    </div>
+
+    <div class="big-num-grid fade-in" style="margin-top: 2rem;">
+      <div class="big-num">
+        <span class="num accent">45%</span>
+        <span class="label">8 个月内被"结晶"为<br>确定性执行的占比 [3]</span>
+      </div>
+      <div class="big-num">
+        <span class="num accent">70%+</span>
+        <span class="label">单事件 agent 成本降低<br>（事件量翻倍条件下）[3]</span>
+      </div>
+      <div class="big-num">
+        <span class="num accent">2x</span>
+        <span class="label">事件总量翻倍<br>成本仍降 70%+</span>
+      </div>
+    </div>
+
+    <div class="callout">
+      <p><strong>对 FlowCraft 的直接意义：</strong>FlowCraft 的 YAML→LangGraph 编译模式天然占据 Stage 3 位置——Agent 探索验证完毕后的"结晶产物"就是一份 <code>workflow.yaml</code>。这不是 Agent 的替代品，而是 Agent 行为的<strong>编译目标</strong>。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RELIABLE VS LUCKY ===== -->
+<section class="section">
+  <div class="section-label">维度五</div>
+  <h2 class="section-title">可靠推理 vs 幸运成功</h2>
+  <p class="section-intro">ClawTrack 论文提出了一个被忽视的问题：Agent 的"成功"可能是幸运的，而非可靠的。</p>
+
+  <div class="metric-section fade-in">
+    <div class="metric-header">
+      <div>
+        <h3>Task Score vs Process Score</h3>
+      </div>
+      <div class="metric-source">
+        ClawTrack [5]<br>
+        arXiv:2607.28037
+      </div>
+    </div>
+    <div class="callout">
+      <p><strong>核心洞察：</strong>现有 benchmark 只判断最终结果（Task Score），<strong>无法区分"可靠推理"和"幸运成功"（lucky success）</strong>，也无法将失败归因到具体过程缺陷。</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:2rem;margin:1.5rem 0;flex-wrap:wrap;">
+      <div style="flex:1;min-width:200px;">
+        <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:0.5rem;">一个 70% 成功率的 Agent</div>
+        <div class="bar-track" style="height:28px;">
+          <div class="bar-fill ag" style="width: 70%;">70% Task Score</div>
+        </div>
+      </div>
+      <div style="font-size:1.5rem;color:var(--text-mute);">×</div>
+      <div style="flex:1;min-width:200px;">
+        <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:0.5rem;">其中只有 50% 是"可靠"的</div>
+        <div class="bar-track" style="height:28px;">
+          <div class="bar-fill" style="width: 50%; background: linear-gradient(90deg, #555, #888); color: white;">50% Process Score</div>
+        </div>
+      </div>
+      <div style="font-size:1.5rem;color:var(--text-mute);">=</div>
+      <div style="flex:1;min-width:200px;">
+        <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:0.5rem;">实际可靠率</div>
+        <div class="bar-track" style="height:28px;">
+          <div class="bar-fill ag" style="width: 35%;">35% 可靠率</div>
+        </div>
+      </div>
+    </div>
+    <div class="callout warn">
+      <p><strong>对比 Workflow DAG：</strong>执行路径是确定的，Process Score 天然接近 100%。<strong>可靠率 ≈ 成功率</strong>。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DECISION MATRIX ===== -->
+<section class="section">
+  <div class="section-label">实践指南</div>
+  <h2 class="section-title">什么时候用什么</h2>
+  <p class="section-intro">不回避反方论点——Agent Loop 在特定场景仍然更好。</p>
+
+  <div class="decision-grid">
+    <div class="decision-card wf">
+      <h4>✅ 选 Workflow DAG</h4>
+      <ul>
+        <li>任务可分解为固定步骤</li>
+        <li>高频执行（成本可预估至关重要）</li>
+        <li>合规/审计需求（金融、医疗、法律）</li>
+        <li>需要可复现性</li>
+        <li>团队 AI 经验有限</li>
+        <li>企业生产环境</li>
+      </ul>
+    </div>
+    <div class="decision-card ag">
+      <h4>⚠️ 选 Agent Loop</h4>
+      <ul>
+        <li>步骤数量未知（开放性探索）</li>
+        <li>低频但高价值（错误成本 >> 计算成本）</li>
+        <li>创造性/探索性任务</li>
+        <li>一次性任务（定义 workflow 不值得）</li>
+        <li>调试从未见过的 bug</li>
+        <li>快速原型</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="quote-block fade-in">
+    <p>"找到最简单的可行方案，只在需要时才增加复杂度。这可能意味着根本不构建 agentic 系统。"</p>
+    <cite>— Anthropic, "Building Effective Agents" [13], 2024-12</cite>
+  </div>
+</section>
+
+<!-- ===== SUMMARY ===== -->
+<section class="section">
+  <div class="section-label">总结</div>
+  <h2 class="section-title">5 大结构性优势</h2>
+
+  <div class="metric-section fade-in">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>优势</th>
+          <th>关键数据</th>
+          <th>来源</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="num-cell" style="color:var(--accent);">1</td>
+          <td>成功率</td>
+          <td>83% vs 50%（+66.7%）</td>
+          <td style="font-size:0.75rem;color:var(--text-mute);">COVENANT [2]</td>
+        </tr>
+        <tr>
+          <td class="num-cell" style="color:var(--accent);">2</td>
+          <td>成本</td>
+          <td>$500 vs $7,500/月（15x）</td>
+          <td style="font-size:0.75rem;color:var(--text-mute);">Anthropic [15] · TDS [16]</td>
+        </tr>
+        <tr>
+          <td class="num-cell" style="color:var(--accent);">3</td>
+          <td>可审计</td>
+          <td>EU AI Act 合规；Agent 无法满足</td>
+          <td style="font-size:0.75rem;color:var(--text-mute);">O'Reilly [19] · Nature [20]</td>
+        </tr>
+        <tr>
+          <td class="num-cell" style="color:var(--asccent);">4</td>
+          <td>可调试</td>
+          <td>Agent 归因准确率 &lt;30%；Workflow 精确到节点</td>
+          <td style="font-size:0.75rem;color:var(--text-mute);">AgentDebugX [4]</td>
+        </tr>
+        <tr>
+          <td class="num-cell" style="color:var(--accent);">5</td>
+          <td>持久化</td>
+          <td>Checkpoint / Time Travel / Fault Recovery</td>
+          <td style="font-size:0.75rem;color:var(--text-mute);">LangGraph [21] · Diagrid [22]</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="quote-block fade-in">
+    <p>Agent Loop 是探索阶段的发现工具，Workflow DAG 是生产环境的运行时。它们不是竞争对手，而是 <strong>Progressive Crystallization 生命周期的不同阶段</strong>。FlowCraft 的 YAML→LangGraph 编译模式天然占据 Stage 3 的位置——这是成本最低、可靠性最高、可审计性最强的阶段。</p>
+    <cite>— 本报告核心结论</cite>
+  </div>
+</section>
+
+<!-- ===== REFERENCES ===== -->
+<section class="refs-section">
+  <h2>引用清单</h2>
+
+  <h3>学术论文（arXiv）</h3>
+  <div class="ref-item"><span class="ref-num">[1]</span><span><strong>What makes prompts a graph</strong> — arXiv:2607.27578 (2026-07). Prompt Graph Engineering 4 条件定义。</span></div>
+  <div class="ref-item"><span class="ref-num">[2]</span><span><strong>COVENANT</strong> — arXiv:2607.25400 (2026-07). Workflow 编译成功率 83% vs Agent 50%。</span></div>
+  <div class="ref-item"><span class="ref-num">[3]</span><span><strong>Progressive Crystallization</strong> — arXiv:2607.07052 (2026-07). Agent→Workflow 三阶段生命周期，成本降 70%+。</span></div>
+  <div class="ref-item"><span class="ref-num">[4]</span><span><strong>AgentDebugX</strong> — arXiv:2607.18754 (2026-07). Agent 归因准确率 &lt;30%。</span></div>
+  <div class="ref-item"><span class="ref-num">[5]</span><span><strong>ClawTrack</strong> — arXiv:2607.28037 (2026-07). 区分"可靠推理"与"幸运成功"。</span></div>
+  <div class="ref-item"><span class="ref-num">[6]</span><span><strong>VADAOrchestra</strong> — arXiv:2606.22485 (2026-06). 神经符号混合架构，金融场景验证。</span></div>
+  <div class="ref-item"><span class="ref-num">[7]</span><span><strong>SQBench</strong> — arXiv:2607.23123 (2026-07). 生产环境 workflow 评估。</span></div>
+  <div class="ref-item"><span class="ref-num">[8]</span><span><strong>Where Facts Go Missing</strong> — arXiv:2607.22448 (2026-07). Agent 信息遗漏分类法。</span></div>
+  <div class="ref-item"><span class="ref-num">[9]</span><span><strong>Graph-Based Agentic AI with LangGraph</strong> — arXiv:2607.19297 (2026-07). LangGraph 三个生产配方。</span></div>
+  <div class="ref-item"><span class="ref-num">[10]</span><span><strong>NVIDIA NOOA</strong> — arXiv:2607.20709 (2026-07). Harness 设计解释双位数性能波动。</span></div>
+  <div class="ref-item"><span class="ref-num">[11]</span><span><strong>From Determinism to Delegation</strong> — arXiv:2606.28791 (2026-06). 范式转移分析。</span></div>
+  <div  class="ref-item"><span class="ref-num">[12]</span><span><strong>The Meta-Agent Challenge</strong> — arXiv:2606.04455 (2026-06). Agent 自主开发能力评估。</span></div>
+
+  <h3>行业来源</h3>
+  <div class="ref-item"><span class="ref-num">[13]</span><span><strong>Anthropic</strong>, "Building Effective Agents" (2024-12). Workflow vs Agent 权威分类。</span></div>
+  <div class="ref-item"><span class="ref-num">[14]</span><span><strong>HackerNoon</strong>, "Why AI Agents Work in Demos But Fail in Production" (2026-02). 复合错误数学，AlphaCodium，$230-360/次。</span></div>
+  <div class="ref-item"><span class="ref-num">[15]</span><span><strong>Anthropic</strong>, "How we built our multi-agent research system" (2025-06). Token 4x/15x，80% 方差解释。</span></div>
+  <div class="ref-item"><span class="ref-num">[16]</span><span><strong>TDS</strong>, "A Developer's Guide: Workflows vs Agents" (2025-06). $500/$2K/$7.5K 成本对比，五维评分框架。</span></div>
+  <div class="ref  class="ref-item"><span class="ref-num">[17]</span><span><strong>Gartner</strong> (2026-06). AI 编码成本 2028 年超过开发者工资。</span></div>
+  <div class="ref-item"><span class="ref-num">[18]</span><span><strong>TDS</strong>, "The 3× Token Bill We Didn't See Coming" (2026-07). 多 Agent 迁移后成本翻 3 倍。</span></div>
+  <div class="ref-item"><span class="ref-num">[19]</span><span><strong>O'Reilly Radar</strong>, "The Case Against Building Your Own Agent Platform" (2026-06). 自建比例 47%→24%，Gartner 40% 取消。</span></div>
+  <div class="ref-item"><span class="ref-num">[20]</span><span><strong>Nature</strong>, UNDCS 论文 (2026-02). FDA 对非确定性医疗 AI 的挑战。</span></div>
+  <div class="ref-item"><span class="ref-num">[21]</span><span><strong>LangGraph</strong> 官方文档 (2026). "Mix deterministic and agentic steps"。</span></div>
+  <div class="ref-item"><span class="ref-num">[22]</span><span><strong>Diagrid</strong>, Catalyst 2.0 (2026-07). Durable execution 成生产刚需。</span></div>
+  <div class="ref-item"><span class="ref-num">[23]</span><span><strong>Gartner</strong>, "40%+ Agentic AI Projects to Be Canceled" (2025-06).</span></div>
+  <div class="ref-item"><span class="ref-num">[24]</span><span><strong>Deloitte</strong>, AI Agent Guardrails Report (2026-04).</span></div>
+  <div class="ref-item"><span class="ref-num">[25]</span><span><strong>Bain</strong>, 2024 GenAI Survey. 95% 用 GenAI，79% 用 agent，1% 成熟。</span></div>
+  <div class="ref-item"><span class="ref-num">[26]</span><span><strong>Menlo Ventures</strong>, State of GenAI in Enterprise (2025-12). 自建比例崩塌。</span></div>
+  <div class="ref-item"><span class="ref-num">[27]</span><span><strong>DevOps.com</strong>, "CI/CD Was Built for Deterministic Software" (2026-05).</span></div>
+  <div class="ref-item"><span class="ref-num">[28]</span><span><strong>GitHub Blog</strong>, "Automate repository tasks with Agentic Workflows" (2026-02).</span></div>
+</section>
+
+<script>
+// Scroll-triggered animation
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
