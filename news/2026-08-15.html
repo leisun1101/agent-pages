@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>每日简报 · 2026-08-15</title>
+  <style>
+    :root {
+      --paper: #fbfaf5;
+      --paper-strong: #fffefa;
+      --ink: #202823;
+      --muted: #6e756f;
+      --moss: #476354;
+      --moss-soft: #90a291;
+      --amber: #d49a58;
+      --line: rgba(32, 40, 35, 0.15);
+      --rail-width: 116px;
+      --ease: cubic-bezier(.2, .75, .25, 1);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #e9e7df;
+      color: var(--ink);
+    }
+
+    body {
+      min-height: 100dvh;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, a { font: inherit; }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid var(--moss);
+      outline-offset: 4px;
+    }
+
+    .reader {
+      width: min(100%, 1560px);
+      height: 100dvh;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: var(--rail-width) minmax(0, 1fr);
+      background: var(--paper-strong);
+      box-shadow: 0 20px 80px rgba(24, 30, 26, 0.12);
+    }
+
+    .rail {
+      position: relative;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      padding: 34px 22px 28px;
+      border-right: 1px solid var(--line);
+      background: rgba(255, 254, 250, 0.94);
+    }
+
+    .brand {
+      margin: 0;
+      font: 600 28px/1.18 Georgia, "Songti SC", "STSong", serif;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-rule {
+      width: 24px;
+      height: 2px;
+      margin: 22px 0 18px;
+      background: var(--moss);
+    }
+
+    .edition {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .rail-progress {
+      margin-top: auto;
+      display: grid;
+      gap: 15px;
+    }
+
+    .nav-button {
+      width: 100%;
+      min-height: 44px;
+      padding: 8px 4px;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      transition: color 180ms ease, border-color 180ms ease;
+    }
+
+    .nav-button:hover { color: var(--moss); border-color: var(--moss); }
+    .nav-button:disabled { opacity: 0.32; cursor: default; }
+
+    .counter {
+      color: var(--ink);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .dot {
+      width: 5px;
+      height: 5px;
+      border: 0;
+      border-radius: 50%;
+      padding: 0;
+      background: #c8cbc6;
+      cursor: pointer;
+    }
+
+    .dot.active { background: var(--moss); transform: scale(1.3); }
+
+    .deck {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      touch-action: pan-y;
+      background: var(--paper-strong);
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: minmax(360px, 46%) minmax(480px, 1fr);
+      min-width: 0;
+      background: var(--paper-strong);
+      opacity: 0;
+      transform: translate3d(104%, 0, 0) rotateY(-1.2deg);
+      transform-origin: left center;
+      pointer-events: none;
+      visibility: hidden;
+      transition: transform 520ms var(--ease), opacity 320ms ease, visibility 0s linear 520ms;
+    }
+
+    .page.past {
+      transform: translate3d(-104%, 0, 0) rotateY(1.2deg);
+    }
+
+    .page.active {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) rotateY(0);
+      pointer-events: auto;
+      visibility: visible;
+      transition-delay: 0s;
+    }
+
+    .visual-stage {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      background: #e8ede6;
+      isolation: isolate;
+    }
+
+    .has-image .visual-stage::after {
+      content: "";
+      position: absolute;
+      z-index: 3;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 13%;
+      pointer-events: none;
+      background: linear-gradient(to right, transparent, rgba(255, 254, 250, 0.92));
+    }
+
+    .story-image {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0;
+      transform: scale(1.025);
+      transition: opacity 420ms ease, transform 1.1s var(--ease);
+    }
+
+    .page.active.has-image .story-image.loaded {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .kinetic-art {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at calc(20% + var(--drift-x, 0px)) calc(80% + var(--drift-y, 0px)), rgba(72, 103, 84, 0.58), transparent 46%),
+        radial-gradient(circle at 84% 70%, rgba(218, 164, 99, 0.78), transparent 38%),
+        linear-gradient(155deg, #f4f2e9 12%, #e8ede6 52%, #f5eadb 100%);
+      transition: opacity 320ms ease;
+      animation: ambient-drift 16s ease-in-out infinite alternate;
+    }
+
+    .has-image .kinetic-art { opacity: 0; }
+    .no-image .kinetic-art { opacity: 1; }
+
+    .kinetic-art::before {
+      content: "";
+      position: absolute;
+      inset: -16%;
+      opacity: 0.34;
+      background: repeating-radial-gradient(circle at 30% 32%, transparent 0 16px, rgba(71, 99, 84, 0.22) 17px 18px);
+      transform: translate3d(var(--parallax-x, 0px), var(--parallax-y, 0px), 0);
+      transition: transform 360ms ease-out;
+    }
+
+    .kinetic-art::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.18;
+      background-image: radial-gradient(rgba(32, 40, 35, 0.38) 0.45px, transparent 0.45px);
+      background-size: 4px 4px;
+      mix-blend-mode: multiply;
+      animation: grain-shift 7s steps(2, end) infinite;
+    }
+
+    .kinetic-index,
+    .kinetic-word,
+    .kinetic-category {
+      position: absolute;
+      z-index: 1;
+      color: var(--moss);
+      font-family: Georgia, "Songti SC", "STSong", serif;
+      pointer-events: none;
+    }
+
+    .kinetic-index {
+      top: -3vw;
+      left: 4.5vw;
+      color: rgba(52, 67, 58, 0.11);
+      font-size: clamp(190px, 31vw, 520px);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: -0.08em;
+    }
+
+    .kinetic-word {
+      top: 52%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(25px, 3vw, 50px);
+      letter-spacing: 0.52em;
+      text-indent: 0.52em;
+      white-space: nowrap;
+    }
+
+    .kinetic-category {
+      left: 50%;
+      bottom: 17%;
+      transform: translateX(-50%);
+      font-size: clamp(10px, 1vw, 15px);
+      letter-spacing: 0.34em;
+      text-indent: 0.34em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .article {
+      min-width: 0;
+      height: 100%;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: clamp(44px, 5.4vh, 72px) clamp(42px, 5vw, 84px) 54px;
+      background: var(--paper-strong);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(71, 99, 84, 0.28) transparent;
+    }
+
+    .category {
+      display: inline-block;
+      margin-bottom: 24px;
+      padding: 6px 12px;
+      border: 1px solid rgba(71, 99, 84, 0.55);
+      border-radius: 3px;
+      color: var(--moss);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    h1 {
+      max-width: 14em;
+      margin: 0;
+      font: 600 clamp(42px, 4vw, 64px)/1.18 Georgia, "Songti SC", "STSong", serif;
+      letter-spacing: -0.035em;
+      text-wrap: balance;
+    }
+
+    .title-rule {
+      width: 38px;
+      height: 2px;
+      margin: 25px 0 25px;
+      background: var(--moss);
+    }
+
+    .lead {
+      max-width: 64ch;
+      margin: 0 0 23px;
+      font-size: clamp(17px, 1.35vw, 21px);
+      line-height: 1.8;
+      color: #303833;
+    }
+
+    .body-copy {
+      max-width: 65ch;
+      padding-top: 20px;
+      border-top: 1px dashed rgba(32, 40, 35, 0.2);
+    }
+
+    .body-copy p {
+      margin: 0 0 16px;
+      font-size: 15.5px;
+      line-height: 1.9;
+      color: #3d443f;
+    }
+
+    .fact-box {
+      max-width: 65ch;
+      margin-top: 26px;
+      padding: 18px 20px;
+      border: 1px solid rgba(32, 40, 35, 0.13);
+      border-left: 3px solid var(--moss);
+      background: rgba(248, 247, 241, 0.8);
+    }
+
+    .fact-box strong {
+      display: block;
+      margin-bottom: 8px;
+      font: 600 16px/1.4 Georgia, "Songti SC", serif;
+    }
+
+    .fact-box p { margin: 0; font-size: 14px; line-height: 1.75; }
+
+    .meta-row {
+      max-width: 65ch;
+      margin-top: 30px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: end;
+    }
+
+    .meta {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.75;
+    }
+
+    .source-link {
+      flex: 0 0 auto;
+      min-height: 42px;
+      padding: 10px 14px;
+      border: 1px solid var(--moss);
+      border-radius: 3px;
+      color: var(--moss);
+      text-decoration: none;
+      transition: background 180ms ease, color 180ms ease;
+    }
+
+    .source-link:hover { background: var(--moss); color: #fff; }
+
+    .overview-page .article {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .date-kicker {
+      margin: 0 0 18px;
+      color: var(--moss);
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .overview-page h1 { font-size: clamp(54px, 6vw, 96px); }
+
+    .overview-copy {
+      max-width: 62ch;
+      margin-top: 30px;
+    }
+
+    .overview-copy p {
+      margin: 0 0 18px;
+      font-size: clamp(16px, 1.25vw, 19px);
+      line-height: 1.9;
+      color: #3d443f;
+    }
+
+    .mobile-nav { display: none; }
+
+    @keyframes ambient-drift {
+      from { background-position: 0% 0%, 0% 0%, 0% 0%; }
+      to { background-position: 3% -2%, -2% 3%, 0% 0%; }
+    }
+
+    @keyframes grain-shift {
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      30% { transform: translate3d(1px, -1px, 0); }
+      60% { transform: translate3d(-1px, 1px, 0); }
+    }
+
+    @media (max-width: 960px) {
+      :root { --rail-width: 0px; }
+
+      .reader {
+        width: 100%;
+        grid-template-columns: 1fr;
+        box-shadow: none;
+      }
+
+      .rail { display: none; }
+
+      .deck {
+        height: calc(100dvh - 70px - env(safe-area-inset-bottom));
+      }
+
+      .page {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(220px, 34dvh) auto;
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
+      }
+
+      .visual-stage { min-height: 220px; }
+      .has-image .visual-stage::after { display: none; }
+
+      .kinetic-index {
+        top: -38px;
+        left: 8vw;
+        font-size: clamp(180px, 68vw, 320px);
+      }
+
+      .kinetic-word { top: 54%; font-size: clamp(20px, 7vw, 34px); }
+      .kinetic-category { bottom: 13%; }
+
+      .article {
+        height: auto;
+        min-height: 66dvh;
+        overflow: visible;
+        padding: 30px 22px calc(112px + env(safe-area-inset-bottom));
+      }
+
+      h1 { font-size: clamp(35px, 9.5vw, 50px); line-height: 1.22; }
+      .lead { font-size: 17px; line-height: 1.78; }
+      .body-copy p { font-size: 15.5px; line-height: 1.85; }
+      .meta-row { align-items: stretch; flex-direction: column; }
+      .source-link { align-self: flex-start; }
+
+      .mobile-nav {
+        position: fixed;
+        z-index: 50;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 12px;
+        min-height: 70px;
+        padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+        border-top: 1px solid var(--line);
+        background: rgba(255, 254, 250, 0.95);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+      }
+
+      .mobile-nav .nav-button {
+        min-height: 48px;
+        border: 1px solid var(--line);
+        border-radius: 3px;
+      }
+
+      .mobile-nav .nav-button:last-child { justify-self: end; }
+      .mobile-counter { font-size: 12px; font-variant-numeric: tabular-nums; }
+    }
+
+    @media (max-width: 520px) {
+      .page { grid-template-rows: minmax(190px, 29dvh) auto; }
+      .overview-page h1 { font-size: clamp(48px, 15vw, 72px); }
+      .overview-page .article { justify-content: flex-start; }
+      .category { margin-bottom: 18px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+
+      .page, .page.past { transform: none; }
+      .page:not(.active) { display: none; }
+      .kinetic-art::before { transform: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="reader">
+    <aside class="rail" aria-label="简报导航">
+      <p class="brand">每日<br>简报</p>
+      <span class="brand-rule" aria-hidden="true"></span>
+      <p class="edition">Saturday ·<br>2026-08-15</p>
+      <div class="rail-progress">
+        <button class="nav-button" id="prevButton" type="button">上一页</button>
+        <span class="counter" id="pageCounter">01 / 11</span>
+        <div class="dots" id="dots" aria-label="页码"><button class="dot active" type="button" aria-label="第1页" aria-current="page"></button><button class="dot" type="button" aria-label="第2页"></button><button class="dot" type="button" aria-label="第3页"></button><button class="dot" type="button" aria-label="第4页"></button><button class="dot" type="button" aria-label="第5页"></button><button class="dot" type="button" aria-label="第6页"></button><button class="dot" type="button" aria-label="第7页"></button><button class="dot" type="button" aria-label="第8页"></button><button class="dot" type="button" aria-label="第9页"></button><button class="dot" type="button" aria-label="第10页"></button><button class="dot" type="button" aria-label="第11页"></button></div>
+        <button class="nav-button" id="nextButton" type="button">下一页</button>
+      </div>
+    </aside>
+
+    <section class="deck" id="deck" aria-live="polite">
+      <section class="page overview-page no-image active" data-index="0" aria-hidden="false">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">00</span><span class="kinetic-word" aria-hidden="true">DAILY</span><span class="kinetic-category" aria-hidden="true">DAILY · BRIEFING</span></div>
+        </div>
+        <article class="article">
+          <p class="date-kicker">Saturday · 2026-08-15</p>
+          <h1>每日简报</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">筛选窗口：柏林时间 8 月 14 日 08:00 至 8 月 15 日 07:00。最终入选10条。</p>
+          <div class="overview-copy"><p>周六的简报以地缘与 AI 两条主线为主。中东方向，特朗普威胁击败伊朗后宣布霍尔木兹海峡为&quot;美国领土&quot;，伊朗同日宣布击落美军 MQ-9 无人机并坚持封锁，布伦特原油升至 88.5 美元附近，霍尔木兹航运与全球能源供应链持续承压。</p><p>AI 产业继续狂飙：Anthropic 单季营收突破 115 亿美元、同比暴涨 14 倍，IPO 估值传闻冲上 2 万亿美元；Cursor 被 SpaceX 正式收购，AI 编程工具格局生变。欧洲则被第五波热浪与多地野火笼罩，法国、克罗地亚、英国损失严重，气候风险正在变成日常议题。</p></div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="1" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">01</span><span class="kinetic-word" aria-hidden="true">中东</span><span class="kinetic-category" aria-hidden="true">中东 · 地缘</span></div>
+          <img class="story-image" src="https://www.aljazeera.com/wp-content/uploads/2026/08/AFP__20260814__C4PN4AF__v1__HighRes__UsPoliticsTrump-1786747603.jpg?resize=1920%2C1440" alt="特朗普威胁宣布霍尔木兹海峡为&quot;美国领土&quot;，伊朗击落美军 MQ-9 无人机" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">中东 · 地缘</span>
+          <h1>特朗普威胁宣布霍尔木兹海峡为&quot;美国领土&quot;，伊朗击落美军 MQ-9 无人机</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">美伊冲突进入新阶段：特朗普放话击败伊朗后&quot;很快&quot;将海峡宣布为美国领土，伊朗革命卫队同日宣布用新防空系统击落美军 MQ-9&quot;死神&quot;无人机，油价应声上涨。</p>
+          <div class="body-copy"><p>特朗普在周五表态中称，将在击败伊朗后&quot;很快&quot;（pretty soon）宣布霍尔木兹海峡为美国领土，财长贝森特同时放言将对伊朗采取&quot;前所未见&quot;的经济措施。半岛电视台记者分析指出，该说法夸大了美国对这条国际水道（实际位于伊朗与阿曼领海内）的控制力，但海上封锁本身是真实的：美防长称将轮换舰船维持封锁，美军中央司令部已确认在阿拉伯海&quot;重新引导&quot;62 艘商船。</p><p>伊朗方面回应强硬：副外长称海峡&quot;将保持伊朗属性&quot;，封锁将持续到美国接受失败；革命卫队宣布用&quot;新型先进防空系统&quot;在霍尔木兹甘省上空击落一架美军 MQ-9 无人机（美方暂未回应，此前美媒报道美军在伊战中已损失至少 45 架 MQ-9）。阿联酋 ADNOC 确认有船只在海峡遇袭，沙特外交部&quot;最强烈谴责&quot;并对两艘 ADNOC 油轮遇袭事件指认伊朗负全责。油轮遇袭叠加谈判停滞，布伦特原油升至 88.52 美元、WTI 报 82.40 美元。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>布伦特原油升至 88.52 美元；伊朗宣布击落美军 MQ-9 无人机；美军已&quot;重新引导&quot;62 艘商船</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：Al Jazeera / Reuters<br>时间：2026-08-15 06:30 CET</p>
+            <a class="source-link" href="https://www.aljazeera.com/news/liveblog/2026/8/15/iran-war-live-trump-vows-to-make-hormuz-us-territory-pretty-soon" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="2" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">02</span><span class="kinetic-word" aria-hidden="true">AI</span><span class="kinetic-category" aria-hidden="true">AI · 产业</span></div>
+          <img class="story-image" src="https://wpimg-wscn.awtmt.com/9a83cfd7-d5ce-49cf-8da6-1a5591b85a6e.png" alt="Anthropic Q2 营收暴涨 14 倍至 115 亿美元，IPO 估值或达 2 万亿美元" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">AI · 产业</span>
+          <h1>Anthropic Q2 营收暴涨 14 倍至 115 亿美元，IPO 估值或达 2 万亿美元</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">Anthropic 二季度营收突破 115 亿美元、同比至少增长 14 倍，已秘密递交上市申请；路透独家称 IPO 估值取决于 2028 年 1900–2000 亿美元的收入预测，市场传闻估值或达 2 万亿美元、超 SpaceX 成史上最大 IPO。</p>
+          <div class="body-copy"><p>华尔街见闻援引彭博报道，Anthropic 二季度初步营收超过 115 亿美元，较上年同期（7.87 亿美元）至少增长 14 倍，一季度为 47.3 亿美元，且二季度实现调整后营业利润为正。此前媒体披露其年化营收在 5 月已突破 470 亿美元，与 OpenAI（超 400 亿美元）的差距正在拉开。</p><p>IPO 方面，知情人士透露公司已秘密提交上市申请，正与摩根士丹利、高盛、摩根大通合作推进。路透独家报道称本次 IPO 估值锚点是 2028 年 1900–2000 亿美元的收入预测；市场传闻估值或达 2 万亿美元，超过 SpaceX 成为史上最大 IPO。彭博汇编显示，今年全球 IPO 累计募资已达 2564 亿美元，为 2021 年以来最高。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>Q2 营收超 115 亿美元，同比至少 +14 倍；IPO 估值锚点：2028 年 1900–2000 亿美元收入预测</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：华尔街见闻（彭博）/ Reuters<br>时间：2026-08-15 03:36 CET</p>
+            <a class="source-link" href="https://wallstreetcn.com/articles/3779495" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="3" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">03</span><span class="kinetic-word" aria-hidden="true">AI</span><span class="kinetic-category" aria-hidden="true">AI · 工具</span></div>
+          <img class="story-image" src="https://aihot.virxact.com/items/cmst3joqo03pwro0658o4g1m3/opengraph-image-1az256?3bca4e4fb1f54684" alt="Cursor 正式被 SpaceX 收购，绑定 Grok 与全球最大 GPU 集群" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">AI · 工具</span>
+          <h1>Cursor 正式被 SpaceX 收购，绑定 Grok 与全球最大 GPU 集群</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">AI 编程工具 Cursor 宣布正式被 SpaceX 收购（4 月启动、8 月 14 日官宣完成），将获得 SpaceX 全球最大规模 GPU 集群使用权，与 Grok 深度协同，AI 编程工具竞争格局生变。</p>
+          <div class="body-copy"><p>Cursor 官方博客确认收购完成，CEO mntruell 与 SpaceXAI 官方账号同步官宣。双方合作始于 4 月，本次为收购流程收官。官方称合并后 Cursor 将获得全球最大规模 GPU 集群使用权，有足够算力构建&quot;更强大、运行成本更经济&quot;的模型，以更低价格向用户提供更强能力；本周发布的 Grok 4.6 被官方称为&quot;双方携手所能构建成果的初步展现&quot;。</p><p>市场解读认为，Cursor 并入 SpaceX 后获得大规模算力，将改变编程工具能力迭代与定价的预期；IT 之家等报道称交易金额约 600 亿美元，为科技行业史上最大收购之一。对 Claude Code、Copilot 等竞品而言，模型与算力+工具的垂直整合趋势愈发明显。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>Cursor 正式并入 SpaceX；交易传闻约 600 亿美元；获得全球最大规模 GPU 集群使用权</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：Cursor Blog / AIHOT / IT之家<br>时间：2026-08-14 20:00 CET</p>
+            <a class="source-link" href="https://aihot.virxact.com/items/cmst3joqo03pwro0658o4g1m3" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page no-image" data-index="4" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">04</span><span class="kinetic-word" aria-hidden="true">全球</span><span class="kinetic-category" aria-hidden="true">全球 · 科技政策</span></div>
+          
+        </div>
+        <article class="article">
+          <span class="category">全球 · 科技政策</span>
+          <h1>路透独家：美国将要求盟友在中美 AI 竞赛中&quot;选边站&quot;</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">美国国务院起草信函，拟告知 35 个&quot;AI 机会声明&quot;签署国：不能同时参与中美两套 AI 框架。哈萨克斯坦是目前已知唯一同时加入两边的国家，华盛顿已拉响警报。</p>
+          <div class="body-copy"><p>路透独家报道，美国国务院起草了一封致 35 个&quot;AI 机会声明&quot;签署国的信函，明确传达&quot;你不能两头通吃&quot;：同时加入北京主导框架的国家将被排除在美国主导的 AI 联盟之外。信函未点名中国，但强调&quot;签署《Pax Silica 宣言》是一项承诺，不能与期望相冲突的重复性倡议成员身份并存&quot;。</p><p>Pax Silica 框架由华盛顿 2025 年发起，约 24 国加入，包括日本、澳大利亚、韩国，核心是保障 AI 模型、半导体与关键矿产供应链。哈萨克斯坦是目前唯一已知同时加入美国 Pax Silica 与中国联盟的国家。今年 7 月习近平发起竞争性组织&quot;世界人工智能合作组织&quot;推广开源权重技术，中美 AI 阵营化趋势加剧，对算力、芯片与云供应链影响深远。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>信函发给 35 个签署国；哈萨克斯坦为唯一已知&quot;双面加入&quot;国家；美国战略意图是&quot;饿死&quot;中国尖端 AI 资源</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：Reuters<br>时间：2026-08-14 23:53 CET</p>
+            <a class="source-link" href="https://www.reuters.com/world/" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="5" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">05</span><span class="kinetic-word" aria-hidden="true">欧洲</span><span class="kinetic-category" aria-hidden="true">欧洲 · 气候</span></div>
+          <img class="story-image" src="https://i.guim.co.uk/img/media/6d153fe5361ed9b23a587ee6ca162a617be7205b/759_0_4161_3330/master/4161.jpg?width=1200&amp;height=630&amp;quality=85&amp;auto=format&amp;fit=crop&amp;precrop=40:21,offset-x50,offset-y0&amp;overlay-align=bottom%2Cleft&amp;overlay-width=100p&amp;overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctbGl2ZS5wbmc&amp;enable=upscale&amp;s=3fb70f4b7d9ea9e40c4f7ed01411d1cb" alt="第五波热浪席卷欧洲：克罗地亚野火 1 死 42 伤，法国数百人涉纵火被拘，英国禁售一次性烧烤" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">欧洲 · 气候</span>
+          <h1>第五波热浪席卷欧洲：克罗地亚野火 1 死 42 伤，法国数百人涉纵火被拘，英国禁售一次性烧烤</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">欧洲正经历今夏第五波热浪，约 1.5 亿人面临 35°C 以上高温。克罗地亚野火致 1 死 42 伤、上千人撤离；法国 7 月以来近 500 人因涉火被拘；英国野火破纪录并临时禁售一次性烧烤。</p>
+          <div class="body-copy"><p>克罗地亚达尔马提亚海岸野火已确认至少 1 人死亡、42 人受伤（其中 7 人生命垂危），旅游小镇 Lokva Rogoznica 与 Omiš 约 1200 人撤离，含约 300 名捷克游客，总理称其为&quot;近年来最严重火灾之一&quot;。法国西南部 Landes 新火情 24 小时内烧毁近 1100 公顷松林，525 人撤离；自 7 月 1 日以来法国已有 474 人因涉野火被拘留，近 70% 涉嫌故意纵火。</p><p>英国野火数量已超去年全年总数 1017 起，西米德兰兹多处住宅被毁，政府临时禁售一次性烧烤炉并派军人支援消防（全国仍有 37 处火情）。德国 Hürtgen 森林火灾致 Gey 村上千人撤离，二战未爆弹阻碍灭火；希腊、西班牙、意大利同样告急。气象数据显示英格兰 8 月降雨量仅为长期均值 6%，欧盟 Copernicus 警告中欧东欧大片地区出现&quot;极度极端&quot;火险条件。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>欧洲约 1.5 亿人面临 35°C+；克罗地亚 1 死 42 伤；法国 474 人涉火被拘；英国野火破纪录</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：The Guardian / France24 / BBC<br>时间：2026-08-14 19:08 CET</p>
+            <a class="source-link" href="https://www.theguardian.com/world/live/2026/aug/14/fires-wildfires-extreme-heat-west-midlands-stourbridge-uk-greece-france-croatia-climate-crisis-europe-latest-news-updates" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="6" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">06</span><span class="kinetic-word" aria-hidden="true">欧洲</span><span class="kinetic-category" aria-hidden="true">欧洲 · 数字政策</span></div>
+          <img class="story-image" src="https://i.guim.co.uk/img/media/37d9d05fd3b13992e53c2a7f0210f723e9bc0a54/92_0_2500_2000/master/2500.jpg?width=1200&amp;height=630&amp;quality=85&amp;auto=format&amp;fit=crop&amp;precrop=40:21,offset-x50,offset-y0&amp;overlay-align=bottom%2Cleft&amp;overlay-width=100p&amp;overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctZGVmYXVsdC5wbmc&amp;enable=upscale&amp;s=2df3e466cac6c1e8b791479c29445b63" alt="法国宪法委员会否决 15 岁以下社交媒体禁令，马克龙要求重写法案" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">欧洲 · 数字政策</span>
+          <h1>法国宪法委员会否决 15 岁以下社交媒体禁令，马克龙要求重写法案</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">法国最高宪法机构裁定禁止 15 岁以下未成年人使用社交媒体的法案&quot;不成比例地侵犯言论与传播自由&quot;且缺乏隐私保障，马克龙已要求总理重新起草，誓言在大选前落地。</p>
+          <div class="body-copy"><p>法国宪法委员会否决了议会 7 月通过的法案，该法案原定 9 月初起禁止 15 岁以下未成年人开设社交媒体账户，并要求平台 4 个月内关闭现有账户、使用经隐私监管机构批准的年龄验证工具。委员会裁定年龄验证条款&quot;不成比例地侵犯言论与传播自由&quot;，同时&quot;未能提供尊重私生活权利所必需的法律保障&quot;。</p><p>爱丽舍宫表示马克龙已要求总理勒科尔努重新起草法案以回应关切，并决心让改革在 2027 年春季大选前生效。背景是全球效仿澳大利亚（2025 年 12 月起禁止 16 岁以下使用主流平台）的立法浪潮：英国正筹备明年对同一年龄组封锁主流应用，欧盟则计划在 DSA 框架下讨论&quot;按年龄段分阶段开放&quot;。社交媒体公司普遍反对全面禁令，称已有保护措施。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>宪法委员会以&quot;不成比例侵犯言论自由&quot;为由否决；马克龙要求重写并誓言 2027 大选前生效</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：The Guardian<br>时间：2026-08-14 19:12 CET</p>
+            <a class="source-link" href="https://www.theguardian.com/world/2026/aug/14/french-court-blocks-macron-social-media-ban-under-15s" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page no-image" data-index="7" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">07</span><span class="kinetic-word" aria-hidden="true">全球</span><span class="kinetic-category" aria-hidden="true">全球 · 经济</span></div>
+          
+        </div>
+        <article class="article">
+          <span class="category">全球 · 经济</span>
+          <h1>美国 7 月零售销售环比 -0.6%，九个月来首次下滑，9 月加息押注跌破三成</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">美国 7 月零售销售环比下降 0.6%，为九个月来首次、14 个月最大降幅，远逊预期的 +0.1%；线上零售领跌，餐饮逆势增长。CME 数据显示 9 月加息概率降至约 30%。</p>
+          <div class="body-copy"><p>路透报道，美国 7 月零售销售环比 -0.6%（预期 +0.1%），为去年 10 月以来首次下滑、14 个月最大降幅；同比仍 +5.0%。核心零售销售（剔除汽车、汽油等）环比 -0.4%。分项上，线上/非实体店零售商 -2.2% 领跌，汽车经销商 -1.8%，加油站 -0.9%；餐饮 +0.5%、服装 +1.9%（返校季提振）。</p><p>下滑背景包括退税红利消退、亚马逊把 Prime Day 从 7 月提前到 6 月造成的&quot;还账&quot;效应，以及消费者对高价的敏感。密歇根大学 8 月消费者信心指数从 55.2 降至 51.0。数据公布后美股基本持平、美元走软、美债收益率下跌；CME FedWatch 显示 9 月加息概率从 33.9% 降至约 30.6%，高盛将三季度 GDP 预测下调 0.5 个百分点至 2.2%。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>零售销售环比 -0.6%（预期 +0.1%），九个月首次下滑；9 月加息概率降至约 30.6%</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：Reuters<br>时间：2026-08-14 21:08 CET</p>
+            <a class="source-link" href="https://www.reuters.com/business/us-retail-sales-unexpectedly-fall-july-2026-08-14/" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page no-image" data-index="8" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">08</span><span class="kinetic-word" aria-hidden="true">中国</span><span class="kinetic-category" aria-hidden="true">中国 · 经济</span></div>
+          
+        </div>
+        <article class="article">
+          <span class="category">中国 · 经济</span>
+          <h1>中国 7 月新增贷款净减少 3400 亿，创纪录收缩，信贷需求疲软</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">央行数据显示 7 月人民币贷款净减少 3400 亿元，为彭博有记录以来最大收缩、年内第二次负增长；居民部门贷款减少 8271 亿，仅政府债与企业债支撑社融。</p>
+          <div class="body-copy"><p>中国人民银行 8 月 14 日公布 7 月金融数据：单月人民币贷款减少 3400 亿元（预期为正增约 1260 亿元），为彭博有记录以来最大倒退、年内第二次收缩；贷款余额同比增长 5.1% 至 282.29 万亿元。前七个月住户贷款减少 8271 亿元（短期 -9281 亿、中长期 +1010 亿），企业贷款增加 11 万亿元。</p><p>社会融资方面，7 月新增约 1.41 万亿元，前七个月累计 22.25 万亿元、同比少增 1.74 万亿元；政府债券净融资 7.76 万亿元、企业债券净融资 2.52 万亿元，成为社融主要支撑。M2 同比 +7.7%，M2-M1 剪刀差收窄至 3.7 个百分点。路透将收缩归因于企业与家庭信贷需求疲软；业内专家则建议淡化对单一贷款渠道的关注，债券与股权融资占比上升。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>7 月人民币贷款 -3400 亿元，彭博有记录以来最大收缩；住户贷款前 7 月减少 8271 亿</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：Reuters / 华尔街见闻<br>时间：2026-08-14 12:33 CET</p>
+            <a class="source-link" href="https://www.reuters.com/world/china/" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="9" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">09</span><span class="kinetic-word" aria-hidden="true">全球</span><span class="kinetic-category" aria-hidden="true">全球 · 灾害</span></div>
+          <img class="story-image" src="https://ichef.bbci.co.uk/ace/branded_news/1200/cpsprodpb/9ae3/live/73539fc0-984d-11f1-92c4-9d3840de4561.jpg" alt="印尼弗洛勒斯岛海域 7.7 级强震：已确认至少 20 人死亡，海啸预警 3 小时后解除" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">全球 · 灾害</span>
+          <h1>印尼弗洛勒斯岛海域 7.7 级强震：已确认至少 20 人死亡，海啸预警 3 小时后解除</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">印尼东部弗洛勒斯岛近海发生 7.7 级强震（震源 15 公里），港口城镇毛梅雷发现 20 具遗体，约 3 小时海啸预警已解除；通往震中陆路被山体滑坡阻断，数十次余震持续。</p>
+          <div class="body-copy"><p>当地时间周六凌晨 4:58，印尼弗洛勒斯岛近海发生 7.7 级地震，震源深度 15 公里，一度触发海啸预警（约 3 小时后解除，多地记录到不足 1 米的海啸波）。伤亡数字各机构口径不一：救援机构在港口城镇毛梅雷发现至少 20 死、6 伤、2 人被困废墟；省长称至少 5 人在睡梦中被压死；国家减灾机构初期数据为 14 死。</p><p>破坏集中于小城镇为主的区域：毛梅雷港航站楼部分倒塌，震中最近的 Nagekeo 地区约 2000 人疏散，多栋房屋、仓库与政府设施受损，通讯信号受影响，陆路被山体滑坡阻断，救援队改乘渡轮前往。震后已发生数十次余震（含一次 6.1 级强震）。1992 年同一地区曾发生 7.5 级地震并造成大面积破坏。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>7.7 级、震源 15 公里；已确认至少 20 人死亡；海啸预警约 3 小时后解除</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：Reuters / BBC<br>时间：2026-08-15 05:00 CET</p>
+            <a class="source-link" href="https://www.bbc.co.uk/news/articles/c5y0zz63gero" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page no-image" data-index="10" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">10</span><span class="kinetic-word" aria-hidden="true">平台经济</span><span class="kinetic-category" aria-hidden="true">平台经济 · 外卖</span></div>
+          
+        </div>
+        <article class="article">
+          <span class="category">平台经济 · 外卖</span>
+          <h1>小菜园主动&quot;去外卖化&quot;：外卖占比降至 32.6%，堂食翻台率回升，净利润下降 24%</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">中式连锁餐饮小菜园上半年主动下调外卖权重：外卖收入降 10.6%、占比从 39% 压到 32.6%，换来堂食收入 +18.1%、翻台率升至 3.5 次/天，但利润同比 -24.3%，人均消费降至 50.5 元。</p>
+          <div class="body-copy"><p>小菜园（全直营大众中式餐饮，在营门店 824 家）发布 2026 年上半年业绩：收入 29.03 亿元、同比 +7.0%，期内利润 2.89 亿元、同比 -24.3%，净利率由 14.1% 降至约 10.0%。结构上，外卖收入同比下降 10.6% 至 9.45 亿元，占比由 39.0% 降至 32.6%，订单由 1680 万笔减至 1470 万笔；堂食收入同比增长 18.1% 至 19.45 亿元，占比升至 67%，整体翻台率由 3.1 升至 3.5 次/天。</p><p>代价同样明显：堂食人均消费由 57.1 元降至 50.5 元，617 家同店销售额同比下降 12.5%。公司称这是&quot;用短期利润换回堂食客流&quot;的主动调整，与调价、88VIP 会员体系及主动让利有关。外卖收缩虽节省了约 0.26 亿元平台履约与促销费用，但被原材料与员工成本约 2.97 亿元的增幅完全覆盖——对平台经济而言，商家在佣金压力与堂食复苏之间的再平衡，是一个值得关注的量化样本。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>外卖收入占比 39.0%→32.6%；堂食收入 +18.1%、翻台率 3.1→3.5；利润 -24.3%、人均消费降至 50.5 元</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：华尔街见闻<br>时间：2026-08-15 05:32 CET</p>
+            <a class="source-link" href="https://wallstreetcn.com/articles/3779506" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <nav class="mobile-nav" aria-label="简报翻页">
+    <button class="nav-button" id="mobilePrevButton" type="button">上一页</button>
+    <span class="mobile-counter" id="mobileCounter">01 / 11</span>
+    <button class="nav-button" id="mobileNextButton" type="button">下一页</button>
+  </nav>
+
+  <script>
+    (() => {
+      const pages = Array.from(document.querySelectorAll('.page'));
+      const dots = Array.from(document.querySelectorAll('.dot'));
+      const deck = document.getElementById('deck');
+      const controls = {
+        prev: [document.getElementById('prevButton'), document.getElementById('mobilePrevButton')],
+        next: [document.getElementById('nextButton'), document.getElementById('mobileNextButton')],
+        counters: [document.getElementById('pageCounter'), document.getElementById('mobileCounter')]
+      };
+      const SWIPE_MIN = 48;
+      const HORIZONTAL_RATIO = 1.2;
+      let current = 0;
+      let gesture = null;
+      let wheelLocked = false;
+
+      function pad(value) {
+        return String(value).padStart(2, '0');
+      }
+
+      function show(index, updateHash = true) {
+        const nextIndex = Math.max(0, Math.min(index, pages.length - 1));
+        current = nextIndex;
+
+        pages.forEach((page, pageIndex) => {
+          page.classList.toggle('active', pageIndex === current);
+          page.classList.toggle('past', pageIndex < current);
+          page.setAttribute('aria-hidden', pageIndex === current ? 'false' : 'true');
+          if ('inert' in page) page.inert = pageIndex !== current;
+        });
+
+        dots.forEach((dot, dotIndex) => {
+          dot.classList.toggle('active', dotIndex === current);
+          dot.setAttribute('aria-current', dotIndex === current ? 'page' : 'false');
+        });
+
+        const label = `${pad(current + 1)} / ${pad(pages.length)}`;
+        controls.counters.forEach(counter => { if (counter) counter.textContent = label; });
+        controls.prev.forEach(button => { if (button) button.disabled = current === 0; });
+        controls.next.forEach(button => { if (button) button.disabled = current === pages.length - 1; });
+
+        if (updateHash) history.replaceState(null, '', `#page-${current + 1}`);
+      }
+
+      function activateNoImageState(img) {
+        const page = img.closest('.page');
+        if (!page) return;
+        page.classList.remove('has-image');
+        page.classList.add('no-image');
+        img.remove();
+      }
+
+      function hasTextSelection() {
+        const selection = window.getSelection ? window.getSelection() : null;
+        return Boolean(selection && selection.type === 'Range' && selection.toString().trim());
+      }
+
+      document.querySelectorAll('.story-image').forEach(img => {
+        img.addEventListener('load', () => img.classList.add('loaded'), { once: true });
+        img.addEventListener('error', () => activateNoImageState(img), { once: true });
+        if (img.complete) {
+          if (img.naturalWidth > 0) img.classList.add('loaded');
+          else activateNoImageState(img);
+        }
+      });
+
+      controls.prev.forEach(button => button && button.addEventListener('click', () => show(current - 1)));
+      controls.next.forEach(button => button && button.addEventListener('click', () => show(current + 1)));
+      dots.forEach((dot, index) => dot.addEventListener('click', () => show(index)));
+
+      window.addEventListener('keydown', event => {
+        if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+        if (event.key === 'ArrowLeft') show(current - 1);
+        if (event.key === 'ArrowRight') show(current + 1);
+      });
+
+      deck.addEventListener('pointerdown', event => {
+        if (!event.isPrimary || (event.pointerType !== 'touch' && event.pointerType !== 'pen')) return;
+        if (event.target.closest('a, button, input, textarea, select, [contenteditable="true"]')) return;
+        if (hasTextSelection()) return;
+        gesture = { id: event.pointerId, x: event.clientX, y: event.clientY };
+        if (deck.setPointerCapture) deck.setPointerCapture(event.pointerId);
+      });
+
+      deck.addEventListener('pointerup', event => {
+        if (!gesture || event.pointerId !== gesture.id) return;
+        const dx = gesture.x - event.clientX;
+        const dy = gesture.y - event.clientY;
+        gesture = null;
+        if (hasTextSelection()) return;
+        if (Math.abs(dx) < SWIPE_MIN || Math.abs(dx) < Math.abs(dy) * HORIZONTAL_RATIO) return;
+        show(current + (dx > 0 ? 1 : -1));
+      });
+
+      deck.addEventListener('pointercancel', () => { gesture = null; });
+      deck.addEventListener('lostpointercapture', () => { gesture = null; });
+
+      deck.addEventListener('wheel', event => {
+        if (wheelLocked || Math.abs(event.deltaX) < 42 || Math.abs(event.deltaX) < Math.abs(event.deltaY)) return;
+        wheelLocked = true;
+        show(current + (event.deltaX > 0 ? 1 : -1));
+        window.setTimeout(() => { wheelLocked = false; }, 450);
+      }, { passive: true });
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const finePointer = window.matchMedia('(pointer: fine)');
+      if (!reduceMotion.matches && finePointer.matches) {
+        deck.addEventListener('pointermove', event => {
+          const stage = pages[current]?.querySelector('.kinetic-art');
+          if (!stage || pages[current].classList.contains('has-image')) return;
+          const x = ((event.clientX / window.innerWidth) - 0.5) * 3;
+          const y = ((event.clientY / window.innerHeight) - 0.5) * 3;
+          stage.style.setProperty('--parallax-x', `${x}px`);
+          stage.style.setProperty('--parallax-y', `${y}px`);
+        });
+      }
+
+      const hashMatch = location.hash.match(/^#page-(\d+)$/);
+      show(hashMatch ? Number(hashMatch[1]) - 1 : 0, false);
+    })();
+  </script>
+</body>
+</html>
