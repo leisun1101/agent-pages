@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>每日简报 · 2026-08-17</title>
+  <style>
+    :root {
+      --paper: #fbfaf5;
+      --paper-strong: #fffefa;
+      --ink: #202823;
+      --muted: #6e756f;
+      --moss: #476354;
+      --moss-soft: #90a291;
+      --amber: #d49a58;
+      --line: rgba(32, 40, 35, 0.15);
+      --rail-width: 116px;
+      --ease: cubic-bezier(.2, .75, .25, 1);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #e9e7df;
+      color: var(--ink);
+    }
+
+    body {
+      min-height: 100dvh;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, a { font: inherit; }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid var(--moss);
+      outline-offset: 4px;
+    }
+
+    .reader {
+      width: min(100%, 1560px);
+      height: 100dvh;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: var(--rail-width) minmax(0, 1fr);
+      background: var(--paper-strong);
+      box-shadow: 0 20px 80px rgba(24, 30, 26, 0.12);
+    }
+
+    .rail {
+      position: relative;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      padding: 34px 22px 28px;
+      border-right: 1px solid var(--line);
+      background: rgba(255, 254, 250, 0.94);
+    }
+
+    .brand {
+      margin: 0;
+      font: 600 28px/1.18 Georgia, "Songti SC", "STSong", serif;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-rule {
+      width: 24px;
+      height: 2px;
+      margin: 22px 0 18px;
+      background: var(--moss);
+    }
+
+    .edition {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .rail-progress {
+      margin-top: auto;
+      display: grid;
+      gap: 15px;
+    }
+
+    .nav-button {
+      width: 100%;
+      min-height: 44px;
+      padding: 8px 4px;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      transition: color 180ms ease, border-color 180ms ease;
+    }
+
+    .nav-button:hover { color: var(--moss); border-color: var(--moss); }
+    .nav-button:disabled { opacity: 0.32; cursor: default; }
+
+    .counter {
+      color: var(--ink);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .dot {
+      width: 5px;
+      height: 5px;
+      border: 0;
+      border-radius: 50%;
+      padding: 0;
+      background: #c8cbc6;
+      cursor: pointer;
+    }
+
+    .dot.active { background: var(--moss); transform: scale(1.3); }
+
+    .deck {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      touch-action: pan-y;
+      background: var(--paper-strong);
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: minmax(360px, 46%) minmax(480px, 1fr);
+      min-width: 0;
+      background: var(--paper-strong);
+      opacity: 0;
+      transform: translate3d(104%, 0, 0) rotateY(-1.2deg);
+      transform-origin: left center;
+      pointer-events: none;
+      visibility: hidden;
+      transition: transform 520ms var(--ease), opacity 320ms ease, visibility 0s linear 520ms;
+    }
+
+    .page.past {
+      transform: translate3d(-104%, 0, 0) rotateY(1.2deg);
+    }
+
+    .page.active {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) rotateY(0);
+      pointer-events: auto;
+      visibility: visible;
+      transition-delay: 0s;
+    }
+
+    .visual-stage {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      background: #e8ede6;
+      isolation: isolate;
+    }
+
+    .has-image .visual-stage::after {
+      content: "";
+      position: absolute;
+      z-index: 3;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 13%;
+      pointer-events: none;
+      background: linear-gradient(to right, transparent, rgba(255, 254, 250, 0.92));
+    }
+
+    .story-image {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0;
+      transform: scale(1.025);
+      transition: opacity 420ms ease, transform 1.1s var(--ease);
+    }
+
+    .page.active.has-image .story-image.loaded {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .kinetic-art {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at calc(20% + var(--drift-x, 0px)) calc(80% + var(--drift-y, 0px)), rgba(72, 103, 84, 0.58), transparent 46%),
+        radial-gradient(circle at 84% 70%, rgba(218, 164, 99, 0.78), transparent 38%),
+        linear-gradient(155deg, #f4f2e9 12%, #e8ede6 52%, #f5eadb 100%);
+      transition: opacity 320ms ease;
+      animation: ambient-drift 16s ease-in-out infinite alternate;
+    }
+
+    .has-image .kinetic-art { opacity: 0; }
+    .no-image .kinetic-art { opacity: 1; }
+
+    .kinetic-art::before {
+      content: "";
+      position: absolute;
+      inset: -16%;
+      opacity: 0.34;
+      background: repeating-radial-gradient(circle at 30% 32%, transparent 0 16px, rgba(71, 99, 84, 0.22) 17px 18px);
+      transform: translate3d(var(--parallax-x, 0px), var(--parallax-y, 0px), 0);
+      transition: transform 360ms ease-out;
+    }
+
+    .kinetic-art::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.18;
+      background-image: radial-gradient(rgba(32, 40, 35, 0.38) 0.45px, transparent 0.45px);
+      background-size: 4px 4px;
+      mix-blend-mode: multiply;
+      animation: grain-shift 7s steps(2, end) infinite;
+    }
+
+    .kinetic-index,
+    .kinetic-word,
+    .kinetic-category {
+      position: absolute;
+      z-index: 1;
+      color: var(--moss);
+      font-family: Georgia, "Songti SC", "STSong", serif;
+      pointer-events: none;
+    }
+
+    .kinetic-index {
+      top: -3vw;
+      left: 4.5vw;
+      color: rgba(52, 67, 58, 0.11);
+      font-size: clamp(190px, 31vw, 520px);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: -0.08em;
+    }
+
+    .kinetic-word {
+      top: 52%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(25px, 3vw, 50px);
+      letter-spacing: 0.52em;
+      text-indent: 0.52em;
+      white-space: nowrap;
+    }
+
+    .kinetic-category {
+      left: 50%;
+      bottom: 17%;
+      transform: translateX(-50%);
+      font-size: clamp(10px, 1vw, 15px);
+      letter-spacing: 0.34em;
+      text-indent: 0.34em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .article {
+      min-width: 0;
+      height: 100%;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: clamp(44px, 5.4vh, 72px) clamp(42px, 5vw, 84px) 54px;
+      background: var(--paper-strong);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(71, 99, 84, 0.28) transparent;
+    }
+
+    .category {
+      display: inline-block;
+      margin-bottom: 24px;
+      padding: 6px 12px;
+      border: 1px solid rgba(71, 99, 84, 0.55);
+      border-radius: 3px;
+      color: var(--moss);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    h1 {
+      max-width: 14em;
+      margin: 0;
+      font: 600 clamp(42px, 4vw, 64px)/1.18 Georgia, "Songti SC", "STSong", serif;
+      letter-spacing: -0.035em;
+      text-wrap: balance;
+    }
+
+    .title-rule {
+      width: 38px;
+      height: 2px;
+      margin: 25px 0 25px;
+      background: var(--moss);
+    }
+
+    .lead {
+      max-width: 64ch;
+      margin: 0 0 23px;
+      font-size: clamp(17px, 1.35vw, 21px);
+      line-height: 1.8;
+      color: #303833;
+    }
+
+    .body-copy {
+      max-width: 65ch;
+      padding-top: 20px;
+      border-top: 1px dashed rgba(32, 40, 35, 0.2);
+    }
+
+    .body-copy p {
+      margin: 0 0 16px;
+      font-size: 15.5px;
+      line-height: 1.9;
+      color: #3d443f;
+    }
+
+    .fact-box {
+      max-width: 65ch;
+      margin-top: 26px;
+      padding: 18px 20px;
+      border: 1px solid rgba(32, 40, 35, 0.13);
+      border-left: 3px solid var(--moss);
+      background: rgba(248, 247, 241, 0.8);
+    }
+
+    .fact-box strong {
+      display: block;
+      margin-bottom: 8px;
+      font: 600 16px/1.4 Georgia, "Songti SC", serif;
+    }
+
+    .fact-box p { margin: 0; font-size: 14px; line-height: 1.75; }
+
+    .meta-row {
+      max-width: 65ch;
+      margin-top: 30px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: end;
+    }
+
+    .meta {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.75;
+    }
+
+    .source-link {
+      flex: 0 0 auto;
+      min-height: 42px;
+      padding: 10px 14px;
+      border: 1px solid var(--moss);
+      border-radius: 3px;
+      color: var(--moss);
+      text-decoration: none;
+      transition: background 180ms ease, color 180ms ease;
+    }
+
+    .source-link:hover { background: var(--moss); color: #fff; }
+
+    .overview-page .article {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .date-kicker {
+      margin: 0 0 18px;
+      color: var(--moss);
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .overview-page h1 { font-size: clamp(54px, 6vw, 96px); }
+
+    .overview-copy {
+      max-width: 62ch;
+      margin-top: 30px;
+    }
+
+    .overview-copy p {
+      margin: 0 0 18px;
+      font-size: clamp(16px, 1.25vw, 19px);
+      line-height: 1.9;
+      color: #3d443f;
+    }
+
+    .mobile-nav { display: none; }
+
+    @keyframes ambient-drift {
+      from { background-position: 0% 0%, 0% 0%, 0% 0%; }
+      to { background-position: 3% -2%, -2% 3%, 0% 0%; }
+    }
+
+    @keyframes grain-shift {
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      30% { transform: translate3d(1px, -1px, 0); }
+      60% { transform: translate3d(-1px, 1px, 0); }
+    }
+
+    @media (max-width: 960px) {
+      :root { --rail-width: 0px; }
+
+      .reader {
+        width: 100%;
+        grid-template-columns: 1fr;
+        box-shadow: none;
+      }
+
+      .rail { display: none; }
+
+      .deck {
+        height: calc(100dvh - 70px - env(safe-area-inset-bottom));
+      }
+
+      .page {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(220px, 34dvh) auto;
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
+      }
+
+      .visual-stage { min-height: 220px; }
+      .has-image .visual-stage::after { display: none; }
+
+      .kinetic-index {
+        top: -38px;
+        left: 8vw;
+        font-size: clamp(180px, 68vw, 320px);
+      }
+
+      .kinetic-word { top: 54%; font-size: clamp(20px, 7vw, 34px); }
+      .kinetic-category { bottom: 13%; }
+
+      .article {
+        height: auto;
+        min-height: 66dvh;
+        overflow: visible;
+        padding: 30px 22px calc(112px + env(safe-area-inset-bottom));
+      }
+
+      h1 { font-size: clamp(35px, 9.5vw, 50px); line-height: 1.22; }
+      .lead { font-size: 17px; line-height: 1.78; }
+      .body-copy p { font-size: 15.5px; line-height: 1.85; }
+      .meta-row { align-items: stretch; flex-direction: column; }
+      .source-link { align-self: flex-start; }
+
+      .mobile-nav {
+        position: fixed;
+        z-index: 50;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 12px;
+        min-height: 70px;
+        padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+        border-top: 1px solid var(--line);
+        background: rgba(255, 254, 250, 0.95);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+      }
+
+      .mobile-nav .nav-button {
+        min-height: 48px;
+        border: 1px solid var(--line);
+        border-radius: 3px;
+      }
+
+      .mobile-nav .nav-button:last-child { justify-self: end; }
+      .mobile-counter { font-size: 12px; font-variant-numeric: tabular-nums; }
+    }
+
+    @media (max-width: 520px) {
+      .page { grid-template-rows: minmax(190px, 29dvh) auto; }
+      .overview-page h1 { font-size: clamp(48px, 15vw, 72px); }
+      .overview-page .article { justify-content: flex-start; }
+      .category { margin-bottom: 18px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+
+      .page, .page.past { transform: none; }
+      .page:not(.active) { display: none; }
+      .kinetic-art::before { transform: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="reader">
+    <aside class="rail" aria-label="简报导航">
+      <p class="brand">每日<br>简报</p>
+      <span class="brand-rule" aria-hidden="true"></span>
+      <p class="edition">Monday ·<br>2026-08-17</p>
+      <div class="rail-progress">
+        <button class="nav-button" id="prevButton" type="button">上一页</button>
+        <span class="counter" id="pageCounter">01 / 11</span>
+        <div class="dots" id="dots" aria-label="页码"><button class="dot active" type="button" aria-label="第1页" aria-current="page"></button><button class="dot" type="button" aria-label="第2页"></button><button class="dot" type="button" aria-label="第3页"></button><button class="dot" type="button" aria-label="第4页"></button><button class="dot" type="button" aria-label="第5页"></button><button class="dot" type="button" aria-label="第6页"></button><button class="dot" type="button" aria-label="第7页"></button><button class="dot" type="button" aria-label="第8页"></button><button class="dot" type="button" aria-label="第9页"></button><button class="dot" type="button" aria-label="第10页"></button><button class="dot" type="button" aria-label="第11页"></button></div>
+        <button class="nav-button" id="nextButton" type="button">下一页</button>
+      </div>
+    </aside>
+
+    <section class="deck" id="deck" aria-live="polite">
+      <section class="page overview-page no-image active" data-index="0" aria-hidden="false">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">00</span><span class="kinetic-word" aria-hidden="true">DAILY</span><span class="kinetic-category" aria-hidden="true">DAILY · BRIEFING</span></div>
+        </div>
+        <article class="article">
+          <p class="date-kicker">Monday · 2026-08-17</p>
+          <h1>每日简报</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">筛选窗口：柏林时间 8 月 16 日 08:00 至 8 月 17 日 07:00。最终入选10条。</p>
+          <div class="overview-copy"><p>今天的信息量不小：俄乌双方夜间互袭刷新纪录，刚果（金）埃博拉疫情成为该国史上最致命的一次，特朗普在军演开始前数小时单方面下令缩减美韩联合演习，加沙和平进程则出现美方与哈马斯罕见直接接触的突破性动作。</p><p>对你更相关的几条：比利时史上最大野火正逼近德国边境，边境城镇已建议居民撤离；德国企业对美直接投资上半年暴跌至三年最低；欧盟计划秋季推出迄今最全面的对俄制裁。技术侧，阿里开源 Qwen 3.8 27B 被评测指出默认推理强度过高，MCP 新规范则正式走向无状态——两条都值得你花几分钟看看。</p></div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="1" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">01</span><span class="kinetic-word" aria-hidden="true">亚洲</span><span class="kinetic-category" aria-hidden="true">亚洲 · 安全</span></div>
+          <img class="story-image" src="https://s.france24.com/media/display/45b74abc-99c4-11f1-a872-005056bfb2b6/w:1280/p:16x9/000-72JR2KF.jpg" alt="特朗普以与金正恩关系好为由，下令大幅缩减美韩联合军演" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">亚洲 · 安全</span>
+          <h1>特朗普以与金正恩关系好为由，下令大幅缩减美韩联合军演</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">特朗普在军演开始前数小时发文，要求五角大楼&quot;大幅缩减&quot;年度美韩联合演习，理由是演习太贵、对朝鲜&quot;完全不合适且敌对&quot;，并抱怨韩国拒绝参与他对伊朗的行动。韩国国防部回应：演习按原计划进行。</p>
+          <div class="body-copy"><p>特朗普周日（8 月 16 日）在 Truth Social 发文下令，距周一开打的年度美韩联合军演&quot;乙支自由之盾&quot;（Ulchi Freedom Shield）仅数小时。这场演习为期 11 天（8 月 17 日至 27 日），约 1.8 万名韩国军人参加，另有驻韩美军部队，重点演练无人机战、GPS 干扰与网络攻击。</p><p>特朗普给出的理由有三条：与金正恩&quot;关系非常好&quot;；演习&quot;昂贵&quot;且向朝鲜发出&quot;完全不合适且敌对&quot;的信号；韩国此前拒绝加入其对伊朗的&quot;无核化&quot;行动。他称&quot;为时已晚无法取消&quot;，因此命令国防部长大幅缩减演习。</p><p>韩国国防部回应称，军演将&quot;按先前通知和安排的计划进行&quot;。朝鲜上周五刚试射了一枚飞越日本海的弹道导弹，并警告可能以&quot;新水平威慑&quot;回应。专家认为，缩减而非完全取消对朝鲜没有意义，反而会损害美韩同盟协调与东北亚威慑。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>军演原定周一开打、1.8 万名韩军参加；韩国国防部回应&quot;按原计划进行&quot;</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：France 24<br>时间：2026-08-17 06:38 CEST</p>
+            <a class="source-link" href="https://www.france24.com/en/americas/20260817-trump-orders-pentagon-to-scale-back-military-drills-with-south-korea-hours-before-start" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="2" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">02</span><span class="kinetic-word" aria-hidden="true">中东</span><span class="kinetic-category" aria-hidden="true">中东 · 外交</span></div>
+          <img class="story-image" src="https://ichef.bbci.co.uk/ace/branded_news/1200/cpsprodpb/c31f/live/48688550-99f6-11f1-b2ab-0dd01740f9f6.jpg" alt="库什纳罕见直接会晤哈马斯后抵达以色列，加沙和平计划现转机" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">中东 · 外交</span>
+          <h1>库什纳罕见直接会晤哈马斯后抵达以色列，加沙和平计划现转机</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">特朗普女婿、中东特使库什纳在开罗与哈马斯政治局领导人举行罕见直接会谈——去年停火以来首次这一级别的接触——随后抵达以色列，周一将见内塔尼亚胡。背景是以色列上周刚公开拒绝了特朗普的 15 点加沙和平计划。</p>
+          <div class="body-copy"><p>一名巴勒斯坦官员向 BBC 证实，库什纳会见了由哈马斯新领导人哈亚率领的代表团；特朗普&quot;和平委员会&quot;特使姆拉德诺夫和英国前首相布莱尔也参与，埃及、卡塔尔、土耳其调解方代表在场。库什纳在埃及期间还会见了总统塞西。会谈细节没有官方声明，据报涉及武装解除、以军撤出与人道主义努力。</p><p>僵局背景：内塔尼亚胡上周公开表示&quot;以色列拒绝和平委员会的 15 点文件，在哈马斯真正解除武装前，以军不会撤出任何部队&quot;。八个穆斯林国家（埃及、阿联酋、卡塔尔、沙特、约旦、土耳其、巴基斯坦、印尼）周日发表联合声明，谴责以色列的拒绝，称其&quot;威胁特朗普的和平努力&quot;。</p><p>停火生效以来以军几乎每日空袭加沙；周日以军称打击了汗尤尼斯和努塞拉特的哈马斯与伊斯兰圣战目标。内塔尼亚胡还面临 10 月大选压力，联合政府内有主张更强硬的部长。美方绕过以色列直接与哈马斯接触，本身即是向以方施压的强信号。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>去年停火以来美方与哈马斯首次这一级别的直接接触；8 个穆斯林国家联合谴责以色列拒绝 15 点计划</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：BBC<br>时间：2026-08-17 06:50 CEST</p>
+            <a class="source-link" href="https://www.bbc.co.uk/news/articles/c77gg5vn44yo" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="3" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">03</span><span class="kinetic-word" aria-hidden="true">欧洲</span><span class="kinetic-category" aria-hidden="true">欧洲 · 冲突</span></div>
+          <img class="story-image" src="https://ichef.bbci.co.uk/ace/branded_news/1200/cpsprodpb/2f78/live/bd896330-997f-11f1-a7ab-8b30adf0800a.jpg" alt="俄称遭遇 2026 年以来最大规模乌克兰无人机袭击，基辅书市被毁，双方至少 14 人死亡" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">欧洲 · 冲突</span>
+          <h1>俄称遭遇 2026 年以来最大规模乌克兰无人机袭击，基辅书市被毁，双方至少 14 人死亡</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">乌克兰对俄发动 2026 年以来规模最大的无人机袭击，俄国防部宣称 24 小时击落 1478 架无人机、连续第二天刷新纪录；俄军导弹则回击基辅，摧毁一个露天书市。俄乌两地合计至少 14 人死亡，不同口径下最多 19 人。</p>
+          <div class="body-copy"><p>俄方称约 822 架无人机参与袭击、其中约 600 架瞄准莫斯科，莫斯科州长称这是&quot;近期记忆中最大规模无人机袭击之一&quot;。莫斯科以南约 25 英里一座 25 万平方米的 Wildberries 配送仓库燃起大火，乌军方称已使该公司 10 大物流中心中的 7 个&quot;瘫痪&quot;。俄方伤亡至少 7 人，包括罗斯托夫州 5 人。</p><p>俄军导弹袭击基辅，摧毁了彼得罗夫卡露天书市，摊主称全部库存付之一炬，街上散落烧焦的书；基辅一夜拉响 4 次防空警报，至少 6 人受伤。俄方称打击目标为生产导弹部件的设施和无人机部件工厂。一架西班牙 F-18 还在罗马尼亚上空击落一架&quot;疑似俄方&quot;无人机。</p><p>泽连斯基表示，本周俄军发射了超过 1550 架攻击无人机、近 1560 枚滑翔炸弹和 62 枚导弹。乌智库人士认为俄方&quot;故意夸大&quot;拦截数字，但确认这是莫斯科地区最大规模袭击之一。双方防空资源接近耗尽，平民伤亡上升，战事重心正全面转向空中互袭。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>俄国防部宣称 24 小时击落 1478 架无人机，连续第二天刷新纪录；Wildberries 10 大物流中心 7 个瘫痪</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：BBC / The Guardian<br>时间：2026-08-16 21:03 CEST</p>
+            <a class="source-link" href="https://www.bbc.co.uk/news/articles/c1411pgje8xo" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="4" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">04</span><span class="kinetic-word" aria-hidden="true">全球</span><span class="kinetic-category" aria-hidden="true">全球 · 公共卫生</span></div>
+          <img class="story-image" src="https://ichef.bbci.co.uk/ace/branded_news/1200/cpsprodpb/6968/live/176af9c0-99f5-11f1-8ffd-896dfa12c5fd.jpg" alt="刚果（金）埃博拉疫情成为该国史上最致命：2325 人死亡，蔓延最快记录叠加" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">全球 · 公共卫生</span>
+          <h1>刚果（金）埃博拉疫情成为该国史上最致命：2325 人死亡，蔓延最快记录叠加</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">自 5 月 15 日宣布疫情以来，刚果（金）已有 2325 人死于埃博拉，确诊近 5000 例，正式成为该国历史上最致命的埃博拉疫情。联合国官员称&quot;这场流行病每 30 分钟就夺去一条人命&quot;。</p>
+          <div class="body-copy"><p>刚果（金）公共卫生研究院周日报告 4945 例确诊病例，过去 24 小时新增 101 例；死亡 2325 人，超过该国 2018-2020 年疫情的死亡人数。世卫组织称传播速度&quot;异常&quot;，为有记录以来蔓延最快——2014-2016 年西非疫情花了近 5 个月才达到 1000 例死亡，本轮不到 3 个月就超过 2000 例。</p><p>致病的是罕见的 Bundibugyo 毒株，此前仅有过两次已知暴发，目前没有获批疫苗。英国 MHRA 已批准牛津大学团队基于新冠疫苗同款技术的 Bundibugyo 疫苗开展首次人体试验，另有 3 个团队在研；WHO 正在当地测试两种抗病毒疗法。</p><p>疫情已扩散至 26 个省中的 6 个，并出现跨国传播：乌干达确诊 20 例，德国收治 2 人，法国通报 1 例。WHO 希望 3 个月内逆转疫情扩散，但明确表示目标只是&quot;控制传播&quot;。刚果（金）50 年来第 17 次埃博拉疫情叠加多年冲突与高流动性人口，防控难度极大。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>2325 人死亡、确诊 4945 例；联合国官员称疫情&quot;每 30 分钟夺走一条人命&quot;</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：BBC<br>时间：2026-08-17 06:41 CEST</p>
+            <a class="source-link" href="https://www.bbc.co.uk/news/articles/cvgll74vvydo" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="5" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">05</span><span class="kinetic-word" aria-hidden="true">欧洲</span><span class="kinetic-category" aria-hidden="true">欧洲 · 政治</span></div>
+          <img class="story-image" src="https://www.reuters.com/resizer/v2/FA2FXZR6Q5IUHGHSVARIPS4JVU.jpg?auth=8fa6ae28d4bc7312eca9dde22851e1e53d75e8e8c23fac51bb4ff4d3a24b73a0&amp;height=1005&amp;width=1920&amp;quality=80&amp;smart=true" alt="欧盟计划秋季推出开战以来&quot;最具深远影响&quot;的对俄制裁名单" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">欧洲 · 政治</span>
+          <h1>欧盟计划秋季推出开战以来&quot;最具深远影响&quot;的对俄制裁名单</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">欧盟外交与安全政策高级代表卡拉斯接受德国《世界报》采访时表示，欧盟计划秋季推出俄乌战争爆发以来最具深远影响的对俄制裁名单，一旦通过，被制裁的俄罗斯实体总数将立即增加三分之一。</p>
+          <div class="body-copy"><p>卡拉斯称：&quot;欧盟制裁已让俄罗斯战争机器损失超过 1 万亿欧元（约 1.16 万亿美元），秋季我将提出开战以来最具深远影响的制裁名单。&quot;她补充说，名单通过后受制裁实体总数将立即增加约三分之一，&quot;对莫斯科的压力必须持续加大，直到其结束战争&quot;。</p><p>欧盟最近一轮对俄制裁于 2026 年 7 月批准，针对俄罗斯银行业和加密货币网络。卡拉斯的采访未透露秋季方案的具体领域和时间表，但定位&quot;迄今最全面&quot;，意味着更多俄罗斯企业、银行和个人将进入欧盟资产冻结与交易禁令范围，欧洲金融机构和贸易商需重新做合规筛查。</p><p>欧盟内部实施制裁历来需要 27 个成员国一致同意，协调难度不小。秋季方案落地前，涉及俄罗斯敞口的欧洲金融机构与大宗商品贸易商将持续关注预期博弈。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>通过后受制裁俄实体总数将立即增加三分之一；欧盟称制裁已让俄损失超 1 万亿欧元</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：Reuters<br>时间：2026-08-17 02:05 CEST</p>
+            <a class="source-link" href="https://www.reuters.com/world/europe/eu-plans-most-far-reaching-sanctions-package-against-russia-autumn-foreign-chief-2026-08-17/" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="6" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">06</span><span class="kinetic-word" aria-hidden="true">德国</span><span class="kinetic-category" aria-hidden="true">德国 · 经济</span></div>
+          <img class="story-image" src="https://www.reuters.com/resizer/v2/7J2HEFBCI5OIPNZXKYWLTK6RSU.jpg?auth=a5ac438da09e39b478e3f8ec895fc8422b7db5866974e93a95ad2f17378eed57&amp;height=1005&amp;width=1920&amp;quality=80&amp;smart=true" alt="德国企业对美直接投资上半年暴跌近三分之二，降至三年最低" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">德国 · 经济</span>
+          <h1>德国企业对美直接投资上半年暴跌近三分之二，降至三年最低</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">德国经济研究所基于德国央行数据的测算显示，2026 年上半年德国企业对美直接投资仅 43 亿欧元，同比下跌近三分之二，为 2023 年以来最低，约为疫情前五年同期均值的四分之一。</p>
+          <div class="body-copy"><p>与 2024 年同期相比，降幅接近 80%。研究所研究员萨米娜·苏丹称：&quot;这延续了自特朗普 2025 年 1 月第二任期开始以来一直明显的下行趋势。&quot;直接原因是特朗普政府政策加剧了跨大西洋贸易伙伴之间的不确定性。</p><p>数据的一个结构性信号：2025 年投资构成中，直接投资贷款与留存收益再投资异常偏高，而狭义股本资本（新投资减去清算的净额）低于平均水平。也就是说，已经在美运营的企业把赚取的利润继续再投资于美国——&quot;美国总体上仍是一个有吸引力的市场&quot;——但不愿投入新资本。</p><p>这被解读为&quot;冻结新投资&quot;而非&quot;撤离&quot;：若持续，将影响德国企业海外扩张与就业创造。背景是欧盟去年为规避对美出口高额关税，与美国达成含 6000 亿美元投资承诺的协议。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>上半年对美直接投资 43 亿欧元，同比降近三分之二，为疫情前五年均值（约 158 亿欧元）的四分之一</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：Reuters<br>时间：2026-08-16 08:35 CEST</p>
+            <a class="source-link" href="https://www.reuters.com/business/finance/german-companies-cut-us-investment-three-year-low-data-show-2026-08-16/" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="7" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">07</span><span class="kinetic-word" aria-hidden="true">欧洲</span><span class="kinetic-category" aria-hidden="true">欧洲 · 环境</span></div>
+          <img class="story-image" src="https://i.guim.co.uk/img/media/ce4b5f03218f7b7d59f8e0139c430445f14f57ab/440_0_3799_3041/master/3799.jpg?width=1200&amp;dpr=1&amp;s=none&amp;crop=none" alt="比利时史上最大野火逼近德国边境，希腊萨拉米纳岛野火致一对老人死亡" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">欧洲 · 环境</span>
+          <h1>比利时史上最大野火逼近德国边境，希腊萨拉米纳岛野火致一对老人死亡</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">比利时列日省高芬自然保护区的野火烧了约 3000 公顷，是该国现代史上最大的一次，火线正逼近德国边境，边境城镇蒙绍已建议居民离开。希腊萨拉米纳岛周日的野火则夺走一对老年夫妇的生命。</p>
+          <div class="body-copy"><p>比利时野火 8 月 14 日（周五）在高芬（Hautes Fagnes）自然保护区起火，截至周日上午过火约 3000 公顷（约 7400 英亩），为该国现代史上最大，超过 2011 年那场（约 1400 公顷）两倍多。列日省 Waimes 与 Bütgenbach 两镇约 600 名居民被疏散，德国边境城镇蒙绍（Monschau）周日建议靠近边境的居民离开——官方预计火不会烧入德国领土，但严重烟霾污染很可能。</p><p>救援力量包括 250 多名消防与应急人员（含德国消防队）、军队和开拖拉机拉水的农民；空中支援来自欧盟民防机制、瑞典、荷兰等国。比利时总理感谢欧洲伙伴援助。周日两条朝向 Jalhay 和蒙绍方向的火线据称已受控。</p><p>希腊方面，萨拉米纳岛周日下午几乎同时爆发两起野火，一对老年夫妇死于自家住宅外；500 多人被下令撤离（其中 500 人经海路离岛），约 200 名消防员、50 辆消防车和多架飞机投入扑救，至少 10 人受伤。西班牙阿拉贡另有一名士兵灭火时死亡。欧洲正经历今夏第五波热浪，多国野火叠加。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>比利时约 3000 公顷过火（现代史上最大），德国边境城镇蒙绍已建议居民撤离；希腊 2 人死亡</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：The Guardian / Reuters<br>时间：2026-08-16 18:28 CEST</p>
+            <a class="source-link" href="https://www.reuters.com/business/environment/belgiums-biggest-wildfire-record-heads-towards-germany-2026-08-16/" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="8" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">08</span><span class="kinetic-word" aria-hidden="true">全球</span><span class="kinetic-category" aria-hidden="true">全球 · 经济</span></div>
+          <img class="story-image" src="https://english-kyodo.ismcdn.jp/mwimgs/c/8/1200x/img_c8cc183433d2b4766a3d794944538d741709116.jpg" alt="日本二季度 GDP 年化增速仅 1.1% 远逊预期，中东冲突拖累资本开支" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">全球 · 经济</span>
+          <h1>日本二季度 GDP 年化增速仅 1.1% 远逊预期，中东冲突拖累资本开支</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">日本内阁府周一公布，二季度实际 GDP 年化增速 1.1%，远低于市场预期的 2%；资本开支环比下滑 1.2%（预期为正），私人消费原地踏步，内需全面疲软，全靠出口支撑。</p>
+          <div class="body-copy"><p>分项数据：私人消费（占经济一半以上）环比持平，预期为 +0.5%；资本开支环比 -1.2%，预期 +0.4%，部分因软件订单减少及中东冲突相关的不确定性与供应链中断；外需净贡献 +0.5 个百分点，出口受益于美国对日系混动车强劲需求与全球 AI 投资带动的半导体设备出口。</p><p>本季度是美伊冲突爆发后的首个完整季度：能源价格攀升冲击企业与家庭，霍尔木兹海峡运输实际中断打击原油进口（进口环比 -1.5%，反而推高了 GDP）。日元偏弱支撑出口，但也推高进口成本，分析师警告企业可能自秋季起提价。</p><p>经济降速令日本央行加息路径两难：通胀仍高（GDP 价格指数同比 +2.6%）需要加息压制，但内需这么弱，市场预期最快 9 月加息的时点判断基本未变；日本经济研究中心调查显示，经济学家预计三季度年化增速将放缓至 0.05%，近乎零增长。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>年化 1.1% vs 预期 2.0%；资本开支 -1.2%；三季度预期年化增速仅 0.05%</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：Reuters<br>时间：2026-08-17 05:42 CEST</p>
+            <a class="source-link" href="https://www.reuters.com/world/asia-pacific/japans-economy-grows-slower-than-expected-april-june-2026-08-17/" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="9" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">09</span><span class="kinetic-word" aria-hidden="true">AI</span><span class="kinetic-category" aria-hidden="true">AI · 开源模型</span></div>
+          <img class="story-image" src="https://aihot.virxact.com/items/cmswesk6a0r2hrovml2edcl2c/opengraph-image-1az256?3bca4e4fb1f54684" alt="阿里开源 Qwen 3.8 27B：基准全面超前代，但默认推理强度导致严重&quot;过度思考&quot;" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">AI · 开源模型</span>
+          <h1>阿里开源 Qwen 3.8 27B：基准全面超前代，但默认推理强度导致严重&quot;过度思考&quot;</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">阿里 Qwen 实验室发布 Apache 2.0 许可的 27B 视觉语言模型 Qwen 3.8 27B，官方基准全面超越前代 Qwen 3.6 27B 和自家闭源旗舰 Qwen 3.7-Plus。但评测发现其默认推理强度开在最高档，同一任务从 137 秒暴涨到 21 分钟。</p>
+          <div class="body-copy"><p>模型支持图像与视频理解，原生上下文 262,144 token、可扩展至 1M，内置多 token 预测（MTP）加速。量化后约 17GB，一台高端笔记本即可运行。官方基准中，Terminal Bench 2.1 得 73.0（前代 63.4、闭源 Qwen 3.7-Plus 64.0），SWE-bench Pro 61.7，LiveCodeBench v6 90.3，视觉侧 OSWorld-Verified 84.3 为同表最高。</p><p>评测者 Simon Willison 发现官方默认 reasoning_effort 为最高档 xhigh，导致&quot;极其夸张的过度思考&quot;：提示&quot;画一个鹈鹕骑自行车的 SVG&quot;，默认设置下耗时 21 分钟、消耗 22,276 个推理 token 才产出 3223 个输出 token；关闭推理后同一提示只需 137 秒。他建议部署时&quot;先忽略这个默认值，用 low 甚至关闭推理&quot;。</p><p>对开发者意味着：17GB 的 27B 稠密模型把长上下文、多模态与工具调用全部装进本地，本地 coding agent 成为现实；但消费级硬件上默认 xhigh 是&quot;糟糕的起点&quot;，需主动调低推理强度。llama.cpp 已支持 MTP 投机解码，实测提速约 72%。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>同一 SVG 任务：关闭推理 137 秒 vs 默认设置 21 分钟（22,276 个推理 token）</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：AIHOT / Simon Willison<br>时间：2026-08-17 00:00 CEST</p>
+            <a class="source-link" href="https://aihot.virxact.com/items/cmswesk6a0r2hrovml2edcl2c" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+<section class="page article-page has-image" data-index="10" aria-hidden="true">
+        <div class="visual-stage">
+          <div class="kinetic-art"><span class="kinetic-index" aria-hidden="true">10</span><span class="kinetic-word" aria-hidden="true">工程</span><span class="kinetic-category" aria-hidden="true">工程 · AI 基础设施</span></div>
+          <img class="story-image" src="https://static001.infoq.cn/resource/image/e0/56/e08a13a0c5ab11cccf8fca9226a21756.jpg" alt="MCP 协议走向无状态：开发者追问&quot;这不就又变回 API 了吗？&quot;" referrerpolicy="no-referrer">
+        </div>
+        <article class="article">
+          <span class="category">工程 · AI 基础设施</span>
+          <h1>MCP 协议走向无状态：开发者追问&quot;这不就又变回 API 了吗？&quot;</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+          <p class="lead">MCP 规范 7 月底版本取消协议会话机制，握手、会话标头从核心请求路径中移除，每个请求自带版本和身份；新增 Mcp-Method、Mcp-Name 两个必需标头，让网关无需解析 JSON-RPC 正文即可路由、限流和计量。</p>
+          <div class="body-copy"><p>新规范意味着每个请求可落到任意实例，自动扩缩不再需要保留状态，负载均衡、渐进式发布等既有 API 基础设施可以直接复用。授权同步收紧：动态客户端注册已弃用、计划 2027 年夏季后移除，并采用 RFC 9207 做颁发者标识，客户端将规范服务器 URI 作为 RFC 8707 resource 发送。</p><p>开发者评论颇为犀利：&quot;我们发明了一种有状态协议，发现状态难以扩展，于是剥离了状态，最终得到的结果是&#x27;发一个 POST 请求就行&#x27;。REST 阵营已经得意地等待这一刻 20 年了。&quot;辩护方则认为，MCP 真正的价值在于它是 AI 提供商认可的标准，&quot;正因为如此，人们有强烈的动力真正去实现它&quot;。</p><p>生态侧：Anthropic 报告其 MCP SDK 月下载量超过 4 亿次、今年增长三倍；但一次审计显示某客户服务器三个月仅 61 次工具调用、其中 58 次来自客户自己的工程师——&quot;资金正在流向网关、注册中心和身份验证层，而不是服务器本身&quot;。无状态化加标头路由，正是对暴露面与安全控制的直接回应。</p></div>
+          <aside class="fact-box">
+            <strong>关键事实</strong>
+            <p>Anthropic MCP SDK 月下载超 4 亿次；审计显示不少服务器三个月真实工具调用仅几十次</p>
+          </aside>
+          <div class="meta-row">
+            <p class="meta">来源：InfoQ<br>时间：2026-08-16 10:00 CEST</p>
+            <a class="source-link" href="https://www.infoq.cn/article/412hbBva0NF0AYP0CjzD" target="_blank" rel="noopener noreferrer">阅读原文</a>
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <nav class="mobile-nav" aria-label="简报翻页">
+    <button class="nav-button" id="mobilePrevButton" type="button">上一页</button>
+    <span class="mobile-counter" id="mobileCounter">01 / 11</span>
+    <button class="nav-button" id="mobileNextButton" type="button">下一页</button>
+  </nav>
+
+  <script>
+    (() => {
+      const pages = Array.from(document.querySelectorAll('.page'));
+      const dots = Array.from(document.querySelectorAll('.dot'));
+      const deck = document.getElementById('deck');
+      const controls = {
+        prev: [document.getElementById('prevButton'), document.getElementById('mobilePrevButton')],
+        next: [document.getElementById('nextButton'), document.getElementById('mobileNextButton')],
+        counters: [document.getElementById('pageCounter'), document.getElementById('mobileCounter')]
+      };
+      const SWIPE_MIN = 48;
+      const HORIZONTAL_RATIO = 1.2;
+      let current = 0;
+      let gesture = null;
+      let wheelLocked = false;
+
+      function pad(value) {
+        return String(value).padStart(2, '0');
+      }
+
+      function show(index, updateHash = true) {
+        const nextIndex = Math.max(0, Math.min(index, pages.length - 1));
+        current = nextIndex;
+
+        pages.forEach((page, pageIndex) => {
+          page.classList.toggle('active', pageIndex === current);
+          page.classList.toggle('past', pageIndex < current);
+          page.setAttribute('aria-hidden', pageIndex === current ? 'false' : 'true');
+          if ('inert' in page) page.inert = pageIndex !== current;
+        });
+
+        dots.forEach((dot, dotIndex) => {
+          dot.classList.toggle('active', dotIndex === current);
+          dot.setAttribute('aria-current', dotIndex === current ? 'page' : 'false');
+        });
+
+        const label = `${pad(current + 1)} / ${pad(pages.length)}`;
+        controls.counters.forEach(counter => { if (counter) counter.textContent = label; });
+        controls.prev.forEach(button => { if (button) button.disabled = current === 0; });
+        controls.next.forEach(button => { if (button) button.disabled = current === pages.length - 1; });
+
+        if (updateHash) history.replaceState(null, '', `#page-${current + 1}`);
+      }
+
+      function activateNoImageState(img) {
+        const page = img.closest('.page');
+        if (!page) return;
+        page.classList.remove('has-image');
+        page.classList.add('no-image');
+        img.remove();
+      }
+
+      function hasTextSelection() {
+        const selection = window.getSelection ? window.getSelection() : null;
+        return Boolean(selection && selection.type === 'Range' && selection.toString().trim());
+      }
+
+      document.querySelectorAll('.story-image').forEach(img => {
+        img.addEventListener('load', () => img.classList.add('loaded'), { once: true });
+        img.addEventListener('error', () => activateNoImageState(img), { once: true });
+        if (img.complete) {
+          if (img.naturalWidth > 0) img.classList.add('loaded');
+          else activateNoImageState(img);
+        }
+      });
+
+      controls.prev.forEach(button => button && button.addEventListener('click', () => show(current - 1)));
+      controls.next.forEach(button => button && button.addEventListener('click', () => show(current + 1)));
+      dots.forEach((dot, index) => dot.addEventListener('click', () => show(index)));
+
+      window.addEventListener('keydown', event => {
+        if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+        if (event.key === 'ArrowLeft') show(current - 1);
+        if (event.key === 'ArrowRight') show(current + 1);
+      });
+
+      deck.addEventListener('pointerdown', event => {
+        if (!event.isPrimary || (event.pointerType !== 'touch' && event.pointerType !== 'pen')) return;
+        if (event.target.closest('a, button, input, textarea, select, [contenteditable="true"]')) return;
+        if (hasTextSelection()) return;
+        gesture = { id: event.pointerId, x: event.clientX, y: event.clientY };
+        if (deck.setPointerCapture) deck.setPointerCapture(event.pointerId);
+      });
+
+      deck.addEventListener('pointerup', event => {
+        if (!gesture || event.pointerId !== gesture.id) return;
+        const dx = gesture.x - event.clientX;
+        const dy = gesture.y - event.clientY;
+        gesture = null;
+        if (hasTextSelection()) return;
+        if (Math.abs(dx) < SWIPE_MIN || Math.abs(dx) < Math.abs(dy) * HORIZONTAL_RATIO) return;
+        show(current + (dx > 0 ? 1 : -1));
+      });
+
+      deck.addEventListener('pointercancel', () => { gesture = null; });
+      deck.addEventListener('lostpointercapture', () => { gesture = null; });
+
+      deck.addEventListener('wheel', event => {
+        if (wheelLocked || Math.abs(event.deltaX) < 42 || Math.abs(event.deltaX) < Math.abs(event.deltaY)) return;
+        wheelLocked = true;
+        show(current + (event.deltaX > 0 ? 1 : -1));
+        window.setTimeout(() => { wheelLocked = false; }, 450);
+      }, { passive: true });
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const finePointer = window.matchMedia('(pointer: fine)');
+      if (!reduceMotion.matches && finePointer.matches) {
+        deck.addEventListener('pointermove', event => {
+          const stage = pages[current]?.querySelector('.kinetic-art');
+          if (!stage || pages[current].classList.contains('has-image')) return;
+          const x = ((event.clientX / window.innerWidth) - 0.5) * 3;
+          const y = ((event.clientY / window.innerHeight) - 0.5) * 3;
+          stage.style.setProperty('--parallax-x', `${x}px`);
+          stage.style.setProperty('--parallax-y', `${y}px`);
+        });
+      }
+
+      const hashMatch = location.hash.match(/^#page-(\d+)$/);
+      show(hashMatch ? Number(hashMatch[1]) - 1 : 0, false);
+    })();
+  </script>
+</body>
+</html>
